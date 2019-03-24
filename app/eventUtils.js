@@ -1,6 +1,10 @@
 var dateUtils = require('./dateUtils.js');
-
+ 
+   
 var eventUtils = (function (){
+//****************************//
+// begin eventUtils namespace //
+//****************************//
 	var events = [];
 	function consoleLogEvent(ev){
 		console.log(
@@ -11,17 +15,21 @@ var eventUtils = (function (){
   		return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
 	};
 	return{
-		newEvent : function (begDate, endDate, eventShortTitle){
-					if(isValidDate(begDate) && isValidDate(endDate) && typeof(eventShortTitle)==='string')
-						return {
-							beginDate: begDate,
-							endDate: endDate,
-							eventTitle: eventShortTitle
-						};
-	        },
+        Event : function (bdate, edate, title){
+            this.beginDate=bdate;
+            this.endDate=edate;
+            this.title=title;
+        },
+		newEvent : function (begDate, endDate, title){
+            if(isValidDate(begDate) 
+                && isValidDate(endDate)){
+                    return new eventUtils.Event(begDate, endDate, title);}
+            throw('err');
+	    },
 		eventToString : function(ev){
-				dateUtils.dateToDayStamp(ev.beginDate) + " "
-				+ dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle;
+				return dateUtils.dateToDayStamp(ev['beginDate']) + " "
+				+ dateUtils.dateToDayStamp(ev['endDate']) + " " 
+                + ev['eventTitle'];
 		},
 		processDateRange : function (begDateStamp, endDateStamp, strShortTitle){
 		      //To Do: Data Validation here
@@ -48,6 +56,9 @@ var eventUtils = (function (){
 		      events.forEach(consoleLogEvent);
 		}
 	}
-})();//end eventUtils
+//****************************//
+// end eventUtils namespace //
+//****************************//
+})();
 
 module.exports = {eventUtils};

@@ -1,19 +1,36 @@
-var dateUtils = (function (){
+const expect = require('chai').expect;
 
-	let theMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-	let dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'}
+
+const dateUtils = (function (){
+//****************************//
+// begin dateUtils namespace //
+//****************************//
+	const oneDay = 1000 * 60 * 60 * 24;
+	const theMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+	const dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+    let delimiter = "_"
+        , pad0 = function(digit){
+            return digit.toString().padStart(2,'0');
+          }
+        , monthAfter = function(monthAsDate){
+            expect(monthAsDate).to.be.a('date');
+            return new Date( monthAsDate.getFullYear(), 
+                             monthAsDate.getMonth() + 1, 1);
+          };
 
 	return{
-		firstDayofMonth: function(theYear,theMonth){
-		  return new Date(theYear,theMonth,1).getDay();
+		firstDayofMonth: function(theYear,monthIdx){
+		  return new Date(theYear,monthIdx,1).getDay();
 		},
-		monthLength: function(theYear, theMonth){
-		  //returns the number of days in a month
-		  let oneDay = 1000 * 60 * 60 * 24;
-		  let thisMonth = new Date(theYear, theMonth, 1);
-		  let nextMonth = new Date(theYear, theMonth + 1, 1);
-		  let len = Math.ceil((nextMonth.getTime() - thisMonth.getTime())/oneDay);
-		  return len;
+		monthLength: function(theYear, theMonth, timeMeasure){
+   		  let thisMonth = new Date(theYear, theMonth, 1);
+	      let inMilliseconds = monthAfter(thisMonth).getTime() - thisMonth.getTime();
+    /*      if(timeMeasure.ms) then {
+            return inMilliseconds;
+          }
+          if(timeMeasure.day) then {
+     */       return Math.ceil(inMilliseconds/oneDay);
+      //    }
 		},
 		monthIdxToStr: function(monthIdx){
 		  return theMonths[monthIdx];
@@ -23,18 +40,18 @@ var dateUtils = (function (){
 			  let d = new Date();
 			  return dateUtils.dayStamp(d.getFullYear(), d.getMonth(), d.getDate());
 	          }
-		  return arguments[0].toString() + "_"
-				+ (arguments[1]+1).toString().padStart(2,'0') + "_"
-				+ (arguments[2]).toString().padStart(2,'0');
+		  return [  arguments[0].toString(), 
+                    pad0(arguments[1]+1), 
+                    pad0(arguments[2])  ].join(delimiter);
 		},
 		dayStampToDate: function(dayStamp){
-		  let dateParts = dayStamp.split("_");
+		  let dateParts = dayStamp.split(delimiter);
 		  return new Date(dateParts[0], dateParts[1]-1, dateParts[2]);
 		},
 		dateToDayStamp: function(someDate){
 			return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
 		}
-      }
+      };
     })();//end dateUtils
 
 module.exports = dateUtils;

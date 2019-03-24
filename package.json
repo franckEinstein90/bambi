@@ -1,0 +1,30 @@
+{
+  "name": "bambi",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "express": "^4.16.4",
+    "jslint": "^0.12.1",
+    "mocha": "^6.0.2",
+    "request": "^2.88.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franckeinstein90/bambi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/franckeinstein90/bambi/issues"
+  },
+  "homepage": "https://github.com/franckeinstein90/bambi#readme",
+  "description": ""
+}
