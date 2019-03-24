@@ -1,21 +1,38 @@
 const expect = require('chai').expect;
 
+//****************************//
+// begin timeSpan namespace //
+//****************************//
+ const timeSpan = (function (){
+    const daySpanMs = 1000 * 60 * 60 * 24
+          , monthAfter = function(monthAsDate){
+                expect(monthAsDate).to.be.a('date');
+                return new Date( monthAsDate.getFullYear(), 
+                             monthAsDate.getMonth() + 1, 1);
+          };
+    return{
+        day : function(){
+            return daySpanMs;
+        },
+        month : function(monthAsDate){
+   		    let thisMonth = new Date(monthAsDate.getFullYear()
+                                     , monthAsDate.getMonth(), 1);
+            return monthAfter(thisMonth).getTime() - thisMonth.getTime();
+        }
+    }
+})();
 
-const dateUtils = (function (){
 //****************************//
 // begin dateUtils namespace //
 //****************************//
-	const oneDay = 1000 * 60 * 60 * 24;
-	const theMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+ const dateUtils = (function (){
+    const theMonths = [ "January","February","March", "April"
+                        , "May","June","July", "August"
+                        , "September","October", "November","December"];
 	const dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
     let delimiter = "_"
         , pad0 = function(digit){
             return digit.toString().padStart(2,'0');
-          }
-        , monthAfter = function(monthAsDate){
-            expect(monthAsDate).to.be.a('date');
-            return new Date( monthAsDate.getFullYear(), 
-                             monthAsDate.getMonth() + 1, 1);
           };
 
 	return{
@@ -24,13 +41,7 @@ const dateUtils = (function (){
 		},
 		monthLength: function(theYear, theMonth, timeMeasure){
    		  let thisMonth = new Date(theYear, theMonth, 1);
-	      let inMilliseconds = monthAfter(thisMonth).getTime() - thisMonth.getTime();
-    /*      if(timeMeasure.ms) then {
-            return inMilliseconds;
-          }
-          if(timeMeasure.day) then {
-     */       return Math.ceil(inMilliseconds/oneDay);
-      //    }
+          return Math.ceil(timeSpan.month(thisMonth)/timeSpan.day());
 		},
 		monthIdxToStr: function(monthIdx){
 		  return theMonths[monthIdx];
@@ -54,4 +65,4 @@ const dateUtils = (function (){
       };
     })();//end dateUtils
 
-module.exports = dateUtils;
+module.exports = {timeSpan , dateUtils};

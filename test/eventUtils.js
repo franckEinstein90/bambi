@@ -2,6 +2,12 @@ var expect = require('chai').expect;
 var eventUtils = require('../app/eventUtils.js').eventUtils;
 
 let today = new Date();
+describe ('Event object', function(){
+    it('is constructed using two dates and a string', function(){
+        let ev = new eventUtils.Event(new Date(), new Date(), "x");
+        expect(ev).to.not.be.undefined;
+    });
+});
 
 describe('newEvent', function(){
 	it('should throw an invalid date exception if one of the first two arguments is not a date', function(){
@@ -21,7 +27,7 @@ describe('newEvent', function(){
 });
 describe('eventToString', function(){
 	it('should output a string representing the body of an event', function(){
-		let ev = new eventUtils.Event(new Date(), new Date(), "new event");
+		let ev = eventUtils.newEvent(new Date(), new Date(), "new event");
 		expect(eventUtils.eventToString(ev)).to.be.equal("2019_01_01 2019_01_02 new event");
 	});
 });
