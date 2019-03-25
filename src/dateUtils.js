@@ -1,12 +1,10 @@
-const expect = require('chai').expect;
-
 //****************************//
 // begin timeSpan namespace //
 //****************************//
- const timeSpan = (function (){
-    const daySpanMs = 1000 * 60 * 60 * 24
-          , monthAfter = function(monthAsDate){
-                expect(monthAsDate).to.be.a('date');
+const timeSpan = (function (){
+    const secondSpanMs = 1000, 
+          daySpanMs = secondSpanMs * 60  * 60 * 24,
+          monthAfter = function(monthAsDate){
                 return new Date( monthAsDate.getFullYear(), 
                              monthAsDate.getMonth() + 1, 1);
           };
@@ -19,8 +17,10 @@ const expect = require('chai').expect;
                                      , monthAsDate.getMonth(), 1);
             return monthAfter(thisMonth).getTime() - thisMonth.getTime();
         }
-    }
+    };
 })();
+
+
 
 //****************************//
 // begin dateUtils namespace //
@@ -28,8 +28,10 @@ const expect = require('chai').expect;
  const dateUtils = (function (){
     const theMonths = [ "January","February","March", "April"
                         , "May","June","July", "August"
-                        , "September","October", "November","December"];
-	const dateOptions = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+                        , "September","October", "November","December"]
+    , dateOptions = {weekday: 'long'
+                    , year: 'numeric'
+                    , month: 'long', day: 'numeric'};
     let delimiter = "_"
         , pad0 = function(digit){
             return digit.toString().padStart(2,'0');

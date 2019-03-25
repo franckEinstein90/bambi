@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "build": "babel src -d build",
+    "flow": "flow"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.2.0",
     "express": "^4.16.4",
+    "flow-bin": "^0.95.1",
     "jslint": "^0.12.1",
     "mocha": "^6.0.2",
     "request": "^2.88.0"
@@ -17,7 +20,12 @@
   "directories": {
     "test": "test"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-flow": "^7.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/franckeinstein90/bambi.git"

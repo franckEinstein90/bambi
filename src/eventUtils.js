@@ -1,10 +1,14 @@
+// @flow
 var dateUtils = require('./dateUtils.js');
- 
+
+
+
    
 var eventUtils = (function (){
 //****************************//
 // begin eventUtils namespace //
 //****************************//
+
 	var events = [];
 	function consoleLogEvent(ev){
 		console.log(
@@ -22,7 +26,7 @@ var eventUtils = (function (){
         },
 		newEvent : function (begDate, endDate, title){
             if(isValidDate(begDate) 
-                && isValidDate(endDate)){
+               && isValidDate(endDate)){
                     return new eventUtils.Event(begDate, endDate, title);}
             throw('err');
 	    },

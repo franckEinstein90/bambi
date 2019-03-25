@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const dateUtils = require('../app/dateUtils.js').dateUtils;
+const dateUtils = require('../src/dateUtils.js').dateUtils;
 
 const todayDate = new Date();
 const todayStamp = `${todayDate.getFullYear().toString()}_${(todayDate.getMonth()+1).toString().padStart(2,'0')}_${todayDate.getDate().toString()}`;

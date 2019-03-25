@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var eventUtils = require('../app/eventUtils.js').eventUtils;
+var eventUtils = require('../src/eventUtils.js').eventUtils;
 
 let today = new Date();
 describe ('Event object', function(){
