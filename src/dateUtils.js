@@ -41,7 +41,7 @@ const dateUtils = (function() {
         setSeparator: function(sep) {
             separator = sep;
         },
-        firstDayofMonth: function(theYear, monthIdx) {
+        firstDayOfMonth: function(theYear, monthIdx) {
             return new Date(theYear, monthIdx, 1).getDay();
         },
         monthLength: function(theYear, theMonth, timeMeasure) {
