@@ -1,9 +1,6 @@
 // @flow
 var dateUtils = require('./dateUtils.js').dateUtils;
 
-
-
-
 var eventUtils = (function() {
     //****************************//
     // begin eventUtils namespace //
