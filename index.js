@@ -1,20 +1,23 @@
 'use strict'
-const timeSpan = require('./app/dateUtils.js').timeSpan;
-const dateUtils = require('./app/dateUtils.js').dateUtils;
-const express = require('express')
-const app = express()
 
-const PORT = process.env.PORT || 3000
+const express = require('express');
+const exphbs = require('express-handlebars');
 
-function capitalize (str) {
-  const firstLetter = str.charAt(0) // we can check what's inside here
-  return `${firstLetter.toUpperCase()}${str.slice(1)}`
-};
 
-app.get('/name', (req, res) => {
-    console.log("ell" + req.baseUrl);
+const PORT = process.env.PORT || 3000;
+const app = express();
+
+
+app.engine('handlebars', exphbs({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
+
+//app.use(express.static('public'));
+
+
+app.get('/', function(req, res){
+	res.render('home');
+//	res.sendFile(path.join(__dirname, '/public/index.html'));
 });
-
 
 
 app.listen(PORT, () => console.log(`App listening on *:${PORT}`))

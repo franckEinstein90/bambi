@@ -15,6 +15,7 @@ var calendarSettings = (function() {
         getYear: function() {
             return year;
         },
+	firstDay : function 
         setValues: function(year, month) {
             this.month = month;
             this.year = year;
