@@ -13,5 +13,6 @@ Bambi adds functionality associated with "events". A bambi event is a bundle of 
 - date-patterns (every wedneday at 4PM) 
 - the completion of one or several Jira tasks, 
 - the change in statuses of other events. 
+- manually
 
 
