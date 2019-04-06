@@ -13,6 +13,7 @@ Bambi adds functionality associated with "events". A bambi event is a bundle of 
 - date-patterns (every wedneday at 4PM) 
 - the completion of one or several Jira tasks, 
 - the change in statuses of other events. 
-- manually
 
+Triggers can also be manual and bambi provides several UI elements that let confluence users flip events directly from a page. 
 
+You can event create even chains or event trees. Each event has an ID, and bambi provides several gadgets to visualize events happening or not. There are the typical tools (calendars, agendas) and less typical ones, such as event flows. 
