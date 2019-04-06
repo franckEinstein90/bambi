@@ -4,7 +4,6 @@ var calendarSettings = (function() {
     let today = new Date(),
   month = today.getMonth(),
   year = today.getFullYear(),
-  firstDayOfMonth = dateUtils.firstDayOfMonth(this.year, this.month),
   monthLength = dateUtils.monthLength(this.year, this.month);
 
     return {
@@ -15,7 +14,9 @@ var calendarSettings = (function() {
         getYear: function() {
             return year;
         },
-	firstDay : function 
+	    firstDay : function(){
+            dateUtils.firstDayOfMonth(year, month); 
+        },
         setValues: function(year, month) {
             this.month = month;
             this.year = year;
