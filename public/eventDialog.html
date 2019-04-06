@@ -1,0 +1,128 @@
+<script>
+var eventDialog = (function(){
+
+      let beginDate, endDate, currentPage;
+
+  return{
+        setParams: function(dayStamp, cp){
+          var dayStampISO8601 = dayStamp.replace(/\_/g, "-");
+          $("#dateEnd").val(dayStampISO8601 );
+          $("#begin-date").val(dayStampISO8601);
+          currentPage = cp;
+        },
+        show: function(){
+          AJS.dialog2("#demo-dialog").show();
+        },
+        createNewEvent: function(ev){
+          let newBody = currentPage.pageBody.replace(
+            "<h1>Events</h1><ul>",
+            "<h1>Events</h1><ul><li>Event from "+
+                dateUtils.dateToDayStamp(ev.beginDate) + " to " +
+                dateUtils.dateToDayStamp(ev.endDate) + ": " +
+                ev.eventTitle + "</li>");
+              var jsondata = {
+                "version":{"number":currentPage.versionNumber + 1},
+                "title":currentPage.pageTitle,
+                "type":"page",
+                "body":{"storage":{"value":newBody,"representation":"storage"}}};
+                jQuery.ajax
+                     ({
+                       type: "PUT",
+                       url: currentPage.path,
+                       contentType:"application/json; charset=utf-8",
+                       dataType: "json",
+                       async: false,
+                       data: JSON.stringify(jsondata),
+                       success: function (){
+                         console.log('Page saved!');
+                         location.reload();
+                       },
+                       error : function(xhr, errorText){
+                         console.log('Error '+ xhr.responseText);
+                         location.reload();
+                       }
+                   });
+        }
+      }
+    })();
+
+AJS.toInit(function($){
+       AJS.$("#dialog-submit-button").click(function (e) {
+           let beginDate = $("#begin-date").val(),
+               endDate = $("#dateEnd").val(),
+               eventName = $("#eventName").val();
+           e.preventDefault();
+           if(eventName.length < 1 ){
+             AJS.flag({
+               type:'error',
+               title: 'You must provide a name for the event',
+               body: "An event name is necessary to create a new event"
+             });
+             AJS.dialog2("#demo-dialog").hide();
+             return;
+           }
+           dateUtils.setSeparator("-");
+           if(dateUtils.dayStampToDate(endDate) < dateUtils.dayStampToDate(beginDate)){
+             AJS.flag({
+               type:'error',
+               title: 'Invalid end date',
+               body: 'The end date for your event should be after or on the start date',
+             });
+             AJS.dialog2("#demo-dialog").hide();
+             return; //exit create event without creating an event
+           }
+
+           console.log("creating a new event from " + beginDate + " to " + endDate);
+           let ev = eventUtils.newEvent(dateUtils.dayStampToDate(beginDate), dateUtils.dayStampToDate(endDate), eventName);
+           eventDialog.createNewEvent(ev);
+           AJS.dialog2("#demo-dialog").hide();
+       });
+});
+</script>
+
+<section id="demo-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main">Create a new event</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div class="aui-dialog2-content">
+
+
+           <form class="aui">
+          <fieldset>
+            <div class="field-group">
+              <label for="d-fname">Event Description<span class="aui-icon icon-required"> required</span></label>
+              <input class="text" type="text" id="eventName" name="d-fname" title="first name">
+              <div class="description">Description of event</div>
+            </div>
+            <div class="field-group">
+                <label for="begin-date">When<span class="aui-icon icon-required"> required</span></label>
+                <input id="begin-date" type="date" /> to
+                <input id="dateEnd" type="date" />
+            </div>
+<div class="field-group">
+            <label for="dBase">Event Type</label>
+            <select class="select" id="dBase" name="dBase" title="database select">
+                <option>Event</option>
+                <option>Leave</option>
+                <option>JIRA Issue Dates</option>
+                <option>JIRA Agile Sprints</option>
+            </select>
+        </div>
+<div class="field-group">
+            <label for="descr">Description</label>
+            <textarea class="textarea" rows="6" cols="10" name="descr" id="descr"></textarea>
+        </div>
+          </fieldset>
+       </form>
+
+ </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+
+            <button id="dialog-submit-button" class="aui-button aui-button-primary">OK</button>
+        </div>
+    </footer>
+</section>

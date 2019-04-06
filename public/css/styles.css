@@ -1,0 +1,88 @@
+## Macro title: My Macro
+## Macro has a body: Y or N
+## Body processing: Selected body processing option
+## Output: Selected output option
+##
+## Developed by: Franck
+## Date created: dd/mm/yyyy
+## Installed by: Franck
+
+## @noparams
+
+<style>
+  #event-create-dialog {
+    margin-top: -350px;
+    margin-left: -290px;
+    width: 580px;
+    height: auto;
+    z-index: 3002;
+  }
+  #calendarTable{
+    overflow: hidden;
+  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-weight: 100;
+  color: rgba(0, 0, 0, 1);
+  margin: 0;
+  padding: 0;
+  }
+  #tableHeader {
+  height: 50px;
+  text-align: center;
+  position:relative;
+  z-index: 100;
+  }
+
+.eventList{
+border-style: dotted;
+border-width: 1;
+border-color:blue;
+}
+
+  .tableHeader h1 {
+    margin: 0;
+ padding: 10px;
+  text-align: center;
+  vertical-align: top;
+  font-size: 20px;
+  line-height: 50px;
+  font-weight: 100;
+  letter-spacing: 1px;
+  }
+
+  .day {
+  width: 60px;
+  padding: 10px;
+  text-align: center;
+  vertical-align: top;
+  cursor: pointer;
+  position: relative;
+  z-index: 100;
+}
+
+.day.other {
+
+ color: rgba(255, 255, 255, .3);
+}
+
+.monthSelector{
+ width: 60px;
+  padding: 10px;
+  text-align: center;
+  vertical-align: top;
+  cursor: pointer;
+  position: relative;
+  z-index: 100;
+  color: rgba(156, 202, 235, 1);
+}
+
+.today {
+  width: 60px;
+  padding: 10px;
+  text-align: center;
+  vertical-align: top;
+  cursor: pointer;
+  position: relative;
+  z-index: 100;
+  color: rgba(156, 202, 235, 1);
+}
+</style>
