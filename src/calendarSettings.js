@@ -2,9 +2,9 @@ var dateUtils = require('./dateUtils.js').dateUtils;
 
 var calendarSettings = (function() {
     let today = new Date(),
-  month = today.getMonth(),
-  year = today.getFullYear(),
-  monthLength = dateUtils.monthLength(this.year, this.month);
+        month = today.getMonth(),
+        year = today.getFullYear(),
+        monthLength = dateUtils.monthLength(this.year, this.month);
 
     return {
         setMonth: function(y, m) {
@@ -14,8 +14,8 @@ var calendarSettings = (function() {
         getYear: function() {
             return year;
         },
-	    firstDay : function(){
-            dateUtils.firstDayOfMonth(year, month); 
+        firstDay: function() {
+            dateUtils.firstDayOfMonth(year, month);
         },
         setValues: function(year, month) {
             this.month = month;
