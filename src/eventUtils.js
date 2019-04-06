@@ -1,9 +1,33 @@
 // @flow
-var dateUtils = require('./dateUtils.js');
+var dateUtils = require('./dateUtils.js').dateUtils;
 
 
 
-   
+class Event {
+    construtor(bdate, edate, title){
+            this.beginDate=bdate;
+            this.endDate=edate;
+            this.title=title;
+        }
+    get beginDate(){
+        return this._beginDate;
+    }
+    get endDate(){
+        return this._endDate;
+    }
+    get title(){
+        return this._title;
+    }
+
+    toString(separator){ 
+       return `${this.beginDate + separator}
+               ${this.endDate + separator}
+               ${this.title}`; 
+    }
+}
+
+ 
+     
 var eventUtils = (function (){
 //****************************//
 // begin eventUtils namespace //
@@ -13,27 +37,20 @@ var eventUtils = (function (){
 	function consoleLogEvent(ev){
 		console.log(
 			dateUtils.dateToDayStamp(ev.beginDate) + " "
-			+ dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle);
+			+ dateUtils.dateToDayStamp(ev.endDate) + " " + ev.title);
 	};
 	function isValidDate(date) {
   		return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
 	};
 	return{
-        Event : function (bdate, edate, title){
-            this.beginDate=bdate;
-            this.endDate=edate;
-            this.title=title;
-        },
 		newEvent : function (begDate, endDate, title){
-            if(isValidDate(begDate) 
-               && isValidDate(endDate)){
-                    return new eventUtils.Event(begDate, endDate, title);}
-            throw('err');
+            if(isValidDate(begDate) && isValidDate(endDate)){
+                    return new Event(begDate, endDate, title);
+            }
+            throw('Invalid Args at newEvent');
 	    },
 		eventToString : function(ev){
-				return dateUtils.dateToDayStamp(ev['beginDate']) + " "
-				+ dateUtils.dateToDayStamp(ev['endDate']) + " " 
-                + ev['eventTitle'];
+            return ev.toString();
 		},
 		processDateRange : function (begDateStamp, endDateStamp, strShortTitle){
 		      //To Do: Data Validation here
@@ -59,7 +76,7 @@ var eventUtils = (function (){
 		consoleLogEvents : function(){
 		      events.forEach(consoleLogEvent);
 		}
-	}
+	};
 //****************************//
 // end eventUtils namespace //
 //****************************//
