@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "nodemon index.js",
     "test": "mocha --reporter spec",
     "build": "babel src -d build",
     "flow": "flow"
@@ -27,7 +27,9 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
-    "@babel/preset-flow": "^7.0.0"
+    "@babel/preset-flow": "^7.0.0",
+    "nodemon": "^1.18.10",
+    "webpack": "^4.29.6"
   },
   "repository": {
     "type": "git",

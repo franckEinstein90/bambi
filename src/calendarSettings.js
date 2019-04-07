@@ -1,10 +1,11 @@
 var dateUtils = require('./dateUtils.js').dateUtils;
 
+
+
 var calendarSettings = (function() {
     let today = new Date(),
         month = today.getMonth(),
-        year = today.getFullYear(),
-        monthLength = dateUtils.monthLength(this.year, this.month);
+        year = today.getFullYear();
 
     return {
         setMonth: function(y, m) {

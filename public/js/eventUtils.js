@@ -1,4 +1,3 @@
-var dateUtils = require('./dateUtils.js').dateUtils;
 var eventUtils = (function() {
     //****************************//
     // begin eventUtils namespace //
@@ -91,6 +90,4 @@ var eventUtils = (function() {
     // end eventUtils namespace //
     //****************************//
 })();
-module.exports = {
-    eventUtils
-};
+
