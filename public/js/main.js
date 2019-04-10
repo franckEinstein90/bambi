@@ -10,8 +10,49 @@ var calendarSettings = {
         this.monthLength = dateUtils.monthLength(this.year, this.month);
     }
 };
+var makeEventView = function(index, bDate, eDate, evBody){
+     let re = /(.+)\s*\:(.+)/,
+     eventTitle = evBody,
+     eventDescription;
+     let found = evBody.match(re);
+     if (found){
+       eventTitle = found[1];
+       eventDescription = found[2];
+     }
+	   eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
+	   let returnStr =  "<div class='eventView'><span class='eventTitle'>" + eventTitle + "</span>" +
+  		      "<div class='event-controls'>" +
+            "<span class='aui-icon aui-icon-small aui-iconfont-edit event-edit-btn'>Insert meaningful text here for accessibility</span>"+
+            "<span class='aui-icon aui-icon-small aui-iconfont-delete event-edit-btn'>Insert meaningful text here for accessibility</span>"+
+            "</div>" + "<div class='event-dates'>" + bDate;
+      if(bDate.localeCompare(eDate) != 0) {
+        returnStr +=" to " + eDate
+      }
+      returnStr +=  "</div>";
+      if(typeof(eventDescription) !== "undefined"){
+        returnStr += "<div id='event" + index + "' class='aui-expander-content'>";
+        returnStr += eventDescription;
+		    returnStr += "</div><a id='replace-text-trigger' data-replace-text='Read less' class='aui-expander-trigger' aria-controls='event" + index + "'>Read more</a></br>";
+      }
+      return returnStr + "</div>";
+};
+
+
 AJS.toInit(function($) {
-    // Shows the dialog when the "Show dialog" button is clicked
+    //Get the events that are embedded onto the page
+    $("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
+    let re = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\:\s(.+)/;
+    dateUtils.setSeparator("-");
+    $("h1:contains('Events') + ul li").each(function (index){
+	  let found = ($(this).text()).match(re);
+	if(found){
+     $("#eventlist").append(makeEventView(index, found[1], found[2], found[3]));
+	}
+    });
+
+//    $("h1:contains('Events'), h1:contains('Events') + ul").appendTo("#eventlist");
+
+// Shows the dialog when the "Show dialog" button is clicked
     AJS.$("#dialog-show-button").click(function(e) {
         e.preventDefault();
         AJS.dialog2("#demo-dialog").show();

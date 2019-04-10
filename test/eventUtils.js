@@ -12,6 +12,10 @@ describe('newEvent', function(){
 		let ev = eventUtils.newEvent(new Date(), new Date(), "hello");
 		expect(ev).to.exist;
 	});
+	it('should create a new event using two dates and two strings in string format', function(){
+		let ev = eventUtils.newEvent(new Date(), new Date(), "Xmas", "Santa's coming");
+		expect(ev).to.exist;
+	});
 	it('should throw an invalid date exception the endDate is before the startDate', function(){
 	});
 });
@@ -27,6 +31,10 @@ describe('eventToString', function(){
 	it('should output a string representing the body of an event', function(){
 		let ev = new eventUtils.Event(new Date("2019/01/01"), new Date("2019/01/02"), "new event");
 		expect(eventUtils.eventToString(ev)).to.be.equal("2019_01_01 2019_01_02 new event");
+	});
+	it('should output a string representing the body of an event', function(){
+		let ev = new eventUtils.Event(new Date("2019/01/01"), new Date("2019/01/02"), "new event", "do something");
+		expect(eventUtils.eventToString(ev)).to.be.equal("2019_01_01 2019_01_02 new event [do something]");
 	});
 });
 describe('processDateRange', function(){
@@ -66,7 +74,22 @@ describe('processEventStrArray', function(){
 		};
 		eventUtils.processEventStrArray(strArray, format);
 		expect(eventUtils.length()).to.be.equal(3);
+
 	});
+	it('should ignore events in the string format that don', function(){
+		eventUtils.flush();
+		var strArray = [
+			"Event from 2018-03-13 to 2018-03-28: fds</li>",
+			"Event from 2019-03-13 to 2019-05-20: fds</li>",
+			"Event from 2019-03-13 to 2019-03-28: fds</li>"];
+		var format = function(str){
+			var vals = /Event from ([\d-]+) to ([\d-]+)\:\s(.*?)<\/li>/.exec(str).slice(1,4);
+			return vals.map(ev => ev.replace(/\-/g,"_"));
+		};
+		eventUtils.processEventStrArray(strArray, format);
+		expect(eventUtils.length()).to.be.equal(3);
+	});
+
 });
 describe('eventExistsAt', function(){
 	it('should return true if an event exists at the dateStamp passed in as argument', function(){
@@ -81,7 +104,7 @@ describe('eventsAt', function(){
 	it('should return a list of all events at the dateStampe passed in as argument', function(){
 		expect(eventUtils.length()).to.be.equal(0);
 		eventUtils.processDateRange('2019_02_15', '2019_06_15', "some march event");
-		eventUtils.processDateRange('2019_03_15', '2019_03_15', "some march event");
+		eventUtils.processDateRange('2019_03_15', '2019_03_15', "some march event", "with a description");
 		expect(eventUtils.eventsAt('2019_03_15').length).to.be.equal(2);
 		expect(eventUtils.eventsAt('2018_03_15').length).to.be.equal(0);
 	});

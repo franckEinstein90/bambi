@@ -16,22 +16,27 @@ var eventUtils = (function() {
         return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
     };
     return {
-        Event: function Event(beginDate, endDate, title) {
+        Event: function Event(beginDate, endDate, title, description) {
             this.beginDate = beginDate;
             this.endDate = endDate;
             this.eventTitle = title;
+	    this.eventDescription = description;
         },
-        newEvent: function(begDate, endDate, eventTitle) {
+        newEvent: function(begDate, endDate, eventTitle, eventDescription) {
             if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
-                return new eventUtils.Event(begDate, endDate, eventTitle);
+                return new eventUtils.Event(begDate, endDate, eventTitle, eventDescription);
             } else {
                 throw ("unexpected argument");
             }
         },
         eventToString: function(ev) {
-            return dateUtils.dateToDayStamp(ev['beginDate']) + " " +
-                dateUtils.dateToDayStamp(ev['endDate']) + " " +
-                ev['eventTitle'];
+          let eventStr =  dateUtils.dateToDayStamp(ev['beginDate']) + " " +
+              dateUtils.dateToDayStamp(ev['endDate']) + " " +
+              ev['eventTitle'];
+	        if (typeof ev.eventDescription !== 'undefined') {
+		        eventStr += " [" + ev.eventDescription + "]";
+		      }
+ 		      return eventStr;
         },
         flush: function() {
             //empties the list of events
@@ -44,12 +49,12 @@ var eventUtils = (function() {
             //outputs an array of events in string format
             return events.map(ev => eventUtils.eventToString(ev));
         },
-        processDateRange: function(begDateStamp, endDateStamp, strShortTitle) {
+        processDateRange: function(begDateStamp, endDateStamp, strShortTitle, description) {
             //To Do: Data Validation here
             let event = eventUtils.newEvent(
                 dateUtils.dayStampToDate(begDateStamp),
                 dateUtils.dayStampToDate(endDateStamp),
-                strShortTitle);
+                strShortTitle, description);
             events.push(event);
             events.sort(function(a, b) {
                 if (a.beginDate < b.beginDate) {
