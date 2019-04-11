@@ -31,6 +31,9 @@
   position:relative;
   z-index: 100;
   }
+  #tableBody TR TD{
+    height:50px;
+  }
 
 .eventList{
 margin-left:4px;
@@ -74,7 +77,8 @@ padding-left: 1px;
   letter-spacing: 1px;
   }
 
-  .day {
+.day {
+  color:black;
   width: 60px;
   padding: 10px;
   text-align: center;
@@ -83,12 +87,23 @@ padding-left: 1px;
   position: relative;
   z-index: 100;
 }
+.today {
 
-.day.other {
-
- color: rgba(255, 255, 255, .3);
+  background-color: Tomato;
+  width: 60px;
+  padding: 10px;
+  text-align: center;
+  vertical-align: top;
+  cursor: pointer;
+  position: relative;
+  z-index: 100;
+  color: white;
 }
+.date {
 
+}
+.dayEvents{
+}
 .monthSelector{
  width: 60px;
   padding: 10px;
@@ -100,14 +115,4 @@ padding-left: 1px;
   color: rgba(156, 202, 235, 1);
 }
 
-.today {
-  width: 60px;
-  padding: 10px;
-  text-align: center;
-  vertical-align: top;
-  cursor: pointer;
-  position: relative;
-  z-index: 100;
-  color: rgba(156, 202, 235, 1);
-}
 </style>

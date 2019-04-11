@@ -25,6 +25,10 @@ describe ('Event object', function(){
         let ev = new eventUtils.Event(new Date(), new Date(), "x");
         expect(ev).to.not.be.undefined;
     });
+    it('assigns a unique RFC4122 ID to each event', function(){
+        let ev = new eventUtils.Event(new Date(), new Date(), "x");
+        expect(ev.eventID).to.not.be.undefined;
+    });
 });
 
 describe('eventToString', function(){

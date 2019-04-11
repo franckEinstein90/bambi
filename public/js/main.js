@@ -19,8 +19,9 @@ var makeEventView = function(index, bDate, eDate, evBody){
        eventTitle = found[1];
        eventDescription = found[2];
      }
-	   eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
-	   let returnStr =  "<div class='eventView'><span class='eventTitle'>" + eventTitle + "</span>" +
+	   evID = eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
+	   let returnStr =  "<div class='eventView'><div class='hidden'>" + evID + "</div>" +
+            "<span class='eventTitle'>" + eventTitle + "</span>" +
   		      "<div class='event-controls'>" +
             "<span class='aui-icon aui-icon-small aui-iconfont-edit event-edit-btn'>Insert meaningful text here for accessibility</span>"+
             "<span class='aui-icon aui-icon-small aui-iconfont-delete event-edit-btn'>Insert meaningful text here for accessibility</span>"+
@@ -49,6 +50,10 @@ AJS.toInit(function($) {
      $("#eventlist").append(makeEventView(index, found[1], found[2], found[3]));
 	}
     });
+
+  //hidding event ids
+  AJS.$('.hidden').hide();
+
 
 //    $("h1:contains('Events'), h1:contains('Events') + ul").appendTo("#eventlist");
 
@@ -83,6 +88,13 @@ AJS.toInit(function($) {
     });
 
 
+
+var formatUIEvent = function(ev){
+    return "<a data-aui-trigger aria-controls='more-details' href='#more-details'>" + ev.eventTitle.substring(0,5) + "..." +
+		"</a><aui-inline-dialog id='more-details'>" +
+		"<P>Lorem ipsum</P></aui-inline-dialog>"
+}
+
     function populateTable(theMonth, theYear) {
 
         // initialize date-dependent variables
@@ -103,15 +115,15 @@ AJS.toInit(function($) {
                 if (($("#tableBody tr").length >= 1) || (i >= firstDay)) {
                     let dayID = dateUtils.dayStamp(theYear, theMonth, dayCounter);
                     addedDays.push(dayID);
-                    newRow += "<td ID='" + dayID + "' class='" + ((dayID.localeCompare(dateUtils.dayStamp()) == 0) ? "day" : "today") + "'>";
-                    newRow += dayCounter++;
+                    newRow += "<td ID='" + dayID + "' class='" + ((dayID.localeCompare(dateUtils.dayStamp()) == 0) ? "today" : "day") + "'>";
+                    newRow += "<div ID='digit" + dayID + "' class='date'>" + dayCounter + "</div>";
+		    dayCounter++;
                     var eventOnThatDay = eventUtils.eventsAt(dayID);
                     if (eventOnThatDay.length > 0) {
-                        newRow += "<span style='color:red'><a id='" +
-                            dayID + "' title='" +
-                            eventOnThatDay.map(ev => ev.eventTitle).join(",") + "'> &nbsp;" +
-                            eventOnThatDay.length + " event(s)</a></span>";
-                    }
+	              newRow += "<div class='dayEvents'>";
+                      newRow += eventOnThatDay.map(formatUIEvent).join("<br/>");
+	              newRow += "</div>";
+                   }
                     newRow += "</td>";
                 } else {
                     newRow += "<td class='day'></td>";
@@ -120,7 +132,7 @@ AJS.toInit(function($) {
             newRow += "</tr>";
             $("#tableBody").append(newRow);
             for (let i = 0; i < addedDays.length; i++) {
-                $("#" + addedDays[i]).click(function() {
+                $("#digit" + addedDays[i]).click(function() {
                     showDayDialog(addedDays[i]);
                 });
             }
@@ -152,19 +164,18 @@ AJS.toInit(function($) {
             todayDate.getDate().toString().padStart(2, '0'));
         $("#2019-03-15").css("color", "red");
     }
-    fillYears();
-
-    $("#dateChooser").change(function() {
-        let theMonth = document.dateChooser.chooseMonth.selectedIndex;
+    var getFormValues= function(){
+ let theMonth = document.dateChooser.chooseMonth.selectedIndex;
         let theYear = parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text);
         calendarSettings.setValues(
             parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
             document.dateChooser.chooseMonth.selectedIndex);
         populateTable(theMonth, theYear);
-    });
 
-    let theMonth = document.dateChooser.chooseMonth.selectedIndex;
-    let theYear = parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text);
-    populateTable(theMonth, theYear);
+    }
+
+  fillYears();
+  $("#dateChooser").change(function() { getFormValues();});
+  getFormValues();
 
 });
