@@ -1,15 +1,4 @@
-var calendarSettings = {
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
-    firstDayOfMonth: dateUtils.firstDayOfMonth(this.year, this.month),
-    monthLength: dateUtils.monthLength(this.year, this.month),
-    setValues: function(year, month) {
-        this.month = month;
-        this.year = year;
-        this.firstDayOfMonth = dateUtils.firstDayOfMonth(this.year, this.month);
-        this.monthLength = dateUtils.monthLength(this.year, this.month);
-    }
-};
+
 var makeEventView = function(index, bDate, eDate, evBody) {
     let re = /(.+)\s*\:(.+)/,
         eventTitle = evBody,
@@ -21,11 +10,11 @@ var makeEventView = function(index, bDate, eDate, evBody) {
     }
     evID = eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
     let htmlStr = "<div class='eventView'><div class='hidden'>" + evID + "</div>" +
-        "<span class='eventTitle'>" + eventTitle + "</span>" +
+        "<div class='eventHeaderRow'><div class='eventTitle'>" + eventTitle + "</div>" +
         "<div class='event-controls'>" +
         "<span class='aui-icon aui-icon-small aui-iconfont-edit event-edit-btn' id='" + evID + "Edit'>Insert meaningful text here for accessibility</span>" +
         "<span class='aui-icon aui-icon-small aui-iconfont-delete event-edit-btn'>Insert meaningful text here for accessibility</span>" +
-        "</div>" + "<div class='event-dates'>" + bDate;
+        "</div></div>" + "<div class='event-dates'>" + bDate;
 
     if (bDate.localeCompare(eDate) != 0) {
         htmlStr += " to " + eDate
@@ -76,9 +65,17 @@ AJS.toInit(function($) {
         AJS.dialog2("#demo-dialog").hide();
     });
 
-    AJS.$("#select-previous-month").click(function(e) {});
+    AJS.$("#select-previous-month").click(function(e) {
+      calendarSettings.previousMonth();
+      populateCalendarTable();
 
-    AJS.$("#select-next-month").click(function(e) {});
+
+    });
+
+    AJS.$("#select-next-month").click(function(e) {
+      calendarSettings.nextMonth();
+      populateCalendarTable();
+    });
     //furnction  to capture variables from get request
     jQuery.extend({
         getValues: function(url) {
@@ -98,17 +95,17 @@ AJS.toInit(function($) {
 
 
     var formatUIEvent = function(ev) {
-        return "<a data-aui-trigger aria-controls='more-details' href='#more-details'>" + ev.eventTitle.substring(0, 5) + "..." +
+        return "<a data-aui-trigger aria-controls='more-details' href='#more-details'>" + ev.eventTitle  +
             "</a><aui-inline-dialog id='more-details'>" +
             "<P>Lorem ipsum</P></aui-inline-dialog>"
     }
 
-    function populateTable(theMonth, theYear) {
+    var populateCalendarTable = function(){
 
         // initialize date-dependent variables
         let firstDay = calendarSettings.firstDayOfMonth;
-        let howMany = dateUtils.monthLength(theYear, theMonth);
-        $("#tableHeader").html(`<h1>${dateUtils.monthIdxToStr(theMonth)} ${theYear}</h1>`);
+        let howMany = calendarSettings.monthLength;
+        $("#tableHeader").html(`<h1>${dateUtils.monthIdxToStr(calendarSettings.month)} ${calendarSettings.year}</h1>`);
 
         // initialize vars for table creation
         let dayCounter = 1;
@@ -121,7 +118,7 @@ AJS.toInit(function($) {
                     break;
                 }
                 if (($("#tableBody tr").length >= 1) || (i >= firstDay)) {
-                    let dayID = dateUtils.dayStamp(theYear, theMonth, dayCounter);
+                    let dayID = dateUtils.dayStamp(calendarSettings.year, calendarSettings.month, dayCounter);
                     addedDays.push(dayID);
                     newRow += "<td ID='" + dayID + "' class='" + ((dayID.localeCompare(dateUtils.dayStamp()) == 0) ? "today" : "day") + "'>";
                     newRow += "<div ID='digit" + dayID + "' class='date'>" + dayCounter + "</div>";
@@ -166,19 +163,12 @@ AJS.toInit(function($) {
         document.dateChooser.chooseMonth.selectedIndex = today.getMonth()
     }
 
-    function highLightEventsInCalendar() {
-        let todayDate = Date.now();
-        console.log(
-            todayDate.getDate().toString().padStart(2, '0'));
-        $("#2019-03-15").css("color", "red");
-    }
+
     var getFormValues = function() {
-        let theMonth = document.dateChooser.chooseMonth.selectedIndex;
-        let theYear = parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text);
-        calendarSettings.setValues(
+      calendarSettings.setValues(
             parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
             document.dateChooser.chooseMonth.selectedIndex);
-        populateTable(theMonth, theYear);
+        populateCalendarTable();
 
     }
 

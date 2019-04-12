@@ -12,6 +12,18 @@ var calendarSettings = (function() {
             year = y;
             month = m;
         },
+	nextMonth : function(){
+	   let m, y;
+	   if (this.month < 11){m = this.month + 1; y = this.year;}
+		else{m = 0; y = this.year + 1;}
+	   calendarSettings.setValues(y, m);
+	},
+	previousMonth : function(){
+	   let m, y;
+	   if (this.month > 0){m = this.month - 1; y = this.year;}
+		else{m = 11; y = this.year - 1;}
+	   calendarSettings.setValues(y, m);
+	},
         getYear: function() {
             return year;
         },
