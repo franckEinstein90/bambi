@@ -1,10 +1,5 @@
 var dateUtils = require('./dateUtils.js').dateUtils;
-
-
-function Event(options) {
-    this.state = options.status || "off";
-    this.id = options.id || getNewID();
-}
+var Events = require('./events.js').Events;
 
 var eventUtils = (function() {
     //****************************//
@@ -19,28 +14,16 @@ var eventUtils = (function() {
             dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle);
     };
 
-    function generateUUID() {
-        var d = new Date().getTime();
-        if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-            d += performance.now(); //use high-precision timer if available
-        }
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (d + Math.random() * 16) % 16 | 0;
-            d = Math.floor(d / 16);
-            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-        });
-    };
-
     function isValidDate(date) {
         return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
     };
     return {
         Event: function Event(beginDate, endDate, title, description) {
+            Events.Event.call(this);
             this.beginDate = beginDate;
             this.endDate = endDate;
             this.eventTitle = title;
             this.eventDescription = description;
-	    this.eventID = generateUUID();
         },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
             if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
@@ -85,7 +68,7 @@ var eventUtils = (function() {
                 }
                 return 0;
             });
-            return event.eventID;
+            return event.id;
         },
         processEventStrArray: function(eventStrArray, format) {
             //evenStrArray is an an array of string containing event information
@@ -112,8 +95,7 @@ var eventUtils = (function() {
         consoleLogEvents: function() {
             events.forEach(consoleLogEvent);
         },
-	eventIDs: function(){
-	}
+        eventIDs: function() {}
     }
     //****************************//
     // end eventUtils namespace //

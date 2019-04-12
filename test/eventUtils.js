@@ -1,5 +1,6 @@
 var expect = require('chai').expect;
 var eventUtils = require('../src/eventUtils.js').eventUtils;
+var validator = require('validator');
 
 let today = new Date();
 
@@ -27,7 +28,7 @@ describe ('Event object', function(){
     });
     it('assigns a unique RFC4122 ID to each event', function(){
         let ev = new eventUtils.Event(new Date(), new Date(), "x");
-        expect(ev.eventID).to.not.be.undefined;
+        expect(validator.isUUID(ev.id)).to.equal(true);
     });
 });
 
@@ -47,6 +48,12 @@ describe('processDateRange', function(){
 		expect(eventUtils.length()).to.be.equal(1);
 		eventUtils.flush();
 	});
+	it('should return the unique ID of the new event', function(){
+		let newEventID = eventUtils.processDateRange('2018_01_01', '2018_01_02', "hello");
+        expect(validator.isUUID(newEventID)).to.equal(true);
+eventUtils.flush();
+	});
+
 });
 describe('eventsToStringArray', function(){
 	it('should output an array of string representing the list of events in the internal event list', function(){

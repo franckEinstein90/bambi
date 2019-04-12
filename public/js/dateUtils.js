@@ -1,9 +1,8 @@
-/*global Handlebars, prompt*/
 //****************************//
 // begin timeSpan namespace //
 //****************************//
 const timeSpan = (function() {
-    let secondSpanMs = 1000,
+    const secondSpanMs = 1000,
         daySpanMs = secondSpanMs * 60 * 60 * 24,
         monthAfter = function(monthAsDate) {
             return new Date(monthAsDate.getFullYear(),
@@ -68,7 +67,10 @@ const dateUtils = (function() {
         dateToDayStamp: function(someDate) {
             return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
         }
-    };
+    }
 })(); //end dateUtils
 
-
+/*module.exports = {
+    timeSpan,
+    dateUtils
+};*/
