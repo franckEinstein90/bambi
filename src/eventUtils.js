@@ -70,6 +70,9 @@ var eventUtils = (function() {
             });
             return event.id;
         },
+        removeEvent: function(eventId){
+            events = events.filter(x => x.id.localeCompare(eventId) != 0);
+        },
         processEventStrArray: function(eventStrArray, format) {
             //evenStrArray is an an array of string containing event information
             //format is a regular expression that defines the format of the string

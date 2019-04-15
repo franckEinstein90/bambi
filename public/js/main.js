@@ -33,6 +33,10 @@ var makeEventView = function(index, bDate, eDate, evBody) {
 
 
 AJS.toInit(function($) {
+
+    //Set the calendarSetting object to today's date
+
+    calendarSettings.setValues();
     //Get the events that are embedded onto the page
     $("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
     let re = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\:\s(.+)/;
@@ -67,15 +71,20 @@ AJS.toInit(function($) {
 
     AJS.$("#select-previous-month").click(function(e) {
       calendarSettings.previousMonth();
+      setFormValues();
       populateCalendarTable();
-
-
     });
 
     AJS.$("#select-next-month").click(function(e) {
       calendarSettings.nextMonth();
+      setFormValues();
       populateCalendarTable();
     });
+
+    AJS.$("#dateChooser").change(function() {
+        getFormValues();
+    });
+
     //furnction  to capture variables from get request
     jQuery.extend({
         getValues: function(url) {
@@ -150,32 +159,28 @@ AJS.toInit(function($) {
     }
 
     function fillYears() {
-        var today = new Date();
-        var thisYear = today.getFullYear();
         var yearChooser = document.dateChooser.chooseYear;
-        for (i = thisYear; i < thisYear + 5; i++) {
+        for (i = calendarSettings.beginYear(); i < calendarSettings.endYear(); i++) {
             yearChooser.options[yearChooser.options.length] = new Option(i, i)
         }
-        setCurrMonth(today)
+        setFormValues();
     }
 
-    function setCurrMonth(today) {
-        document.dateChooser.chooseMonth.selectedIndex = today.getMonth()
+    var setFormValues = function() { //updates the form values based on the calendarSettings values
+      document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
+      let yearIDX =calendarSettings.yearIdx();
+      document.dateChooser.chooseYear.selectedIndex = yearIDX;
     }
 
-
-    var getFormValues = function() {
+    var getFormValues = function() { //updates the calendarSettings values based on the form values
       calendarSettings.setValues(
             parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
             document.dateChooser.chooseMonth.selectedIndex);
         populateCalendarTable();
-
     }
 
     fillYears();
-    $("#dateChooser").change(function() {
-        getFormValues();
-    });
+
     getFormValues();
 
 });

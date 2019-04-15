@@ -18,6 +18,10 @@
 	<link rel="stylesheet" href="/css/styles.css" media="all">
 </head>
 <body>
+  <div id="page">
+    <header id="header" role="banner">
+	    {{> page/header}}
+    </header>
 
 <div class="aui-page-panel">
     <div class="aui-page-panel-inner">
@@ -30,5 +34,11 @@
         </section>
     </div>
 </div>
+
+
+  <footer id="footer" role="contentinfo">
+	{{> page/footer}}
+  </footer>
+  </div>
 </body>
 </html>

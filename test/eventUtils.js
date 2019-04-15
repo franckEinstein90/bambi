@@ -52,8 +52,19 @@ describe('processDateRange', function(){
 		let newEventID = eventUtils.processDateRange('2018_01_01', '2018_01_02', "hello");
         expect(validator.isUUID(newEventID)).to.equal(true);
 eventUtils.flush();
+
 	});
 
+});
+describe('removeEvent(evId)', function(){
+	it('should remove the event with the given ID from the eventStore', function(){
+	let newEventID = eventUtils.processDateRange('2018_01_01', '2018_01_02', "hello");
+		console.log(newEventID);
+		expect(eventUtils.length()).to.be.equal(1);
+		eventUtils.removeEvent(newEventID);
+		expect(eventUtils.length()).to.be.equal(0);
+		eventUtils.flush();
+	});
 });
 describe('eventsToStringArray', function(){
 	it('should output an array of string representing the list of events in the internal event list', function(){
