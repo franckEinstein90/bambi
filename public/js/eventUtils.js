@@ -1,6 +1,3 @@
-/*var dateUtils = require('./dateUtils.js').dateUtils;
-var Events = require('./events.js').Events;*/
-
 var eventUtils = (function() {
     //****************************//
     // begin eventUtils namespace //
@@ -70,6 +67,9 @@ var eventUtils = (function() {
             });
             return event.id;
         },
+        removeEvent: function(eventId){
+            events = events.filter(x => x.id.localeCompare(eventId) != 0);
+        },
         processEventStrArray: function(eventStrArray, format) {
             //evenStrArray is an an array of string containing event information
             //format is a regular expression that defines the format of the string
@@ -101,6 +101,3 @@ var eventUtils = (function() {
     // end eventUtils namespace //
     //****************************//
 })();
-/*module.exports = {
-    eventUtils
-};*/

@@ -2,8 +2,8 @@
 var makeEventView = function(index, bDate, eDate, evBody) {
     let re = /(.+)\s*\:(.+)/,
         eventTitle = evBody,
-        eventDescription
-    found = evBody.match(re);
+        eventDescription,
+        found = evBody.match(re);
     if (found) { //the event also contains a long description
         eventTitle = found[1];
         eventDescription = found[2];
@@ -31,13 +31,35 @@ var makeEventView = function(index, bDate, eDate, evBody) {
     };
 };
 
-
 AJS.toInit(function($) {
 
-    //Set the calendarSetting object to today's date
 
+  /**************************Page setup General ********/
+  /*****************************************************/
+  //hidding event ids
+  AJS.$('.hidden').hide();
+
+  var eventDialogController = (function(){
+    return{
+          setParams: function(dayStamp, cp){
+            var dayStampISO8601 = dayStamp.replace(/\_/g, "-");
+            $("#dateEnd").val(dayStampISO8601 );
+            $("#begin-date").val(dayStampISO8601);
+          },
+          showEdit: function(evID){
+            AJS.$("#event-id").text(evID);
+            AJS.dialog2("#demo-dialog").show();
+          },
+          showNew: function(){
+          }
+        }
+      })();
+
+    //Set the calendarSetting object to today's date
     calendarSettings.setValues();
-    //Get the events that are embedded onto the page
+
+    /**************************************************************/
+    /*Event Listing UI*********************************************/
     $("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
     let re = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\:\s(.+)/;
     dateUtils.setSeparator("-");
@@ -47,13 +69,13 @@ AJS.toInit(function($) {
             let res = makeEventView(index, found[1], found[2], found[3]);
             $("#eventlist").append(res.html);
             $("#" + evID + "Edit").click(function() {
-                alert(res.id);
+                eventDialogController.showEdit(res.id);
             });
         }
     });
 
-    //hidding event ids
-    AJS.$('.hidden').hide();
+    $("h1:contains('Events') + ul").remove();
+    $("h1:contains('Events')").remove();
 
 
     //    $("h1:contains('Events'), h1:contains('Events') + ul").appendTo("#eventlist");
@@ -61,7 +83,7 @@ AJS.toInit(function($) {
     // Shows the dialog when the "Show dialog" button is clicked
     AJS.$("#dialog-show-button").click(function(e) {
         e.preventDefault();
-        AJS.dialog2("#demo-dialog").show();
+        AJS.dialog2("#event-dialog").show();
     });
 
     AJS.$("#dialog-submit-button").click(function(e) {
