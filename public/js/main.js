@@ -48,7 +48,9 @@ AJS.toInit(function($) {
           },
           showEdit: function(evID){
             AJS.$("#event-id").text(evID);
-            AJS.dialog2("#demo-dialog").show();
+            let ev = eventUtils.getEvent(evID);
+            $("#event-dialog-begin-date").val(;
+            AJS.dialog2("#event-dialog").show();
           },
           showNew: function(){
           }

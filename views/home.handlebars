@@ -6,16 +6,21 @@
 
 <HR>
 <TABLE ID="calendarTable" class="aui">
+<thead>
 <TR>
     <TH><button id="dialog-show-button" class="aui-button">Add an event</button></TH>
-    <TH><span id="select-previous-month" class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span></TH>
+    <TH><span id="select-previous-month" 
+                class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span></TH>
     <TH ID="tableHeader" COLSPAN=4></TH>
-    <TH><span id="select-next-month" class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span></TH>
+    <TH><span id="select-next-month" 
+                class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span></TH>
 </TR>
-<TR><TH>Sun</TH><TH>Mon</TH><TH>Tue</TH><TH>Wed</TH>
-<TH>Thu</TH><TH>Fri</TH><TH>Sat</TH></TR>
+<TR>
+    <TH scope="col">Sun</TH><TH scope="col">Mon</TH><TH scope="col">Tue</TH><TH scope="col">Wed</TH>
+<TH scope="col">Thu</TH><TH scope="col">Fri</TH><TH scope="col">Sat</TH></TR>
 <TBODY ID="tableBody"></TBODY>
 <TR>
+</thead>
     <TD COLSPAN=7>
     <FORM name="dateChooser" ID="dateChooser" class="aui">
         <SELECT ID="chooseMonth" name="chooseMonth">

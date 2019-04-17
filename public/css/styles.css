@@ -6,18 +6,20 @@
    z-index: 3002;
  }
  #calendarTable{
-   overflow: hidden;
- font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
- font-weight: 100;
- color: rgba(0, 0, 0, 1);
- margin: 0;
- padding: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  overflow: hidden;
+  font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-weight: 100;
+  color: rgba(0, 0, 0, 1);
+  margin: 0;
+  padding: 0;
  }
  #tableHeader {
- height: 50px;
- text-align: center;
- position:relative;
- z-index: 100;
+  height: 50px;
+  text-align: center;
+  position:relative;
+  z-index: 100;
  }
  #tableBody TR TD{
    height:50px;
@@ -93,8 +95,6 @@ padding: 10px;
 .dayEvents{
 }
 .monthSelector{
-width: 60px;
- padding: 10px;
  text-align: center;
  vertical-align: top;
  cursor: pointer;
