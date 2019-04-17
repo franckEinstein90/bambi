@@ -17,7 +17,7 @@ var makeEventView = function(index, bDate, eDate, evBody) {
         eventDescription = found[2];
     }
     let evID = eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
-    let htmlStr = "<div class='eventView'><div class='hidden'>" + evID + "</div>" +
+    let htmlStr = "<div class='hidden'>" + evID + "</div>" +
         "<div class='eventHeaderRow'><div class='eventTitle'>" + eventTitle + "</div>" +
         "<div class='event-controls'>" +
         "<span class='aui-icon aui-icon-small aui-iconfont-edit event-edit-btn' id='" + evID + "Edit'>Insert meaningful text here for accessibility</span>" +
@@ -34,7 +34,7 @@ var makeEventView = function(index, bDate, eDate, evBody) {
         htmlStr += "</div><a id='replace-text-trigger' data-replace-text='Read less' class='aui-expander-trigger' aria-controls='event" + index + "'>Read more</a></br>";
     }
     return {
-        html: htmlStr + "</div>",
+        html: "<div class='eventView'>" + htmlStr + "</div>",
         id: evID
     };
 };
@@ -85,9 +85,9 @@ AJS.toInit(function($) {
         if (found) {
             let res = makeEventView(index, found[1], found[2], found[3]);
             $("#eventlist").append(res.html);
-            $("#" + evID + "Edit").click(function() {
-                eventDialogController.showEdit(res.id);
-            });
+            //$("#" + evID + "Edit").click(function() {
+              //  eventDialogController.showEdit(res.id);
+            //});
         }
     });
 
