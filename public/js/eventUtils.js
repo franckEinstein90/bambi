@@ -1,10 +1,17 @@
+
 var eventUtils = (function() {
     //****************************//
     // begin eventUtils namespace //
     //****************************//
 
-    var events = [];
-
+    const events = new Map();
+    let filter = function(filterPred){
+        //returns an array of calendar events filtered
+        //as per the predicate argument
+        let arrayRes = [];
+        events.forEach((value, key)=>{if(filterPred(value)){arrayRes.push(value)}});
+        return arrayRes; 
+    };
     function consoleLogEvent(ev) {
         console.log(
             dateUtils.dateToDayStamp(ev.beginDate) + " " +
@@ -21,6 +28,14 @@ var eventUtils = (function() {
             this.endDate = endDate;
             this.eventTitle = title;
             this.eventDescription = description;
+        },
+        register(calendarEvent) {
+            events.set(calendarEvent.id, calendarEvent);
+        },
+        remove: function(eventId){
+        },
+        get: function(eventId) {
+            //returns the event with the given evID 
         },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
             if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
@@ -40,35 +55,30 @@ var eventUtils = (function() {
         },
         flush: function() {
             //empties the list of events
-            events.length = 0;
+            events.clear();
         },
-        length: function() {
-            return events.length;
+        size: function() {
+            return events.size;
         },
         eventsToStringArray: function() {
-            //outputs an array of events in string format
-            return events.map(ev => eventUtils.eventToString(ev));
+            //returns a copied array of the events in the event store
+            let eventArray = [];
+            for (var value of events.values()) {
+                eventArray.push(eventUtils.eventToString(value));
+            }
+            return eventArray;
         },
-        processDateRange: function(begDateStamp, endDateStamp, strShortTitle, description) {
+       processDateRange: function(begDateStamp, endDateStamp, strShortTitle, description) {
             //To Do: Data Validation here
-            let event = eventUtils.newEvent(
+            let calendarEvent = eventUtils.newEvent(
                 dateUtils.dayStampToDate(begDateStamp),
                 dateUtils.dayStampToDate(endDateStamp),
                 strShortTitle, description);
-            events.push(event);
-            events.sort(function(a, b) {
-                if (a.beginDate < b.beginDate) {
-                    return -1;
-                }
-                if (a.beginDate > b.beginDate) {
-                    return 1;
-                }
-                return 0;
-            });
-            return event.id;
+            eventUtils.register(calendarEvent);
+            return calendarEvent.id;
         },
-        removeEvent: function(eventId){
-            events = events.filter(x => x.id.localeCompare(eventId) != 0);
+        removeEvent: function(eventId) {
+            events.delete(eventId);
         },
         processEventStrArray: function(eventStrArray, format) {
             //evenStrArray is an an array of string containing event information
@@ -81,21 +91,15 @@ var eventUtils = (function() {
         },
         eventExistsAt: function(dateStamp) {
             var stampDate = dateUtils.dayStampToDate(dateStamp);
-            var filteredEvents = events.filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate));
-            if (filteredEvents.length >= 1) {
-                return true;
-            }
-            return false;
+            return filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate)).length >= 1;
         },
-        eventsAt: function(dateStamp) {
-            var stampDate = dateUtils.dayStampToDate(dateStamp);
-            var filteredEvents = events.filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate));
-            return filteredEvents;
+        eventsOn: function(dateStamp) {
+            let stampDate = dateUtils.dayStampToDate(dateStamp);
+            return filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate));
         },
         consoleLogEvents: function() {
             events.forEach(consoleLogEvent);
-        },
-        eventIDs: function() {}
+        }
     }
     //****************************//
     // end eventUtils namespace //

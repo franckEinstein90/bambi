@@ -1,14 +1,22 @@
 
 var makeEventView = function(index, bDate, eDate, evBody) {
+    
     let re = /(.+)\s*\:(.+)/,
         eventTitle = evBody,
         eventDescription,
-        found = evBody.match(re);
+        found = evBody.match(re), 
+        addControlIcon=function(iconName, id){
+            return "<span class='aui-icon aui-icon-small " + 
+                    iconName + 
+                    " event-edit-btn' id='" + id + 
+                    "Edit'>Insert meaningful text here for accessibility</span>";
+        };
+    
     if (found) { //the event also contains a long description
         eventTitle = found[1];
         eventDescription = found[2];
     }
-    evID = eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
+    let evID = eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
     let htmlStr = "<div class='eventView'><div class='hidden'>" + evID + "</div>" +
         "<div class='eventHeaderRow'><div class='eventTitle'>" + eventTitle + "</div>" +
         "<div class='event-controls'>" +
@@ -33,6 +41,9 @@ var makeEventView = function(index, bDate, eDate, evBody) {
 
 AJS.toInit(function($) {
 
+  var CalendarEvent = function(){
+
+  };
 
   /**************************Page setup General ********/
   /*****************************************************/
@@ -48,8 +59,12 @@ AJS.toInit(function($) {
           },
           showEdit: function(evID){
             AJS.$("#event-id").text(evID);
-            let ev = eventUtils.getEvent(evID);
-            $("#event-dialog-begin-date").val(;
+/*            let ev = eventUtils.getEvent(evID);
+
+            AJS.$("#event-dialog-begin-date")
+            AJS.$("#event-dialog-end-date")
+            AJS.$("#event-dialog-title")
+            AJS.$("#event-dialog-description")*/
             AJS.dialog2("#event-dialog").show();
           },
           showNew: function(){
@@ -136,27 +151,23 @@ AJS.toInit(function($) {
     var populateCalendarTable = function(){
 
         // initialize date-dependent variables
-        let firstDay = calendarSettings.firstDayOfMonth;
-        let howMany = calendarSettings.monthLength;
-        $("#tableHeader").html(`<h1>${dateUtils.monthIdxToStr(calendarSettings.month)} ${calendarSettings.year}</h1>`);
+        let firstDay = calendarSettings.firstDayOfMonth,
+          howMany = calendarSettings.monthLength,
+          dayCounter = 1;
 
-        // initialize vars for table creation
-        let dayCounter = 1;
+        $("#tableHeader").html(`<h1>${dateUtils.monthIdxToStr(calendarSettings.month)} ${calendarSettings.year}</h1>`);
         $("#tableBody").html("");
         while (dayCounter <= howMany) {
-            let newRow = "<TR>";
-            let addedDays = [];
-            for (let i = 0; i < 7; i++) {
-                if (dayCounter > howMany) {
-                    break;
-                }
-                if (($("#tableBody tr").length >= 1) || (i >= firstDay)) {
-                    let dayID = dateUtils.dayStamp(calendarSettings.year, calendarSettings.month, dayCounter);
+            let newRow = "", addedDays = [];
+            for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
+                if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay)) {
+                    let dayID = dateUtils.dayStamp(calendarSettings.year, calendarSettings.month, dayCounter),
+                     eventOnThatDay = eventUtils.eventsOn(dayID);
+
                     addedDays.push(dayID);
                     newRow += "<td ID='" + dayID + "' class='" + ((dayID.localeCompare(dateUtils.dayStamp()) == 0) ? "today" : "day") + "'>";
                     newRow += "<div ID='digit" + dayID + "' class='date'>" + dayCounter + "</div>";
                     dayCounter++;
-                    var eventOnThatDay = eventUtils.eventsAt(dayID);
                     if (eventOnThatDay.length > 0) {
                         newRow += "<div class='dayEvents'>";
                         newRow += eventOnThatDay.map(formatUIEvent).join("<br/>");
@@ -167,8 +178,7 @@ AJS.toInit(function($) {
                     newRow += "<td class='day'></td>";
                 }
             }
-            newRow += "</tr>";
-            $("#tableBody").append(newRow);
+            $("#tableBody").append(`<tr>${newRow}</tr>`);
             for (let i = 0; i < addedDays.length; i++) {
                 $("#digit" + addedDays[i]).click(function() {
                     showDayDialog(addedDays[i]);
@@ -204,7 +214,6 @@ AJS.toInit(function($) {
     }
 
     fillYears();
-
     getFormValues();
 
 });
