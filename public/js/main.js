@@ -1,17 +1,17 @@
 
 var makeEventView = function(index, bDate, eDate, evBody) {
-    
+
     let re = /(.+)\s*\:(.+)/,
         eventTitle = evBody,
         eventDescription,
-        found = evBody.match(re), 
+        found = evBody.match(re),
         addControlIcon=function(iconName, id){
-            return "<span class='aui-icon aui-icon-small " + 
-                    iconName + 
-                    " event-edit-btn' id='" + id + 
+            return "<span class='aui-icon aui-icon-small " +
+                    iconName +
+                    " event-edit-btn' id='" + id +
                     "Edit'>Insert meaningful text here for accessibility</span>";
         };
-    
+
     if (found) { //the event also contains a long description
         eventTitle = found[1];
         eventDescription = found[2];
@@ -40,9 +40,13 @@ var makeEventView = function(index, bDate, eDate, evBody) {
 };
 
 AJS.toInit(function($) {
-
-  var CalendarEvent = function(){
-
+  let setEventFormValues = function(evID){
+    let ev = eventUtils.get(evID);
+    dateUtils.setSeparator('-');
+    AJS.$("#event-dialog-begin-date").val(dateUtils.dateToDayStamp(ev.beginDate));
+    AJS.$("#event-dialog-end-date").val(dateUtils.dateToDayStamp(ev.endDate));
+    AJS.$("#event-dialog-title").val(ev.eventTitle);
+    AJS.$("#event-dialog-description").val(ev.eventDescription);
   };
 
   /**************************Page setup General ********/
@@ -50,7 +54,7 @@ AJS.toInit(function($) {
   //hidding event ids
   AJS.$('.hidden').hide();
 
-  var eventDialogController = (function(){
+  const eventDialogController = (function(){
     return{
           setParams: function(dayStamp, cp){
             var dayStampISO8601 = dayStamp.replace(/\_/g, "-");
@@ -59,12 +63,8 @@ AJS.toInit(function($) {
           },
           showEdit: function(evID){
             AJS.$("#event-id").text(evID);
-/*            let ev = eventUtils.getEvent(evID);
-
-            AJS.$("#event-dialog-begin-date")
-            AJS.$("#event-dialog-end-date")
-            AJS.$("#event-dialog-title")
-            AJS.$("#event-dialog-description")*/
+            let ev = eventUtils.get(evID);
+            setEventFormValues(evID);
             AJS.dialog2("#event-dialog").show();
           },
           showNew: function(){
@@ -77,22 +77,22 @@ AJS.toInit(function($) {
 
     /**************************************************************/
     /*Event Listing UI*********************************************/
-    $("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
+    AJS.$("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
     let re = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\:\s(.+)/;
     dateUtils.setSeparator("-");
-    $("h1:contains('Events') + ul li").each(function(index) {
+    AJS.$("h1:contains('Events') + ul li").each(function(index) {
         let found = ($(this).text()).match(re);
         if (found) {
-            let res = makeEventView(index, found[1], found[2], found[3]);
-            $("#eventlist").append(res.html);
-            //$("#" + evID + "Edit").click(function() {
-              //  eventDialogController.showEdit(res.id);
-            //});
+            let eventViewPanel = makeEventView(index, found[1], found[2], found[3]);
+            AJS.$("#eventlist").append(eventViewPanel.html);
+            AJS.$("#" + eventViewPanel.id + "Edit").click(function() {
+                eventDialogController.showEdit(eventViewPanel.id);
+            });
         }
     });
 
-    $("h1:contains('Events') + ul").remove();
-    $("h1:contains('Events')").remove();
+    AJS.$("h1:contains('Events') + ul").remove();
+    AJS.$("h1:contains('Events')").remove();
 
 
     //    $("h1:contains('Events'), h1:contains('Events') + ul").appendTo("#eventlist");
@@ -153,24 +153,25 @@ AJS.toInit(function($) {
         // initialize date-dependent variables
         let firstDay = calendarSettings.firstDayOfMonth,
           howMany = calendarSettings.monthLength,
+          calendarTableTitle = dateUtils.monthIdxToStr(calendarSettings.month) + " " + calendarSettings.year,
           dayCounter = 1;
 
-        $("#tableHeader").html(`<h1>${dateUtils.monthIdxToStr(calendarSettings.month)} ${calendarSettings.year}</h1>`);
-        $("#tableBody").html("");
+        AJS.$("#tableCalendar-title").html("<h1 style='color:white'>"+ calendarTableTitle +"</h1>");
+        AJS.$("#tableBody").empty();
         while (dayCounter <= howMany) {
             let newRow = "", addedDays = [];
             for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
                 if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay)) {
                     let dayID = dateUtils.dayStamp(calendarSettings.year, calendarSettings.month, dayCounter),
-                     eventOnThatDay = eventUtils.eventsOn(dayID);
+                     eventsOnThatDay = eventUtils.eventsOn(dayID);
 
                     addedDays.push(dayID);
                     newRow += "<td ID='" + dayID + "' class='" + ((dayID.localeCompare(dateUtils.dayStamp()) == 0) ? "today" : "day") + "'>";
                     newRow += "<div ID='digit" + dayID + "' class='date'>" + dayCounter + "</div>";
                     dayCounter++;
-                    if (eventOnThatDay.length > 0) {
+                    if (eventsOnThatDay.length > 0) {
                         newRow += "<div class='dayEvents'>";
-                        newRow += eventOnThatDay.map(formatUIEvent).join("<br/>");
+                        newRow += eventsOnThatDay.map(formatUIEvent).join("<br/>");
                         newRow += "</div>";
                     }
                     newRow += "</td>";
@@ -178,7 +179,7 @@ AJS.toInit(function($) {
                     newRow += "<td class='day'></td>";
                 }
             }
-            $("#tableBody").append(`<tr>${newRow}</tr>`);
+            AJS.$("#tableBody").append(`<tr>${newRow}</tr>`);
             for (let i = 0; i < addedDays.length; i++) {
                 $("#digit" + addedDays[i]).click(function() {
                     showDayDialog(addedDays[i]);

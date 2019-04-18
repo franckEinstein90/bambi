@@ -15,8 +15,13 @@
   margin: 0;
   padding: 0;
  }
- #tableHeader {
+ #tableCalendar-header{
+  background-color: #07889B;
+  color:white;
+ }
+ #tableCalendar-title {
   height: 50px;
+  color:white;
   text-align: center;
   position:relative;
   z-index: 100;
@@ -31,7 +36,7 @@ padding-left: 1px;
 }
 
  .eventView{
-   background-color: #4ABDAC;
+   background-color: #66B9BF;
    margin-top:2px;
    margin-bottom: 2px;
    padding-left:4px;
@@ -65,6 +70,7 @@ padding: 10px;
  line-height: 50px;
  font-weight: 100;
  letter-spacing: 1px;
+ color:white;
  }
 
 .day {
@@ -79,7 +85,7 @@ padding: 10px;
 }
 .today {
 
- background-color: Tomato;
+ background-color: #E37222;
  width: 60px;
  padding: 10px;
  text-align: center;

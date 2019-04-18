@@ -15,14 +15,24 @@ describe('Calendar event object', function() {
     });
 });
 
-describe('eventUtils.register', function(){
-  it('Registers an event in the event store', function(){
-    expect(eventUtils.size()).to.be.equal(0);
-    let ev = new eventUtils.Event(new Date(), new Date(), "test event");
-    eventUtils.register(ev);
-    expect(eventUtils.size()).to.be.equal(1);
-    eventUtils.flush();
-  });
+describe('eventUtils.register', function() {
+    it('Registers an event in the event store', function() {
+        expect(eventUtils.size()).to.be.equal(0);
+        let ev = new eventUtils.Event(new Date(), new Date(), "test event");
+        eventUtils.register(ev);
+        expect(eventUtils.size()).to.be.equal(1);
+        eventUtils.flush();
+    });
+});
+
+describe('eventUtils.get', function() {
+    it('returns an event stored in the event store with the given id', function() {
+        let eventTitle = "test event",
+            ev = new eventUtils.Event(new Date(), new Date(), "test event");
+        eventUtils.register(ev);
+        expect(eventUtils.get(ev.id).eventTitle).to.be.equal(eventTitle);
+        eventUtils.flush();
+    });
 });
 
 describe('newEvent', function() {
