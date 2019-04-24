@@ -18,7 +18,7 @@ var eventUtils = (function() {
         logEvent = function(ev) {
             console.log(
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
-                dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle);
+                dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
         },
 
         isValidDate = function(date) {
@@ -37,7 +37,7 @@ var eventUtils = (function() {
         },
         remove: function(eventId) {},
         get: function(eventId) {
-            //returns the event with the given evID 
+            //returns the event with the given evID
 		return events.get(eventId);
         },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {

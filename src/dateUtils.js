@@ -1,7 +1,7 @@
 //****************************//
 // begin timeSpan namespace //
 //****************************//
-const timeSpan = (function() {
+const timeSpanUtils = (function() {
     const secondSpanMs = 1000,
         daySpanMs = secondSpanMs * 60 * 60 * 24,
         monthAfter = function(monthAsDate) {
@@ -9,6 +9,11 @@ const timeSpan = (function() {
                 monthAsDate.getMonth() + 1, 1);
         };
     return {
+        TimeSpan: function(beginDate, endDate, timeStep) {
+            this.beginDate = beginDate;
+            this.endDate = endDate;
+            this.step = timeStep;
+        },
         day: function() {
             return daySpanMs;
         },
@@ -18,8 +23,25 @@ const timeSpan = (function() {
         }
     };
 })();
-
-
+timeSpanUtils.TimeSpan.prototype.setStep = function(step) {
+  this.step = step;
+}
+timeSpanUtils.TimeSpan.prototype.includes = function(targetDate) {
+    //returns true if the the timespan instance includes the targetDate
+    let targetYear = targetDate.getFullYear();
+    if(this.beginDate.getFullYear() <= targetYear && this.endDate.getFullYear() >= targetYear){
+        if(this.step === "year"){return true;}
+        let targetMonth = targetDate.getMonth();
+        if(this.beginDate.getMonth() <= targetMonth && this.endDate.getMonth() >= targetMonth){
+          if(this.step === "month"){return true;}
+          let targetDay = targetDate.getDate();
+          if(this.beginDate.getDate() <= targetDay && this.endDate.getDate() >= targetDay){
+            if(this.step === "day"){return true;}
+          }
+        }
+    }
+    return false;
+}
 
 //****************************//
 // begin dateUtils namespace //
@@ -46,7 +68,7 @@ const dateUtils = (function() {
         },
         monthLength: function(theYear, theMonth, timeMeasure) {
             let thisMonth = new Date(theYear, theMonth, 1);
-            return Math.ceil(timeSpan.month(thisMonth) / timeSpan.day());
+            return Math.ceil(timeSpanUtils.month(thisMonth) / timeSpanUtils.day());
         },
         monthIdxToStr: function(monthIdx) {
             return theMonths[monthIdx];
@@ -71,6 +93,6 @@ const dateUtils = (function() {
 })(); //end dateUtils
 
 module.exports = {
-    timeSpan,
+    timeSpanUtils,
     dateUtils
 };

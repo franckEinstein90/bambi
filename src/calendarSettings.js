@@ -47,9 +47,9 @@ var calendarSettings = (function() {
             dateUtils.firstDayOfMonth(year, month);
         },
         init: function(year, month) {
-          //when no arguments is provided, sets the calendar controls
-          //to today's date, and begin year to 5 years ago,
-          //end year, to 5 years from now
+            //when no arguments is provided, sets the calendar controls
+            //to today's date, and begin year to 5 years ago,
+            //end year, to 5 years from now
             if (arguments.length == 0) {
                 let today = new Date();
                 calendarSettings.init(today.getFullYear(), today.getMonth());

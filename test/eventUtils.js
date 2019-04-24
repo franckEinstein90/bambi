@@ -13,6 +13,10 @@ describe('Calendar event object', function() {
         let ev = new eventUtils.Event(new Date(), new Date(), "x");
         expect(validator.isUUID(ev.id)).to.equal(true);
     });
+    it('has on and off methods', function(){
+        let ev = new eventUtils.Event(new Date(), new Date(), "x");
+        expect(ev).to.have.property("on");
+    });
 });
 
 describe('eventUtils.register', function() {
@@ -22,6 +26,11 @@ describe('eventUtils.register', function() {
         eventUtils.register(ev);
         expect(eventUtils.size()).to.be.equal(1);
         eventUtils.flush();
+    });
+    it("Registers the event as ongoing if the event's date range includes today", function(){
+      let ev = new eventUtils.Event(new Date(), new Date(), "test event");
+      eventUtils.register(ev);
+      expect(ev.status).to.equal("ongoing");
     });
 });
 
