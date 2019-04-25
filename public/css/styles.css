@@ -30,12 +30,12 @@
    height:50px;
  }
 
-.eventList{
+.event-list{
 margin-left:4px;
 padding-left: 1px;
 }
 
- .eventView{
+ .event-view{
    background-color: #66B9BF;
    margin-top:2px;
    margin-bottom: 2px;
@@ -45,7 +45,7 @@ padding-left: 1px;
  .aui-expander-content{
    color:white
  }
- .eventTitle{
+ .event-title{
    color: white;
  }
  .event-controls{

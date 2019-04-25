@@ -2,7 +2,7 @@
 //****************************//
 // begin eventUtils namespace //
 //****************************//
-var eventUtils = (function() {
+const eventUtils = (function() {
     const events = new Map();
     let filter = function(filterPred) {
             //returns an array of calendar events filtered
@@ -18,14 +18,13 @@ var eventUtils = (function() {
         logEvent = function(ev) {
             console.log(
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
-                dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle);
+                dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
         },
-
         isValidDate = function(date) {
             return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
         };
     return {
-        Event: function Event(beginDate, endDate, title, description) {
+        Event: function(beginDate, endDate, title, description) {
             Events.Event.call(this);
             this.beginDate = beginDate;
             this.endDate = endDate;
@@ -33,12 +32,24 @@ var eventUtils = (function() {
             this.eventDescription = description;
         },
         register(calendarEvent) {
+            let eventRange = new timeSpanUtils.TimeSpan(
+                calendarEvent.beginDate,
+                calendarEvent.endDate,
+                "day");
+            if (eventRange.includes(new Date())) {
+                calendarEvent.on();
+            } else {
+                calendarEvent.off();
+            }
             events.set(calendarEvent.id, calendarEvent);
         },
         remove: function(eventId) {},
         get: function(eventId) {
-            //returns the event with the given evID 
-		return events.get(eventId);
+            //returns the event with the given evID
+            return events.get(eventId);
+        },
+        forEach: function(eventProcessingCallBack) {
+            events.forEach(eventProcessingCallBack);
         },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
             if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
@@ -108,3 +119,8 @@ var eventUtils = (function() {
     // end eventUtils namespace //
     //****************************//
 })();
+
+//set up inheritance for eventUtils.Event
+eventUtils.Event.prototype = Object.create(Events.Event.prototype);
+eventUtils.Event.constructor = Events.Event;
+
