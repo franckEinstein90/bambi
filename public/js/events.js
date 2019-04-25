@@ -1,4 +1,4 @@
-var Events = (function() {
+const Events = (function() {
     function generateUUID() {
         var d = new Date().getTime();
         if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -16,9 +16,15 @@ var Events = (function() {
             this.status = "ongoing";
             this.flip = function() {
                 console.log("flipping status");
-            };
+            }
         }
-    }
+    };
 })();
 
-//module.exports = {Events};
+Events.Event.prototype.on = function() {
+    this.status = "ongoing";
+}
+
+Events.Event.prototype.off = function() {
+    this.status = "offgoing";
+}

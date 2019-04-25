@@ -41,8 +41,9 @@ var makeEventView = function(index, bDate, eDate, evBody) {
 AJS.toInit(function($) {
 
     let pageManager = (function() {
+        let makeDiv = (divBody, divId, divClass) => `<div class='${divClass}' id='${divId}'>${divBody}</div>`,
         //gather events stored on the page and register with eventUtils manager
-        let registerEvent = function(evFields) {
+          registerEvent = function(evFields) {
             let regDateRange = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})/;
             if (evFields.length > 1) {
                 //Gather event data
@@ -64,10 +65,26 @@ AJS.toInit(function($) {
         });
         return {
             makeEventViewPanel: function() {
-                AJS.$("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
-                AJS.$("#eventlist").html(eventUtils.eventsToStringArray());
+                //insert the event view panel in the DOM
+                AJS.$("h1:contains('Events')").before(makeDiv("", "eventList", "event-list"));
+                //create a card for each event
+                eventUtils.forEach(pageManager.makeEventViewCard);
+                //hide the unformatted event list from the page
                 AJS.$("h1:contains('Events') + ul").remove();
                 AJS.$("h1:contains('Events')").remove();
+            },
+            makeEventViewCard: function(ev)  {
+              let cardContent = makeDiv(ev.id, "", "hidden") + pageManager.makeEventHeaderRow(ev) + pageManager.makeEventDatesRow(ev);
+              AJS.$("#eventList").append(makeDiv(cardContent,"", "event-view"));
+            },
+            makeEventHeaderRow: function(ev){
+              return makeDiv(makeDiv(ev.eventTitle, "", "event-title") +  makeDiv("", "", "event-controls"));
+            },
+            makeEventDatesRow : function(ev){
+              let dateInfo = dateUtils.dateToDayStamp(ev.beginDate),
+              endDate = dateUtils.dateToDayStamp(ev.endDate);
+              if(dateInfo !== endDate){dateInfo = dateInfo + " to " + endDate}
+              return makeDiv(dateInfo, "", "event-dates");
             }
         };
     })();
