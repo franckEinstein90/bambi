@@ -1,15 +1,21 @@
-var dateUtils = require('./dateUtils.js').dateUtils;
-var calendarSettings = (function() {
+/**************************************************************/
+/*  calendarSettings module ***********************************/
+/*  abstracts the data element of the calendar ****************/
+/**************************************************************/
+const dateUtils = require('./dateUtils.js').dateUtils;
+const calendarSettings = (function() {
     let today = new Date(),
         month = today.getMonth(),
-        year = today.getFullYear();
+        year = today.getFullYear(), 
+	firstYear = 2010, 
+	lastYear  = 2030;
 
     return {
         beginYear: function() {
-            return 2010;
+            return firstYear;
         },
         endYear: function() {
-            return 2030;
+            return lastYear;
         },
         setMonth: function(y, m) {
             year = y;

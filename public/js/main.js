@@ -1,5 +1,6 @@
 var makeEventView = function(index, bDate, eDate, evBody) {
-    let re = /(.+)\s*\:(.+)/,
+    let makeDiv = (divBody, divClass, divId) => `<div class='${divClass}' id='${divID}'>${divBody}</div>`,
+        re = /(.+)\s*\:(.+)/,
         eventTitle = evBody,
         eventDescription,
         found = evBody.match(re),
@@ -40,38 +41,38 @@ var makeEventView = function(index, bDate, eDate, evBody) {
 AJS.toInit(function($) {
 
     let pageManager = (function() {
-	//gather events stored on the page and register with eventUtils manager
-	let registerEvent = function(evFields){
-	  let regDateRange = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})/;
-	  if(evFields.length > 1){
-		//Gather event data
-		let matchDates = evFields[0].match(regDateRange);
-	 	if(matchDates){
-	            let strEventBeginDate = matchDates[1],
-	                strEventEndDate = matchDates[2],
-			strEventShortTitle = evFields[1], 
-			strEventDescription = (evFields.length > 2)?evFields[2]: "";
-			eventUtils.processDateRange(strEventBeginDate, strEventEndDate, strEventShortTitle, strEventDescription);
-		}
-	  }
-	};
-	dateUtils.setSeparator("-");
-     	AJS.$("h1:contains('Events') + ul li").each(function(index) {
-	  let evDescription = AJS.$(this).text(),
-	      evFields = evDescription.split(/\s*\:\s*/);
-	      registerEvent(evFields);
-	});
-	return{
-	   makeEventViewPanel:function(){
-	     AJS.$("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
-		AJS.$("#eventlist").html(eventUtils.eventsToStringArray());
-	     AJS.$("h1:contains('Events') + ul").remove();
-	     AJS.$("h1:contains('Events')").remove();
-	   }
-	};
+        //gather events stored on the page and register with eventUtils manager
+        let registerEvent = function(evFields) {
+            let regDateRange = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})/;
+            if (evFields.length > 1) {
+                //Gather event data
+                let matchDates = evFields[0].match(regDateRange);
+                if (matchDates) {
+                    let strEventBeginDate = matchDates[1],
+                        strEventEndDate = matchDates[2],
+                        strEventShortTitle = evFields[1],
+                        strEventDescription = (evFields.length > 2) ? evFields[2] : "";
+                    eventUtils.processDateRange(strEventBeginDate, strEventEndDate, strEventShortTitle, strEventDescription);
+                }
+            }
+        };
+        dateUtils.setSeparator("-");
+        AJS.$("h1:contains('Events') + ul li").each(function(index) {
+            let evDescription = AJS.$(this).text(),
+                evFields = evDescription.split(/\s*\:\s*/);
+            registerEvent(evFields);
+        });
+        return {
+            makeEventViewPanel: function() {
+                AJS.$("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
+                AJS.$("#eventlist").html(eventUtils.eventsToStringArray());
+                AJS.$("h1:contains('Events') + ul").remove();
+                AJS.$("h1:contains('Events')").remove();
+            }
+        };
     })();
 
-eventUtils.logEvents();
+    eventUtils.logEvents();
     let setEventFormValues = function(evID) {
         let ev = eventUtils.get(evID);
         dateUtils.setSeparator('-');
@@ -111,7 +112,7 @@ eventUtils.logEvents();
     /***********************                                      */
 
 
-    pageManager.makeEventViewPanel(); 
+    pageManager.makeEventViewPanel();
     /*AJS.$("h1:contains('Events') + ul li").each(function(index) {
     	makeEventView(index, found[1], found[2], found[3]);
             AJS.$("#eventlist").append(eventViewPanel.html);
@@ -121,7 +122,7 @@ eventUtils.logEvents();
         }
     });*/
 
-    
+
     //    $("h1:contains('Events'), h1:contains('Events') + ul").appendTo("#eventlist");
 
     // Shows the dialog when the "Show dialog" button is clicked
@@ -179,16 +180,15 @@ eventUtils.logEvents();
 
         // initialize date-dependent variables
         let firstDay = calendarSettings.firstDayOfMonth,
-            howMany = calendarSettings.monthLength,
             calendarTableTitle = dateUtils.monthIdxToStr(calendarSettings.month) + " " + calendarSettings.year,
             dayCounter = 1;
 
         AJS.$("#tableCalendar-title").html("<h1 style='color:white'>" + calendarTableTitle + "</h1>");
         AJS.$("#tableBody").empty();
-        while (dayCounter <= howMany) {
+        while (dayCounter <= calendarSettings.monthLength) {
             let newRow = "",
                 addedDays = [];
-            for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
+            for (let i = 0; i < 7 && dayCounter <= calendarSettings.monthLength; i++) {
                 if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay)) {
                     let dayID = dateUtils.dayStamp(calendarSettings.year, calendarSettings.month, dayCounter),
                         eventsOnThatDay = eventUtils.eventsOn(dayID);
@@ -221,28 +221,30 @@ eventUtils.logEvents();
         eventDialog.show();
     }
 
-    function fillYears() {
-        var yearChooser = document.dateChooser.chooseYear;
+    let populateFormOptions = function() {
+        let makeOption = (idx, value) => `<option value="${idx}">${value}</option>`;
+        let yearChooser = document.dateChooser.chooseYear;
         for (i = calendarSettings.beginYear(); i < calendarSettings.endYear(); i++) {
             yearChooser.options[yearChooser.options.length] = new Option(i, i)
         }
+        appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
         setFormValues();
     }
 
-    var setFormValues = function() { //updates the form values based on the calendarSettings values
+    let setFormValues = function() { //updates the form values based on the calendarSettings values
         document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
         let yearIDX = calendarSettings.yearIdx();
         document.dateChooser.chooseYear.selectedIndex = yearIDX;
     }
 
-    var getFormValues = function() { //updates the calendarSettings values based on the form values
+    let getFormValues = function() { //updates the calendarSettings values based on the form values
         calendarSettings.setValues(
             parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
             document.dateChooser.chooseMonth.selectedIndex);
         populateCalendarTable();
     }
 
-    fillYears();
+    populateFormOptions();
     getFormValues();
 
 });

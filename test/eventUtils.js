@@ -1,6 +1,6 @@
-var expect = require('chai').expect;
-var eventUtils = require('../src/eventUtils.js').eventUtils;
-var validator = require('validator');
+const expect = require('chai').expect;
+const eventUtils = require('../src/eventUtils.js').eventUtils;
+const validator = require('validator');
 
 let today = new Date();
 
@@ -13,7 +13,7 @@ describe('Calendar event object', function() {
         let ev = new eventUtils.Event(new Date(), new Date(), "x");
         expect(validator.isUUID(ev.id)).to.equal(true);
     });
-    it('has on and off methods', function(){
+    it('has on and off methods', function() {
         let ev = new eventUtils.Event(new Date(), new Date(), "x");
         expect(ev).to.have.property("on");
     });
@@ -27,10 +27,10 @@ describe('eventUtils.register', function() {
         expect(eventUtils.size()).to.be.equal(1);
         eventUtils.flush();
     });
-    it("Registers the event as ongoing if the event's date range includes today", function(){
-      let ev = new eventUtils.Event(new Date(), new Date(), "test event");
-      eventUtils.register(ev);
-      expect(ev.status).to.equal("ongoing");
+    it("Registers the event as ongoing if the event's date range includes today", function() {
+        let ev = new eventUtils.Event(new Date(), new Date(), "test event");
+        eventUtils.register(ev);
+        expect(ev.status).to.equal("ongoing");
     });
 });
 
@@ -43,6 +43,18 @@ describe('eventUtils.get', function() {
         eventUtils.flush();
     });
 });
+describe('eventUtils.forEach', function() {
+    it('applies a callback to each registered event', function() {
+        let events = [],
+            resString = "";
+        eventUtils.flush();
+        ["a", "b", "c"].forEach(x => eventUtils.processDateRange("2010_01_02", "2012_03_01", x, "event descri"));
+        eventUtils.forEach(x => resString += x.eventTitle);
+        expect(resString).to.equal("abc");
+        eventUtils.flush();
+    });
+});
+
 
 describe('newEvent', function() {
     it('should throw an invalid date exception if one of the first two arguments is not a date', function() {
