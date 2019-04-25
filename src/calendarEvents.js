@@ -1,11 +1,15 @@
-var dateUtils = require('./dateUtils.js').dateUtils;
-var timeSpanUtils = require('./dateUtils.js').timeSpanUtils;
-var Events = require('./events.js').Events;
+//**********************************************************************//
+// calendarEvents namespace 
+// FranckEinstein
+//
+// A library to manage calendar  events.
+//**********************************************************************//
 
-//****************************//
-// begin eventUtils namespace //
-//****************************//
-const eventUtils = (function() {
+const timeSpanUtils = require('./dateUtils.js').timeSpanUtils;
+const dateUtils = require('./dateUtils.js').dateUtils;
+const Events = require('./events.js').Events;
+
+const calendarEvents = (function() {
     const events = new Map();
     let filter = function(filterPred) {
             //returns an array of calendar events filtered
@@ -27,7 +31,7 @@ const eventUtils = (function() {
             return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
         };
     return {
-        Event: function(beginDate, endDate, title, description) {
+        CalendarEvent: function(beginDate, endDate, title, description) {
             Events.Event.call(this);
             this.beginDate = beginDate;
             this.endDate = endDate;
@@ -46,9 +50,24 @@ const eventUtils = (function() {
             }
             events.set(calendarEvent.id, calendarEvent);
         },
-        remove: function(eventId) {},
+        /*********************************************************************/
+        /* Bread and butter handlers 
+        /*********************************************************************/
+        flush: function() {
+            //removes all events
+            events.clear();
+        },
+        size: function() {
+            return events.size;
+        },
+        remove: function(eventId) {
+            if (!events.has(eventId)) {
+                throw new calendarEvents.Exception("Event does not exist");
+            }
+            events.delete(eventId);
+        },
         get: function(eventId) {
-            //returns the event with the given evID
+            //returns event with given evID
             return events.get(eventId);
         },
         forEach: function(eventProcessingCallBack) {
@@ -56,7 +75,7 @@ const eventUtils = (function() {
         },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
             if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
-                return new eventUtils.Event(begDate, endDate, eventTitle, eventDescription);
+                return new calendarEvents.CalendarEvent(begDate, endDate, eventTitle, eventDescription);
             } else {
                 throw ("unexpected argument");
             }
@@ -70,39 +89,30 @@ const eventUtils = (function() {
             }
             return eventStr;
         },
-        flush: function() {
-            //empties the list of events
-            events.clear();
-        },
-        size: function() {
-            return events.size;
-        },
+
         eventsToStringArray: function() {
             //returns a copied array of the events in the event store
             let eventArray = [];
             for (var value of events.values()) {
-                eventArray.push(eventUtils.eventToString(value));
+                eventArray.push(calendarEvents.eventToString(value));
             }
             return eventArray;
         },
         processDateRange: function(begDateStamp, endDateStamp, strShortTitle, description) {
             //To Do: Data Validation here
-            let calendarEvent = eventUtils.newEvent(
+            let calendarEvent = calendarEvents.newEvent(
                 dateUtils.dayStampToDate(begDateStamp),
                 dateUtils.dayStampToDate(endDateStamp),
                 strShortTitle, description);
-            eventUtils.register(calendarEvent);
+            calendarEvents.register(calendarEvent);
             return calendarEvent.id;
-        },
-        removeEvent: function(eventId) {
-            events.delete(eventId);
         },
         processEventStrArray: function(eventStrArray, format) {
             //evenStrArray is an an array of string containing event information
             //format is a regular expression that defines the format of the string
             let getValues = function(str) {
                 let values = format(str);
-                eventUtils.processDateRange(values[0], values[1], values[2]);
+                calendarEvents.processDateRange(values[0], values[1], values[2]);
             };
             eventStrArray.forEach(str => getValues(str));
         },
@@ -114,19 +124,25 @@ const eventUtils = (function() {
             let stampDate = dateUtils.dayStampToDate(dateStamp);
             return filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate));
         },
+        /*********************************************************************/
+        /* Errors, exceptions, and logs
+        /*********************************************************************/
+        Exception: function(err) {
+            this.message = err;
+        },
         logEvents: function() {
             events.forEach(logEvent);
         }
     }
     //****************************//
-    // end eventUtils namespace //
+    // end calendarEvents namespace //
     //****************************//
 })();
 
-//set up inheritance for eventUtils.Event
-eventUtils.Event.prototype = Object.create(Events.Event.prototype);
-eventUtils.Event.constructor = Events.Event;
+//set up inheritance for calendarEvents.CalendarEvent
+calendarEvents.CalendarEvent.prototype = Object.create(Events.Event.prototype);
+calendarEvents.CalendarEvent.constructor = Events.Event;
 
 module.exports = {
-    eventUtils
+    calendarEvents
 };
