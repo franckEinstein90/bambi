@@ -1,19 +1,30 @@
-//**********************************************************************//
-// calendarEvents namespace 
-// FranckEinstein
-//
-// A library to manage calendar  events.
-//**********************************************************************//
+/******************************************************************************
+ * calendarEvents namespace 
+ * FranckEinstein
+ * 
+ *  A library to manage calendar  events. Includes:
+ *   - Implementation for calendarEvent prototype, which inherits from events
+ *   - Implementation for a map registrar in which events can be registered
+ *****************************************************************************/
 
 const timeSpanUtils = require('./dateUtils.js').timeSpanUtils;
 const dateUtils = require('./dateUtils.js').dateUtils;
 const Events = require('./events.js').Events;
 
 const calendarEvents = (function() {
+
+    /******************************************************************/
+    /* events is the event registrar. It's a map object.
+    /* The keys are event id strings, which calendar events 
+    /* get from the events.Event prototype
+    /******************************************************************/
     const events = new Map();
+
+    /******************************************************************/
+    /* returns an array of calendar events filtered
+    /* as per the predicate argument
+    /******************************************************************/
     let filter = function(filterPred) {
-            //returns an array of calendar events filtered
-            //as per the predicate argument
             let arrayRes = [];
             events.forEach((value, key) => {
                 if (filterPred(value)) {
@@ -27,17 +38,27 @@ const calendarEvents = (function() {
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
                 dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
         },
-        isValidDate = function(date) {
+        validDate = function(date) {
             return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
         };
+
     return {
         CalendarEvent: function(beginDate, endDate, title, description) {
-            Events.Event.call(this);
-            this.beginDate = beginDate;
-            this.endDate = endDate;
-            this.eventTitle = title;
-            this.eventDescription = description;
-        },
+            if(!validDate(beginDate) || !validDate(endDate)) {
+                throw new CalendarEvent.Exception("Invalid date parameters");
+            }
+            try {
+                new timeSpanUtils.TimeSpan(beginDate, endDate);
+                Events.Event.call(this);
+                this.beginDate = beginDate;
+                this.endDate = endDate;
+                this.eventTitle = title;
+                this.eventDescription = description;
+            }
+            catch(e){
+                throw(e);
+            }
+       },
         register(calendarEvent) {
             let eventRange = new timeSpanUtils.TimeSpan(
                 calendarEvent.beginDate,
@@ -50,6 +71,7 @@ const calendarEvents = (function() {
             }
             events.set(calendarEvent.id, calendarEvent);
         },
+
         /*********************************************************************/
         /* Bread and butter handlers 
         /*********************************************************************/
@@ -77,7 +99,7 @@ const calendarEvents = (function() {
             if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
                 return new calendarEvents.CalendarEvent(begDate, endDate, eventTitle, eventDescription);
             } else {
-                throw ("unexpected argument");
+                throw new calendarEvent.Exception("unexpected argument");
             }
         },
         eventToString: function(ev) {
@@ -89,7 +111,6 @@ const calendarEvents = (function() {
             }
             return eventStr;
         },
-
         eventsToStringArray: function() {
             //returns a copied array of the events in the event store
             let eventArray = [];
@@ -139,7 +160,9 @@ const calendarEvents = (function() {
     //****************************//
 })();
 
-//set up inheritance for calendarEvents.CalendarEvent
+/*****************************************************************************/
+/* Inheritance for calendarEvents.CalendarEvent from events.Event 
+/*****************************************************************************/
 calendarEvents.CalendarEvent.prototype = Object.create(Events.Event.prototype);
 calendarEvents.CalendarEvent.constructor = Events.Event;
 

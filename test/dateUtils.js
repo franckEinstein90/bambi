@@ -7,15 +7,27 @@ const todayDate = new Date();
 const todayStamp = `${todayDate.getFullYear().toString()}_${(todayDate.getMonth()+1).toString().padStart(2,'0')}_${todayDate.getDate().toString().padStart(2,'0')}`;
 
 describe('timeSpanUtils.TimeSpan object', function(){
-	it('is created using two dates', function(){
-		let April24_2010 = new Date(2010, 03, 24);
-		let April27_2010 = new Date(2010, 03, 27);
+    describe('TimeSpan.constructor', function() {
+        it('is created using two dates', function(){
+            let April24_2010 = new Date(2010, 03, 24);
+            let April27_2010 = new Date(2010, 03, 27);
 
-		let ts = new timeSpanUtils.TimeSpan(April24_2010, April27_2010, "day");
-		expect(ts).to.have.property('beginDate');
-		expect(ts).to.have.property('endDate');
-		expect(ts).to.have.property('includes');
-	})
+            let ts = new timeSpanUtils.TimeSpan(April24_2010, April27_2010, "day");
+            expect(ts).to.have.property('beginDate');
+            expect(ts).to.have.property('endDate');
+            expect(ts).to.have.property('includes');
+	   })
+       it('throws an exception if the first date is after the second date', function(){
+            let May24_2010 = new Date(2010, 04, 24);
+            let April27_2010 = new Date(2010, 03, 27);
+            
+            expect(() => new timeSpanUtils.TimeSpan(May24_2010, April27_2010, "day"))
+
+            expect(ts).to.have.property('endDate');
+            expect(ts).to.have.property('includes');
+	   })
+})
+
 	describe('timeSpanUtils.TimeSpan.includes', function(){
 	  it('indicates if a given date is included in a time span', function(){
 			let April24_2010 = new Date(2010, 03, 24),

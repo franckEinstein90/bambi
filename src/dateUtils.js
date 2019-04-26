@@ -1,6 +1,16 @@
-//****************************//
-// begin timeSpan namespace //
-//****************************//
+
+/******************************************************************************
+ * The timeSpanUtils module defines several utilites related to time ranges. 
+ * It includes:
+ *
+ *  - A TimeSpan constructor that verifies that a span defined by two dates 
+ *    is valid
+ *
+ ******************************************************************************/
+const validDate = function(date) {
+        return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
+}
+
 const timeSpanUtils = (function() {
     const secondSpanMs = 1000,
         daySpanMs = secondSpanMs * 60 * 60 * 24,
@@ -23,9 +33,11 @@ const timeSpanUtils = (function() {
         }
     };
 })();
+
 timeSpanUtils.TimeSpan.prototype.setStep = function(step) {
   this.step = step;
 }
+
 timeSpanUtils.TimeSpan.prototype.includes = function(targetDate) {
     //returns true if the the timespan instance includes the targetDate
     let targetYear = targetDate.getFullYear();
