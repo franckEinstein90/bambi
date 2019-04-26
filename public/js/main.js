@@ -1,3 +1,7 @@
+/*****************************************************************************/
+
+/*****************************************************************************/
+
 var makeEventView = function(index, bDate, eDate, evBody) {
     let makeDiv = (divBody, divClass, divId) => `<div class='${divClass}' id='${divID}'>${divBody}</div>`,
         re = /(.+)\s*\:(.+)/,
@@ -39,29 +43,35 @@ var makeEventView = function(index, bDate, eDate, evBody) {
 };
 
 AJS.toInit(function($) {
+    /********************************************************************/
+    /* given a string describing a calendar event as printed on the pageManager,
+    /* register it with eventUtils manager
+    /********************************************************************/
+    let registerEventOnPage = function(evFields) {
+        let regDateRange = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})/;
+        if (evFields.length > 1) {
+            //Gather event data
+            let matchDates = evFields[0].match(regDateRange);
+            if (matchDates) {
+                let strEventBeginDate = matchDates[1],
+                    strEventEndDate = matchDates[2],
+                    strEventShortTitle = evFields[1],
+                    strEventDescription = (evFields.length > 2) ? evFields[2] : "";
+                eventUtils.processDateRange(strEventBeginDate, strEventEndDate, strEventShortTitle, strEventDescription);
+            }
+        }
+    }
+
 
     let pageManager = (function() {
         let makeDiv = (divBody, divId, divClass) => `<div class='${divClass}' id='${divId}'>${divBody}</div>`,
-        //gather events stored on the page and register with eventUtils manager
-          registerEvent = function(evFields) {
-            let regDateRange = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})/;
-            if (evFields.length > 1) {
-                //Gather event data
-                let matchDates = evFields[0].match(regDateRange);
-                if (matchDates) {
-                    let strEventBeginDate = matchDates[1],
-                        strEventEndDate = matchDates[2],
-                        strEventShortTitle = evFields[1],
-                        strEventDescription = (evFields.length > 2) ? evFields[2] : "";
-                    eventUtils.processDateRange(strEventBeginDate, strEventEndDate, strEventShortTitle, strEventDescription);
-                }
-            }
-        };
-        dateUtils.setSeparator("-");
-        AJS.$("h1:contains('Events') + ul li").each(function(index) {
+            makeSpan = (spanBody, spanId, spanClass) => `<span class='${spanClass}' id = '${spanId}'>${spanBody}</span>`;
+            dateUtils.setSeparator("-");
+
+        AJS.$("h1:contains('Events') + ul li").each(function(index) { //Extract event descriptions from the page, and register them
             let evDescription = AJS.$(this).text(),
                 evFields = evDescription.split(/\s*\:\s*/);
-            registerEvent(evFields);
+            registerEventOnPage(evFields);
         });
         return {
             makeEventViewPanel: function() {
@@ -73,18 +83,22 @@ AJS.toInit(function($) {
                 AJS.$("h1:contains('Events') + ul").remove();
                 AJS.$("h1:contains('Events')").remove();
             },
-            makeEventViewCard: function(ev)  {
-              let cardContent = makeDiv(ev.id, "", "hidden") + pageManager.makeEventHeaderRow(ev) + pageManager.makeEventDatesRow(ev);
-              AJS.$("#eventList").append(makeDiv(cardContent,"", "event-view"));
+            makeEventViewCard: function(ev) {
+                let cardContent = makeDiv(ev.id, "", "hidden") + pageManager.makeEventHeaderRow(ev) + pageManager.makeEventDatesRow(ev);
+                AJS.$("#eventList").append(makeDiv(cardContent, "", "event-view"));
             },
-            makeEventHeaderRow: function(ev){
-              return makeDiv(makeDiv(ev.eventTitle, "", "event-title") +  makeDiv("", "", "event-controls"));
+            makeEventHeaderRow: function(ev) {
+              let makeIconButton = (accessText, id, buttonName) => makeSpan(accessText, id, 'aui-icon aui-icon-small event-edit-button aui-iconfont-' + buttonName),
+                  editButton = makeIconButton ("edit event", ev.id, "edit");
+                return makeDiv(makeDiv(ev.eventTitle, "", "event-title") + makeDiv(editButton, "", "event-controls"));
             },
-            makeEventDatesRow : function(ev){
-              let dateInfo = dateUtils.dateToDayStamp(ev.beginDate),
-              endDate = dateUtils.dateToDayStamp(ev.endDate);
-              if(dateInfo !== endDate){dateInfo = dateInfo + " to " + endDate}
-              return makeDiv(dateInfo, "", "event-dates");
+            makeEventDatesRow: function(ev) {
+                let dateInfo = dateUtils.dateToDayStamp(ev.beginDate),
+                    endDate = dateUtils.dateToDayStamp(ev.endDate);
+                if (dateInfo !== endDate) {
+                    dateInfo = dateInfo + " to " + endDate
+                }
+                return makeDiv(dateInfo, "", "event-dates");
             }
         };
     })();
