@@ -61,7 +61,7 @@ describe('calendarEvent.remove(evId)', function() {
     })
 
     it("throws a non-existing event exception if the argument id doesn't exists", function() {
-        let newEventID = new calendarEvents.CalendarEvent('2018_04_19', '2018_04_19', "Easter", "Buy Chocolate").id;
+        let newEventID = new calendarEvents.CalendarEvent(new Date(),  new Date(), "Easter", "Buy Chocolate").id;
         expect(function() {
             calendarEvents.remove(newEventID);
         }).to.throw('Event does not exist');

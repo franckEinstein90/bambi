@@ -45,7 +45,7 @@ const calendarEvents = (function() {
     return {
         CalendarEvent: function(beginDate, endDate, title, description) {
             if(!validDate(beginDate) || !validDate(endDate)) {
-                throw new CalendarEvent.Exception("Invalid date parameters");
+                throw new calendarEvents.Exception("Invalid date parameters");
             }
             try {
                 new timeSpanUtils.TimeSpan(beginDate, endDate);
@@ -96,7 +96,7 @@ const calendarEvents = (function() {
             events.forEach(eventProcessingCallBack);
         },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
-            if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
+            if (validDate(begDate) && validDate(endDate) && typeof(eventTitle) === 'string') {
                 return new calendarEvents.CalendarEvent(begDate, endDate, eventTitle, eventDescription);
             } else {
                 throw new calendarEvent.Exception("unexpected argument");
