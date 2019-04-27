@@ -1,4 +1,11 @@
-const Events = (function() {
+/*******************************************************************
+ * events namespace
+ * FranckEinstein90
+ *
+ * *****************************************************************/
+
+const events = (function() {
+
     function generateUUID() {
         var d = new Date().getTime();
         if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
@@ -10,7 +17,9 @@ const Events = (function() {
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
     };
+
     return {
+
         Event: function() {
             this.id = generateUUID();
             this.status = "ongoing";
@@ -21,13 +30,14 @@ const Events = (function() {
     };
 })();
 
-Events.Event.prototype.on = function() {
+events.Event.prototype.on = function() {
     this.status = "ongoing";
 }
 
-Events.Event.prototype.off = function() {
+events.Event.prototype.off = function() {
     this.status = "offgoing";
 }
+
 module.exports = {
-    Events
+    events
 };

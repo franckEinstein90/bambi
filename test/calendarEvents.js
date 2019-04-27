@@ -7,9 +7,13 @@
 
 const expect = require('chai').expect;
 const validator = require('validator');
-
-
 const calendarEvents = require('../src/calendarEvents').calendarEvents;
+
+/******************************************************************************
+ * 
+ *
+ * ***************************************************************************/
+
 let today = new Date();
 describe('hooks', function() {
     beforeEach(function() {
@@ -17,6 +21,11 @@ describe('hooks', function() {
     })
 });
 
+
+/******************************************************************************
+ * Calendar events tests
+ *
+ * ***************************************************************************/
 describe('Calendar event object', function() {
     it('is constructed using two dates and a string', function() {
         let ev = new calendarEvents.CalendarEvent(new Date(), new Date(), "x");
@@ -31,6 +40,12 @@ describe('Calendar event object', function() {
         expect(ev).to.have.property("on");
     })
 })
+
+
+/******************************************************************************
+ * 
+ *
+ * ***************************************************************************/
 
 describe('calendarEvents.register', function() {
     beforeEach(function() {
@@ -69,7 +84,7 @@ describe('calendarEvent.remove(evId)', function() {
     })
 
     it("throws a non-existing event exception if the argument id doesn't exists", function() {
-        let newEventID = new calendarEvents.CalendarEvent(new Date(),  new Date(), "Easter", "Buy Chocolate").id;
+        let newEventID = new calendarEvents.CalendarEvent(new Date(), new Date(), "Easter", "Buy Chocolate").id;
         expect(function() {
             calendarEvents.remove(newEventID);
         }).to.throw('Event does not exist');
@@ -104,7 +119,7 @@ describe('calendarEvents.forEach', function() {
 describe('newEvent', function() {
     it('should throw an invalid date exception if one of the first two arguments is not a date', function() {
         expect(calendarEvents.newEvent.bind("dfsa", new Date(), "dsa")).to.throw("unexpected argument");
-    })
+    }
 
     it('should create a new event using two dates and a string. in string format', function() {
         let ev = calendarEvents.newEvent(new Date(), new Date(), "hello");
