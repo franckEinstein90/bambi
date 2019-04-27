@@ -1,35 +1,39 @@
+/*******************************************************************
+ * tests for events namespace objects and functions
+ * FranckEinstein90
+ ********************************************************************/
 
-var expect = require('chai').expect;
-var validator = require('validator');
-var Events = require('../src/Events').Events;
+const expect = require('chai').expect;
+const validator = require('validator');
+const events = require('../src/events').events;
 
-describe('Event Object', function(){
-  it("has a status of ongoing or offgoing", function(){
-    let ev = new Events.Event();
-    expect(ev).to.not.be.undefined;
-  })
-  it("has a status of ongoing or offgoing", function(){
-    let ev = new Events.Event();
-    expect(ev.status).to.equal("ongoing");
-  })
-  it("has a unique identifier", function(){
-    let ev = new Events.Event();
-    expect(validator.isUUID(ev.id)).to.equal(true);
-  })
-  describe("events.Event.on()", function(){
-    it("turns on the event", function(){
-	let ev = new Events.Event();
-	ev.off();
-        expect(ev.status).to.equal("offgoing");
-	ev.on();	
+describe('Event Object', function() {
+    it("has a status of ongoing or offgoing", function() {
+        let ev = new events.Event();
+        expect(ev).to.not.be.undefined;
+    })
+    it("has a status of ongoing or offgoing", function() {
+        let ev = new events.Event();
         expect(ev.status).to.equal("ongoing");
     })
-  })
-  describe("events.Event.off()", function(){
-    it("turns off the event", function(){
-	let ev = new Events.Event();
-	ev.off();	
-        expect(ev.status).to.equal("offgoing");
+    it("has a unique identifier", function() {
+        let ev = new events.Event();
+        expect(validator.isUUID(ev.id)).to.equal(true);
     })
-  })
+    describe("events.Event.on()", function() {
+        it("turns on the event", function() {
+            let ev = new events.Event();
+            ev.off();
+            expect(ev.status).to.equal("offgoing");
+            ev.on();
+            expect(ev.status).to.equal("ongoing");
+        })
+    })
+    describe("events.Event.off()", function() {
+        it("turns off the event", function() {
+            let ev = new events.Event();
+            ev.off();
+            expect(ev.status).to.equal("offgoing");
+        })
+    })
 });

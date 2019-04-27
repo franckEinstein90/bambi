@@ -1,7 +1,15 @@
+/******************************************************************************
+ * tests for calendarEvents module
+ * FranckEinstein90
+ * ----------------
+ *
+ * ***************************************************************************/
+
 const expect = require('chai').expect;
-const calendarEvents = require('../src/calendarEvents.js').calendarEvents;
 const validator = require('validator');
 
+
+const calendarEvents = require('../src/calendarEvents').calendarEvents;
 let today = new Date();
 describe('hooks', function() {
     beforeEach(function() {
