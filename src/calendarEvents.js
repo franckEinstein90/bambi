@@ -54,7 +54,7 @@ const calendarEvents = (function() {
          * eventRegistrar is the event registrar for calendarEvents
          ******************************************************************/
         eventRegistrar: new events.Registrar(),
-        register(calendarEvent) { //registers a calendarEvent
+        register: function(calendarEvent) { //registers a calendarEvent
             //calendar events are registered as on if the registration 
             //happens during the datespan they occupy. 
             let eventRange = new timeSpanUtils.TimeSpan(
