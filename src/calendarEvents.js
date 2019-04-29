@@ -2,38 +2,18 @@
  * calendarEvents namespace 
  * FranckEinstein
  * 
- *  A library to manage calendar  eventRegistrar. Includes:
- *   - Implementation for calendarEvent prototype, which inherits from eventRegistrar
- *   - Implementation for a map registrar in which eventRegistrar can be registered
- *****************************************************************************/
-
+ *  A library to manage calendar events. Defines objects: 
+ *   - calendarEvents.Event
+ *   - calendarEvents.EventSequence
+ *
+ ******************************************************************************/
 const timeSpanUtils = require('./dateUtils').timeSpanUtils;
 const dateUtils = require('./dateUtils').dateUtils;
 const events = require('./events').events;
 
 const calendarEvents = (function() {
 
-    /******************************************************************/
-    /* eventRegistrar is the event registrar. It's a map object.
-    /* The keys are event id strings, which calendar eventRegistrar 
-    /* get from the eventRegistrar.Event prototype
-    /******************************************************************/
-    let calendarEventsRegistrar = new events.Registrar(); 
-
-    /******************************************************************/
-    /* returns an array of calendar eventRegistrar filtered
-    /* as per the predicate argument
-    /******************************************************************/
-    let filter = function(filterPred) {
-            let arrayRes = [];
-            eventRegistrar.forEach((value, key) => {
-                if (filterPred(value)) {
-                    arrayRes.push(value)
-                }
-            });
-            return arrayRes;
-        },
-        logEvent = function(ev) {
+    logEvent = function(ev) {
             console.log(
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
                 dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
@@ -43,8 +23,19 @@ const calendarEvents = (function() {
         };
 
     return {
+
+        /******************************************************************
+         *  A calendar event is a type of event that has the following
+         *  properties:
+         *
+         *  - A begin date (beginDate)
+         *  - An end date  (endDate)
+         *  - A title (at most 255 chars)
+         *  - A description (at most 510 chars)
+         ***********************************************************************/
+
         CalendarEvent: function(beginDate, endDate, title, description) {
-            if(!validDate(beginDate) || !validDate(endDate)) {
+            if (!validDate(beginDate) || !validDate(endDate)) {
                 throw new calendarEvents.Exception("Invalid date parameters");
             }
             try {
@@ -54,12 +45,18 @@ const calendarEvents = (function() {
                 this.endDate = endDate;
                 this.eventTitle = title;
                 this.eventDescription = description;
+            } catch (e) {
+                throw (e);
             }
-            catch(e){
-                throw(e);
-            }
-       },
-        register(calendarEvent) {
+        },
+
+        /******************************************************************
+         * eventRegistrar is the event registrar for calendarEvents
+         ******************************************************************/
+        eventRegistrar: new events.Registrar(),
+        register(calendarEvent) { //registers a calendarEvent
+            //calendar events are registered as on if the registration 
+            //happens during the datespan they occupy. 
             let eventRange = new timeSpanUtils.TimeSpan(
                 calendarEvent.beginDate,
                 calendarEvent.endDate,
@@ -69,32 +66,9 @@ const calendarEvents = (function() {
             } else {
                 calendarEvent.off();
             }
-            eventRegistrar.set(calendarEvent.id, calendarEvent);
+            events.eventRegistrar.register(calendarEvent);
         },
 
-        /*********************************************************************/
-        /* Bread and butter handlers 
-        /*********************************************************************/
-        flush: function() {
-            //removes all events from Registrar
-            calendarEventsRegistrar.flush();
-        },
-        size: function() {
-            return eventRegistrar.size;
-        },
-        remove: function(eventId) {
-            if (!eventRegistrar.has(eventId)) {
-                throw new calendarEvents.Exception("Event does not exist");
-            }
-            eventRegistrar.delete(eventId);
-        },
-        get: function(eventId) {
-            //returns event with given evID
-            return eventRegistrar.get(eventId);
-        },
-        forEach: function(eventProcessingCallBack) {
-            eventRegistrar.forEach(eventProcessingCallBack);
-        },
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
             if (validDate(begDate) && validDate(endDate) && typeof(eventTitle) === 'string') {
                 return new calendarEvents.CalendarEvent(begDate, endDate, eventTitle, eventDescription);
@@ -102,6 +76,7 @@ const calendarEvents = (function() {
                 throw new calendarEvent.Exception("unexpected argument");
             }
         },
+
         eventToString: function(ev) {
             let eventStr = dateUtils.dateToDayStamp(ev['beginDate']) + " " +
                 dateUtils.dateToDayStamp(ev['endDate']) + " " +
@@ -125,7 +100,7 @@ const calendarEvents = (function() {
                 dateUtils.dayStampToDate(begDateStamp),
                 dateUtils.dayStampToDate(endDateStamp),
                 strShortTitle, description);
-            calendarEvents.register(calendarEvent);
+            calendarEvents.registrar.register(calendarEvent);
             return calendarEvent.id;
         },
         processEventStrArray: function(eventStrArray, format) {
