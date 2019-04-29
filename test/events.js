@@ -24,13 +24,13 @@ describe('Event Object', function() {
     it("is created with state 'on' by default", function() {
         let ev = new events.Event();
         expect(ev).to.not.be.undefined;
-        expect(ev.state).to.equal(events.eventStatus.on);
+        expect(ev.state).to.equal(events.eventState.on);
         expect(ev.isOn()).to.equal(true);
     })
 
     it("can be created with state 'off' by passing an argument", function() {
-        let ev = new events.Event(events.eventStatus.off);
-        expect(ev.state).to.equal(events.eventStatus.off);
+        let ev = new events.Event(events.eventState.off);
+        expect(ev.state).to.equal(events.eventState.off);
     })
 
     it("has a unique identifier", function() {
@@ -43,9 +43,9 @@ describe('Event Object', function() {
         it("turns on the event", function() {
             let ev = new events.Event();
             ev.off();
-            expect(ev.state).to.equal(events.eventStatus.off);
+            expect(ev.state).to.equal(events.eventState.off);
             ev.on();
-            expect(ev.state).to.equal(events.eventStatus.on);
+            expect(ev.state).to.equal(events.eventState.on);
         })
     })
 
@@ -53,7 +53,7 @@ describe('Event Object', function() {
         it("turns off the event", function() {
             let ev = new events.Event();
             ev.off();
-            expect(ev.state).to.equal(events.eventStatus.off);
+            expect(ev.state).to.equal(events.eventState.off);
         })
     })
 });
@@ -81,9 +81,9 @@ describe('events.Registrar Object', function() {
 
     describe('events.Registrar.filter', function() {
         it("filters the registrar according to a given predicate", function() {
-            let evOff1 = new events.Event(events.eventStatus.off),
-                evOff2 = new events.Event(events.eventStatus.off),
-                evOn1 = new events.Event(events.eventStatus.on);
+            let evOff1 = new events.Event(events.eventState.off),
+                evOff2 = new events.Event(events.eventState.off),
+                evOn1 = new events.Event(events.eventState.on);
 
             [evOff1, evOff2, evOn1].forEach(x => evRegistrar.register(x));
 
@@ -122,7 +122,7 @@ describe('events.Registrar Object', function() {
         it('applies a callback to every member of the registrar', function() {
             let ev1 = new events.Event();
             evRegistrar.register(ev1);
-            evRegistrar.forEach(x => expect(x.state).to.equal(events.eventStatus.on));
+            evRegistrar.forEach(x => expect(x.state).to.equal(events.eventState.on));
 
         })
     })

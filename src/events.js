@@ -40,7 +40,7 @@ const events = (function() {
 
     return {
 
-        eventStatus: {
+        eventState: {
             on: 1,
             off: 0
         },
@@ -58,7 +58,7 @@ const events = (function() {
         Event: function(state) { // events.Event registered at construction
             this.id = generateUUID();
             if (state === undefined) {
-                this.state = events.eventStatus.on;
+                this.state = events.eventState.on;
             } else {
                 this.state = state
             }
@@ -106,18 +106,18 @@ const events = (function() {
  * 
  * ***************************************************************************/
 events.Event.prototype.on = function() { //event is ongoing
-    this.state = events.eventStatus.on;
+    this.state = events.eventState.on;
 }
 
 events.Event.prototype.off = function() { //event is offgoing
-    this.state = events.eventStatus.off;
+    this.state = events.eventState.off;
 }
 
 events.Event.prototype.isOn = function() {
-    return (this.state == events.eventStatus.on);
+    return (this.state == events.eventState.on);
 }
 events.Event.prototype.isOff = function() {
-    return (this.state === events.eventStatus.off);
+    return (this.state === events.eventState.off);
 }
 /******************************************************************************
  * Registrar class
