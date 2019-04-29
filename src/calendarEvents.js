@@ -7,8 +7,8 @@
  *   - Implementation for a map registrar in which eventRegistrar can be registered
  *****************************************************************************/
 
-const timeSpanUtils = require('./dateUtils.js').timeSpanUtils;
-const dateUtils = require('./dateUtils.js').dateUtils;
+const timeSpanUtils = require('./dateUtils').timeSpanUtils;
+const dateUtils = require('./dateUtils').dateUtils;
 const events = require('./events').events;
 
 const calendarEvents = (function() {
@@ -18,7 +18,7 @@ const calendarEvents = (function() {
     /* The keys are event id strings, which calendar eventRegistrar 
     /* get from the eventRegistrar.Event prototype
     /******************************************************************/
-    const eventRegistrar = new Map();
+    let calendarEventsRegistrar = new events.Registrar(); 
 
     /******************************************************************/
     /* returns an array of calendar eventRegistrar filtered
@@ -76,8 +76,8 @@ const calendarEvents = (function() {
         /* Bread and butter handlers 
         /*********************************************************************/
         flush: function() {
-            //removes all eventRegistrar
-            eventRegistrar.clear();
+            //removes all events from Registrar
+            calendarEventsRegistrar.flush();
         },
         size: function() {
             return eventRegistrar.size;

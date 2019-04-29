@@ -14,10 +14,11 @@ describe('Event Object', function() {
 /******************************************************************************
  * construction tests
  * ***************************************************************************/
-    it("has a status of ongoing or offgoing", function() {
+
+    it("is in 'on' statue by default", function() {
         let ev = new events.Event();
         expect(ev).to.not.be.undefined;
-        expect(ev.status).to.equal("ongoing");
+        expect(ev.state).to.equal(events.eventStatus.on);
     })
 
     it("has a unique identifier", function() {
@@ -30,9 +31,9 @@ describe('Event Object', function() {
         it("turns on the event", function() {
             let ev = new events.Event();
             ev.off();
-            expect(ev.status).to.equal("offgoing");
+            expect(ev.status).to.equal(events.eventStatus.off);
             ev.on();
-            expect(ev.status).to.equal("ongoing");
+            expect(ev.status).to.equal(events.eventStatus.on);
         })
     })
 
@@ -40,7 +41,59 @@ describe('Event Object', function() {
         it("turns off the event", function() {
             let ev = new events.Event();
             ev.off();
-            expect(ev.status).to.equal("offgoing");
+            expect(ev.status).to.equal(events.eventStatus.off);
         })
     })
 });
+
+
+describe('events.Registrar Object', function() {
+    let evRegistrar = new events.Registrar();
+        
+    it('has the following methods and properties', function(){
+            ["forEach", "size", "flush", "register", "get"].forEach(x => 
+            expect(evRegistrar).to.have.property(x));
+    })
+
+    
+    describe('events.Registrar.register', function(){
+
+        it('registers an event in the registrar', function(){
+            let ev = new events.Event();
+            evRegistrar.register(ev);
+            expect(evRegistrar.size()).to.equal(1);
+        });
+
+    })
+
+    describe('events.Registrar.get', function(){
+
+        it('gets an event from the registrar', function(){
+            let ev = new events.Event();
+            evRegistrar.register(ev);
+            expect(evRegistrar.get(ev.id).id).to.equal(ev.id);
+        });
+
+    })
+
+    describe('events.Registrar.forEach', function(){
+
+        it('applies a callback to every member of the registrar', function(){
+           let ev1 = new events.Event();
+           evRegistrar.register(ev1);
+           evRegistrar.forEach(x => expect(x.state).to.equal(events.eventStatus.on));
+            
+        })
+    })
+
+    describe('events.Registrar.flush()', function(){
+
+       it('empties the registrar', function(){
+            evRegistrar.flush();
+            expect(evRegistrar.size()).to.equal(0);
+        });
+    })
+
+});
+
+

@@ -118,8 +118,9 @@ describe('calendarEvents.forEach', function() {
 
 describe('newEvent', function() {
     it('should throw an invalid date exception if one of the first two arguments is not a date', function() {
-        expect(calendarEvents.newEvent.bind("dfsa", new Date(), "dsa")).to.throw("unexpected argument");
-    }
+        expect(calendarEvents.newEvent.bind("dfsa", new Date(), "dsa")).
+            to.throw("unexpected argument");
+    })
 
     it('should create a new event using two dates and a string. in string format', function() {
         let ev = calendarEvents.newEvent(new Date(), new Date(), "hello");
