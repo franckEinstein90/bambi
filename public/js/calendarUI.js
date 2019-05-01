@@ -4,30 +4,102 @@
  * ***************************************************************************/
 
 
+
+ /****************************************************
+  * Module eventDialogController
+  ***************************************************/
+ const eventDialogController = (function() {
+
+    let dialogAction = undefined,
+    eventBeginDateField = "#event-dialog-begin-date",
+    eventEndDateField = "#event-dialog-end-date",
+    dateStampToDate = function(dayStamp){
+    dateUtils.setSeparator("-");
+    return dateUtils.dayStampToDate(dayStamp)
+   },
+   calendarBlankEvent = function(dayStamp){
+     let beginDate = dateStampToDate(dayStamp);
+     return new eventUtils.Event(beginDate, beginDate, "", "");
+   },
+   setEventFormValues = function(ev) {
+       dateUtils.setSeparator('-');
+       AJS.$(eventBeginDateField).val(dateUtils.dateToDayStamp(ev.beginDate));
+       AJS.$(eventEndDateField).val(dateUtils.dateToDayStamp(ev.endDate));
+       if(ev.eventTitle){
+         AJS.$("#event-dialog-title").val(ev.eventTitle);
+       }
+       if(ev.eventDescription){
+        AJS.$("#event-dialog-description").val(ev.eventDescription);
+       }
+   },
+   setEventDialogHeader = function(headerTitle){
+       AJS.$("#event-dialog-action").text(headerTitle);
+   },
+   validateFormInfo = function(){
+     let fieldAsDate = function(fieldID){
+       return dateUtils.dayStampToDate(AJS.$(fieldID).val());
+     },
+     beginDate = fieldAsDate(eventBeginDateField),
+     endDate = fieldAsDate(eventEndDateField);
+     console.log("validating");
+   }
+     return {
+
+      dialogActions : {create: 1, edit: 2},
+
+      getDialogAction: function(){
+           return dialogAction;
+         },
+
+      showEdit: function(evID) {
+           dialogAction = eventDialogController.dialogActions.edit;
+           setEventDialogHeader("Modifying existing event");
+           let ev = eventUtils.get(evID);
+           setEventFormValues(ev);
+           AJS.dialog2("#event-dialog").show();
+         },
+
+      showNew: function(dayStamp) {
+           dialogAction = eventDialogController.dialogActions.create;
+           setEventDialogHeader("Creating new event");
+           let ev = calendarBlankEvent(dayStamp);
+           setEventFormValues(ev);
+           AJS.dialog2("#event-dialog").show();
+         },
+
+      publish: function(ev){
+           console.log("publishing event to page" + ev.eventTitle);
+           validateFormInfo();
+         }
+     }
+ })();
+
+
+
 const calendarUI = (function(){
-    let calendarTableTitle, 
-    
-    tag = ((t, content) => `<${t}> ${content} </${t}>`), 
+    let calendarTableTitle,
+
+    tag = ((t, content) => `<${t}> ${content} </${t}>`),
     setCalendarTitle = function(){
-            calendarTableTitle = 
-                dateUtils.monthIdxToStr(calendarSettings.month) + 
+            calendarTableTitle =
+                dateUtils.monthIdxToStr(calendarSettings.month) +
                 " " + calendarSettings.year
-            AJS.$("#tableCalendar-title").html("<h1 style='color:white'>" + 
+            AJS.$("#tableCalendar-title").html("<h1 style='color:white'>" +
                 calendarTableTitle + "</h1>");
     },
 
     addTableCells = function(weekRow){
-       return weekRow.map(x => tag('td', x)).join(); 
+       return weekRow.map(x => tag('td', x)).join();
 
-    },  
+    },
     addTableBody = function(){
 
-        let firstWeekday = calendarSettings.firstDay(); 
-        let currentDay = 1, 
-        lastMonthDay = calendarSettings.monthLength, 
+        let firstWeekday = calendarSettings.firstDay();
+        let currentDay = 1,
+        lastMonthDay = calendarSettings.monthLength,
 
-        weekRow = [0, 1, 2, 3, 4, 5, 6], 
-        rows = [], 
+        weekRow = [0, 1, 2, 3, 4, 5, 6],
+        rows = [],
         addRow = function(){
             if(rows.length === 0){
                 rows.push(weekRow.map(
@@ -42,12 +114,12 @@ const calendarUI = (function(){
             addRow();
         }
         AJS.$("#tableBody").empty();
-        rows.forEach(x => 
+        rows.forEach(x =>
             AJS.$("#tableBody").append(`<tr>${addTableCells(x)}</tr>`));
     }
     return{
       populateCalendarTable : function() {
-            let dayCounter = 1; 
+            let dayCounter = 1;
             let weekday1st = calendarSettings.firstDayOfMonth;
             setCalendarTitle();
             addTableBody();
