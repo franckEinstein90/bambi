@@ -1,5 +1,7 @@
-//var dateUtils = require('./dateUtils.js').dateUtils;
-
+/******************************************************************************
+ *
+ *
+ * ***************************************************************************/
 
 
 var calendarSettings = (function() {
@@ -47,7 +49,7 @@ var calendarSettings = (function() {
             return year;
         },
         firstDay: function() {
-            dateUtils.firstDayOfMonth(year, month);
+            return dateUtils.firstDayOfMonth(year, month);
         },
         setValues: function(year, month) {
             if (arguments.length == 0) {

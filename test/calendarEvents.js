@@ -2,28 +2,18 @@
  * tests for calendarEvents module
  * FranckEinstein90
  * ----------------
- *
+ * tests library at src/calendarEvents.js
  * ***************************************************************************/
 
 const expect = require('chai').expect;
 const validator = require('validator');
+
+const events = require('../src/events').events;
 const calendarEvents = require('../src/calendarEvents').calendarEvents;
 
-/******************************************************************************
- * 
- *
- * ***************************************************************************/
-
-let today = new Date();
-describe('hooks', function() {
-    beforeEach(function() {
-        calendarEvents.flush();
-    })
-});
-
 
 /******************************************************************************
- * Calendar events tests
+ * calendarEvents.Event
  *
  * ***************************************************************************/
 describe('Calendar event object', function() {
@@ -37,7 +27,7 @@ describe('Calendar event object', function() {
     })
     it('has on and off methods', function() {
         let ev = new calendarEvents.CalendarEvent(new Date(), new Date(), "x");
-        expect(ev).to.have.property("on");
+        expect(ev.state).to.equal(events.eventState.on);
     })
 })
 
@@ -47,22 +37,31 @@ describe('Calendar event object', function() {
  *
  * ***************************************************************************/
 
+describe('calendarEvents.calendar', function() {
+    it('is created automatically by the namespace', function(){
+        expect(calendarEvents.calendar).to.not.be.undefined;
+    });
+});
+
+
 describe('calendarEvents.register', function() {
     beforeEach(function() {
-        calendarEvents.flush();
+        calendarEvents.calendar.flush();
     })
+        
 
     it('Registers an event in the event store', function() {
-        expect(calendarEvents.size()).to.be.equal(0);
+        expect(calendarEvents.calendar.size()).to.be.equal(0);
         let ev = new calendarEvents.CalendarEvent(new Date(), new Date(), "test event");
         calendarEvents.register(ev);
-        expect(calendarEvents.size()).to.be.equal(1);
+        expect(calendarEvents.calendar.size()).to.be.equal(1);
     })
 
     it("Registers the event as ongoing if the event's date range includes today", function() {
         let ev = new calendarEvents.CalendarEvent(new Date(), new Date(), "test event");
         calendarEvents.register(ev);
-        expect(ev.status).to.equal("ongoing");
+        expect(ev.state).to.equal(events.eventState.on);
+        expect(ev.isOn()).to.equal(true);
     })
 })
 
@@ -73,28 +72,28 @@ describe('calendarEvents.register', function() {
 
 describe('calendarEvent.remove(evId)', function() {
     beforeEach(function() {
-        calendarEvents.flush();
+        calendarEvents.calendar.flush();
     })
 
-    it('removes the event with the given ID from the eventStore', function() {
+    it('removes the event with the given ID from the calendar', function() {
         let newEventID = calendarEvents.processDateRange('2018_01_01', '2018_01_02', "hello");
-        expect(calendarEvents.size()).to.be.equal(1);
-        calendarEvents.remove(newEventID);
-        expect(calendarEvents.size()).to.be.equal(0);
+        expect(calendarEvents.calendar.size()).to.be.equal(1);
+        calendarEvents.calendar.remove(newEventID);
+        expect(calendarEvents.calendar.size()).to.be.equal(0);
     })
 
     it("throws a non-existing event exception if the argument id doesn't exists", function() {
         let newEventID = new calendarEvents.CalendarEvent(new Date(), new Date(), "Easter", "Buy Chocolate").id;
         expect(function() {
-            calendarEvents.remove(newEventID);
+            calendarEvents.calendar.remove(newEventID);
         }).to.throw('Event does not exist');
-        expect(calendarEvents.size()).to.be.equal(0);
+        expect(calendarEvents.calendar.size()).to.be.equal(0);
     })
 })
 
 describe('calendarEvents.get', function() {
     beforeEach(function() {
-        calendarEvents.flush();
+        calendarEvents.calendar.flush();
     })
 
     it('returns an event stored in the event store with the given id', function() {
