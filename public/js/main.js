@@ -104,36 +104,14 @@ AJS.toInit(function($) {
     })();
 
     eventUtils.logEvents();
-    let setEventFormValues = function(evID) {
-        let ev = eventUtils.get(evID);
-        dateUtils.setSeparator('-');
-        AJS.$("#event-dialog-begin-date").val(dateUtils.dateToDayStamp(ev.beginDate));
-        AJS.$("#event-dialog-end-date").val(dateUtils.dateToDayStamp(ev.endDate));
-        AJS.$("#event-dialog-title").val(ev.eventTitle);
-        AJS.$("#event-dialog-description").val(ev.eventDescription);
-    };
+
 
     /**************************Page setup General ********/
     /*****************************************************/
     //hidding event ids
     AJS.$('.hidden').hide();
 
-    const eventDialogController = (function() {
-        return {
-            setParams: function(dayStamp, cp) {
-                var dayStampISO8601 = dayStamp.replace(/\_/g, "-");
-                $("#dateEnd").val(dayStampISO8601);
-                $("#begin-date").val(dayStampISO8601);
-            },
-            showEdit: function(evID) {
-                AJS.$("#event-id").text(evID);
-                let ev = eventUtils.get(evID);
-                setEventFormValues(evID);
-                AJS.dialog2("#event-dialog").show();
-            },
-            showNew: function() {}
-        }
-    })();
+
 
     //Set the calendarSetting object to today's date
     calendarSettings.setValues();
@@ -144,32 +122,76 @@ AJS.toInit(function($) {
 
 
     pageManager.makeEventViewPanel();
-   AJS.$("#dialog-show-button").click(function(e) {
+
+   /*AJS.$("h1:contains('Events') + ul li").each(function(index) {
+    	makeEventView(index, found[1], found[2], found[3]);
+            AJS.$("#eventlist").append(eventViewPanel.html);
+            AJS.$("#" + eventViewPanel.id + "Edit").click(function() {
+                eventDialogController.showEdit(eventViewPanel.id);
+            });
+        }
+    });*/
+
+/**********************************************************
+ * Event hanlders for calendar UI
+ *********************************************************/
+    // Shows the dialog when the "Show dialog" button is clicked
+    AJS.$("#dialog-show-button").click(function(e) {
         e.preventDefault();
-        AJS.dialog2("#event-dialog").show();
     });
 
-    AJS.$("#dialog-submit-button").click(function(e) {
-        e.preventDefault();
-        AJS.dialog2("#demo-dialog").hide();
-    });
 
     AJS.$("#select-previous-month").click(function(e) {
         calendarSettings.previousMonth();
         setFormValues();
-        populateCalendarTable();
+        calendarUI.populateCalendarTable();
     });
 
     AJS.$("#select-next-month").click(function(e) {
         calendarSettings.nextMonth();
         setFormValues();
-        populateCalendarTable();
+        calendarUI.populateCalendarTable();
     });
 
     AJS.$("#dateChooser").change(function() {
         getFormValues();
     });
 
+/***********************************************
+ * Event handlers for event dialog
+ ***********************************************/
+  AJS.$("#dialog-submit-button").click(function (e) {
+           let beginDate = $("#begin-date").val(),
+               endDate = $("#dateEnd").val(),
+               eventName = $("#event-dialog-title").val(),
+               eventDesc = $("#descr").val();
+
+           e.preventDefault();
+           if(eventName.length < 1 ){
+             AJS.flag({
+               type:'error',
+               title: 'You must provide a name for the event',
+               body: "An event name is necessary to create a new event"
+             });
+             AJS.dialog2("#event-dialog").hide();
+             return;
+           }
+           dateUtils.setSeparator("-");
+           if(dateUtils.dayStampToDate(endDate) < dateUtils.dayStampToDate(beginDate)){
+             AJS.flag({
+               type:'error',
+               title: 'Invalid end date',
+               body: 'The end date for your event should be after or on the start date',
+             });
+             AJS.dialog2("#event-dialog").hide();
+             return; //exit create event without creating an event
+           }
+
+           console.log("creating a new event from " + beginDate + " to " + endDate);
+           let ev = eventUtils.newEvent(dateUtils.dayStampToDate(beginDate), dateUtils.dayStampToDate(endDate), eventName, eventDesc);
+           eventDialog.createNewEvent(ev);
+           AJS.dialog2("#event-dialog").hide();
+       });
     //furnction  to capture variables from get request
     jQuery.extend({
         getValues: function(url) {
@@ -195,7 +217,7 @@ AJS.toInit(function($) {
     }
 
    //function called when user clicks on a day
-    function showDayDialog(dayID) {
+    let showDayDialog = function (dayID) {
         eventDialog.setParams(dayID);
         eventDialog.show();
     }
