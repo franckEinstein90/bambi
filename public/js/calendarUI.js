@@ -6,8 +6,7 @@
 
 const calendarUI = (function(){
     let calendarTableTitle, 
-    
-    tag = ((t, content) => `<${t}> ${content} </${t}>`), 
+    tag = (t, content, id) => `<${t}> ${content} </${t}>`, 
     setCalendarTitle = function(){
             calendarTableTitle = 
                 dateUtils.monthIdxToStr(calendarSettings.month) + 
@@ -17,15 +16,18 @@ const calendarUI = (function(){
     },
 
     addTableCells = function(weekRow){
-       return weekRow.map(x => tag('td', x)).join(); 
-
+       let dayID = function(dayDate) {
+             return dateUtils.dayStamp( 
+                        calendarSettings.year, 
+                        calendarSettings.month, 
+                        dayDate)
+        };
+       return weekRow.map(x => tag('td', dayID(x))).join(); 
     },  
     addTableBody = function(){
-
-        let firstWeekday = calendarSettings.firstDay(); 
-        let currentDay = 1, 
+        let firstWeekday = calendarSettings.firstDay(),
+        currentDay = 1, 
         lastMonthDay = calendarSettings.monthLength, 
-
         weekRow = [0, 1, 2, 3, 4, 5, 6], 
         rows = [], 
         addRow = function(){

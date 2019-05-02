@@ -165,10 +165,10 @@ events.Registrar.prototype.remove = function(evId) {
      * removes an event with given id from 
      * the registrar
      * *****************************************************/
-    if (!this.events.has(eventId)) {
+    if (!this.events.has(evId)) {
         throw new events.Exception("Event does not exist");
     }
-    this.events.delete(eventId);
+    this.events.delete(evId);
 }
 
 

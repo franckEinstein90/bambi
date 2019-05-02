@@ -144,20 +144,7 @@ AJS.toInit(function($) {
 
 
     pageManager.makeEventViewPanel();
-    /*AJS.$("h1:contains('Events') + ul li").each(function(index) {
-    	makeEventView(index, found[1], found[2], found[3]);
-            AJS.$("#eventlist").append(eventViewPanel.html);
-            AJS.$("#" + eventViewPanel.id + "Edit").click(function() {
-                eventDialogController.showEdit(eventViewPanel.id);
-            });
-        }
-    });*/
-
-
-    //    $("h1:contains('Events'), h1:contains('Events') + ul").appendTo("#eventlist");
-
-    // Shows the dialog when the "Show dialog" button is clicked
-    AJS.$("#dialog-show-button").click(function(e) {
+   AJS.$("#dialog-show-button").click(function(e) {
         e.preventDefault();
         AJS.dialog2("#event-dialog").show();
     });
@@ -207,46 +194,7 @@ AJS.toInit(function($) {
             "<P>Lorem ipsum</P></aui-inline-dialog>"
     }
 
-    var populateCalendarTable = function() {
-
-        // initialize date-dependent variables
-        let firstDay = calendarSettings.firstDayOfMonth,
-            calendarTableTitle = dateUtils.monthIdxToStr(calendarSettings.month) + " " + calendarSettings.year,
-            dayCounter = 1;
-
-        AJS.$("#tableCalendar-title").html("<h1 style='color:white'>" + calendarTableTitle + "</h1>");
-        AJS.$("#tableBody").empty();
-        while (dayCounter <= calendarSettings.monthLength) {
-            let newRow = "",
-                addedDays = [];
-            for (let i = 0; i < 7 && dayCounter <= calendarSettings.monthLength; i++) {
-                if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay)) {
-                    let dayID = dateUtils.dayStamp(calendarSettings.year, calendarSettings.month, dayCounter),
-                        eventsOnThatDay = eventUtils.eventsOn(dayID);
-
-                    addedDays.push(dayID);
-                    newRow += "<td ID='" + dayID + "' class='" + ((dayID.localeCompare(dateUtils.dayStamp()) == 0) ? "today" : "day") + "'>";
-                    newRow += "<div ID='digit" + dayID + "' class='date'>" + dayCounter + "</div>";
-                    dayCounter++;
-                    if (eventsOnThatDay.length > 0) {
-                        newRow += "<div class='dayEvents'>";
-                        newRow += eventsOnThatDay.map(formatUIEvent).join("<br/>");
-                        newRow += "</div>";
-                    }
-                    newRow += "</td>";
-                } else {
-                    newRow += "<td class='day'></td>";
-                }
-            }
-            AJS.$("#tableBody").append(`<tr>${newRow}</tr>`);
-            for (let i = 0; i < addedDays.length; i++) {
-                $("#digit" + addedDays[i]).click(function() {
-                    showDayDialog(addedDays[i]);
-                });
-            }
-        }
-    }
-    //function called when user clicks on a day
+   //function called when user clicks on a day
     function showDayDialog(dayID) {
         eventDialog.setParams(dayID);
         eventDialog.show();
@@ -272,7 +220,7 @@ AJS.toInit(function($) {
         calendarSettings.setValues(
             parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
             document.dateChooser.chooseMonth.selectedIndex);
-        populateCalendarTable();
+        calendarUI.populateCalendarTable();
     }
 
     populateFormOptions();

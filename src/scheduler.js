@@ -1,4 +1,4 @@
-const Events = require('./events.js').Events;
+const Events = require('./events').Events;
 
 
 let eventChainUtils = (function() {

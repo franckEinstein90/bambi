@@ -1,6 +1,7 @@
 /******************************************************************************
  * calendarEvents namespace 
  * FranckEinstein
+ * ------------------------
  * 
  *  A library to manage calendar events. Defines objects: 
  *   - calendarEvents.Event
@@ -11,6 +12,11 @@ const timeSpanUtils = require('./dateUtils').timeSpanUtils;
 const dateUtils = require('./dateUtils').dateUtils;
 const events = require('./events').events;
 
+
+/******************************************************************************
+ * 
+ * 
+ * ***************************************************************************/
 const calendarEvents = (function() {
 
     logEvent = function(ev) {
@@ -51,9 +57,10 @@ const calendarEvents = (function() {
         },
 
         /******************************************************************
-         * eventRegistrar is the event registrar for calendarEvents
+         * calendar is the event registrar for calendarEvents
          ******************************************************************/
-        eventRegistrar: new events.Registrar(),
+        calendar: new events.Registrar(),
+
         register: function(calendarEvent) { //registers a calendarEvent
             //calendar events are registered as on if the registration 
             //happens during the datespan they occupy. 
@@ -66,7 +73,7 @@ const calendarEvents = (function() {
             } else {
                 calendarEvent.off();
             }
-            events.eventRegistrar.register(calendarEvent);
+            calendarEvents.calendar.register(calendarEvent);
         },
 
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
@@ -100,7 +107,7 @@ const calendarEvents = (function() {
                 dateUtils.dayStampToDate(begDateStamp),
                 dateUtils.dayStampToDate(endDateStamp),
                 strShortTitle, description);
-            calendarEvents.registrar.register(calendarEvent);
+            calendarEvents.calendar.register(calendarEvent);
             return calendarEvent.id;
         },
         processEventStrArray: function(eventStrArray, format) {
