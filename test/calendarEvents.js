@@ -87,7 +87,7 @@ describe('calendarEvent.remove(evId)', function() {
         expect(function() {
             calendarEvents.calendar.remove(newEventID);
         }).to.throw('Event does not exist');
-        expect(calendarEvents.calendar.size()).to.be.equal(0);
+        expect(calendarEvents.calendar.size()).to.equal(0);
     })
 })
 

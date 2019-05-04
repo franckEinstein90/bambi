@@ -100,25 +100,31 @@ const events = (function() {
 })();
 
 
-
 /******************************************************************************
- * Event class related
+ * Event class prototype
  * 
  * ***************************************************************************/
-events.Event.prototype.on = function() { //event is ongoing
-    this.state = events.eventState.on;
+
+events.Event.prototype = {
+
+    on: function() { //event is ongoing
+        this.state = events.eventState.on;
+    },
+
+    off: function() { //event is offgoing
+        this.state = events.eventState.off;
+    },
+
+    isOn : function() {
+        return (this.state == events.eventState.on);
+    },
+
+    isOff : function() {
+        return (this.state === events.eventState.off);
+    }
+
 }
 
-events.Event.prototype.off = function() { //event is offgoing
-    this.state = events.eventState.off;
-}
-
-events.Event.prototype.isOn = function() {
-    return (this.state == events.eventState.on);
-}
-events.Event.prototype.isOff = function() {
-    return (this.state === events.eventState.off);
-}
 /******************************************************************************
  * Registrar class
  * -----------------
@@ -126,24 +132,23 @@ events.Event.prototype.isOff = function() {
  *  keeping track of their status
  * 
  * ***************************************************************************/
-events.Registrar.prototype.register = function(ev) {
-    this.events.set(ev.id, ev);
-}
+events.Registrar.prototype = {
+    register : function(ev) {
+        this.events.set(ev.id, ev);
+    }, 
+    size : function(ev) {
+        return this.events.size;
+    },
+    flush : function(ev) {
+        return this.events.clear();
+    },
+    forEach : function(eventCallbackFunction) {
+        this.events.forEach(eventCallbackFunction);
+    },
+    get : function(eventId) {
+        return this.events.get(eventId);
+    }
 
-events.Registrar.prototype.size = function(ev) {
-    return this.events.size;
-}
-
-events.Registrar.prototype.flush = function(ev) {
-    return this.events.clear();
-}
-
-events.Registrar.prototype.forEach = function(eventCallbackFunction) {
-    this.events.forEach(eventCallbackFunction);
-}
-
-events.Registrar.prototype.get = function(eventId) {
-    return this.events.get(eventId);
 }
 
 events.Registrar.prototype.filter = function(filterPred) {

@@ -20,13 +20,12 @@ describe('timeSpanUtils.TimeSpan object', function(){
        it('throws an exception if the first date is after the second date', function(){
             let May24_2010 = new Date(2010, 04, 24);
             let April27_2010 = new Date(2010, 03, 27);
-            
-            expect(() => new timeSpanUtils.TimeSpan(May24_2010, April27_2010, "day"))
 
-            expect(ts).to.have.property('endDate');
-            expect(ts).to.have.property('includes');
+            expect(function() {
+                new timeSpanUtils.TimeSpan(May24_2010, April27_2010, "day")
+            }).to.throw(timeSpanUtils.invalidDateSpan);
 	   })
-})
+    })
 
 	describe('timeSpanUtils.TimeSpan.includes', function(){
 	  it('indicates if a given date is included in a time span', function(){

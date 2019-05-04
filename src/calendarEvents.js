@@ -23,13 +23,10 @@ const calendarEvents = (function() {
             console.log(
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
                 dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
-        },
-        validDate = function(date) {
-            return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
-        };
+        }
 
     return {
-
+        
         /******************************************************************
          *  A calendar event is a type of event that has the following
          *  properties:
