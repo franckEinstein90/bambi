@@ -57,11 +57,18 @@ const events = (function() {
          * **********************************************************/
         Event: function(state) { // events.Event registered at construction
             this.id = generateUUID();
+
+            this.onOffActions = [];
+            this.onOnActions = [];
+            this.onFlipActions = [];
+
             if (state === undefined) {
                 this.state = events.eventState.on;
             } else {
                 this.state = state
             }
+
+            
             eventRegistrar.set(this.id, this.state);
         },
 
@@ -108,11 +115,17 @@ const events = (function() {
 events.Event.prototype = {
 
     on: function() { //event is ongoing
-        this.state = events.eventState.on;
+        if(this.isOff()){
+            this.state = events.eventState.on;
+            this.onOnActions.forEach(x => x());
+        }
     },
 
     off: function() { //event is offgoing
-        this.state = events.eventState.off;
+        if(this.isOn()){
+            this.state = events.eventState.off;
+            this.onOffActions.forEach(x => x());
+        }
     },
 
     isOn : function() {
@@ -121,8 +134,13 @@ events.Event.prototype = {
 
     isOff : function() {
         return (this.state === events.eventState.off);
-    }
+    }, 
 
+    flip : function() {
+        if(this.isOn()){this.off()}
+        else{this.on()}
+        this.onFlipActions.forEach(x => x());
+    }, 
 }
 
 /******************************************************************************
