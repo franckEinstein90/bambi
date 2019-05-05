@@ -68,7 +68,7 @@ const events = (function() {
                 this.state = state
             }
 
-            
+
             eventRegistrar.set(this.id, this.state);
         },
 
@@ -115,32 +115,35 @@ const events = (function() {
 events.Event.prototype = {
 
     on: function() { //event is ongoing
-        if(this.isOff()){
+        if (this.isOff()) {
             this.state = events.eventState.on;
             this.onOnActions.forEach(x => x());
         }
     },
 
     off: function() { //event is offgoing
-        if(this.isOn()){
+        if (this.isOn()) {
             this.state = events.eventState.off;
             this.onOffActions.forEach(x => x());
         }
     },
 
-    isOn : function() {
+    isOn: function() {
         return (this.state == events.eventState.on);
     },
 
-    isOff : function() {
+    isOff: function() {
         return (this.state === events.eventState.off);
-    }, 
+    },
 
-    flip : function() {
-        if(this.isOn()){this.off()}
-        else{this.on()}
+    flip: function() {
+        if (this.isOn()) {
+            this.off()
+        } else {
+            this.on()
+        }
         this.onFlipActions.forEach(x => x());
-    }, 
+    },
 }
 
 /******************************************************************************
@@ -151,47 +154,56 @@ events.Event.prototype = {
  * 
  * ***************************************************************************/
 events.Registrar.prototype = {
-    register : function(ev) {
+
+    /*****************************************************************
+     *  Registers an event in the registrar
+     *  *************************************************************/
+    register: function(ev) {
         this.events.set(ev.id, ev);
-    }, 
-    size : function(ev) {
+    },
+
+    size: function(ev) {
         return this.events.size;
     },
-    flush : function(ev) {
+
+    flush: function(ev) {
         return this.events.clear();
     },
-    forEach : function(eventCallbackFunction) {
+
+    forEach: function(eventCallbackFunction) {
         this.events.forEach(eventCallbackFunction);
     },
-    get : function(eventId) {
+
+    get: function(eventId) {
         return this.events.get(eventId);
-    }
+    },
 
-}
+    filter: function(filterPred) {
+        /********************************************************
+         * returns an array of events filtered as 
+         * per the predicate argument
+         * *****************************************************/
+        let arrayRes = [];
+        this.events.forEach((value, key) => {
+            if (filterPred(value)) {
+                arrayRes.push(value)
+            }
+        });
+        return arrayRes;
+    },
 
-events.Registrar.prototype.filter = function(filterPred) {
-    /********************************************************
-     * returns an array of events filtered as 
-     * per the predicate argument
-     * *****************************************************/
-    let arrayRes = [];
-    this.events.forEach((value, key) => {
-        if (filterPred(value)) {
-            arrayRes.push(value)
+    remove: function(evId) {
+        /********************************************************
+         * removes an event with given id from 
+         * the registrar
+         * *****************************************************/
+        if (!this.events.has(evId)) {
+            throw new events.Exception("Event does not exist");
         }
-    });
-    return arrayRes;
-}
-
-events.Registrar.prototype.remove = function(evId) {
-    /********************************************************
-     * removes an event with given id from 
-     * the registrar
-     * *****************************************************/
-    if (!this.events.has(evId)) {
-        throw new events.Exception("Event does not exist");
+        this.events.delete(evId);
     }
-    this.events.delete(evId);
+
+
 }
 
 
