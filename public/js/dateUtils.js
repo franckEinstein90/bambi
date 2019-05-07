@@ -60,19 +60,25 @@ const dateUtils = (function() {
         };
 
     return {
+	weekDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], 
+
         setSeparator: function(sep) {
             separator = sep;
         },
+
         firstDayOfMonth: function(theYear, monthIdx) {
             return new Date(theYear, monthIdx, 1).getDay();
         },
+
         monthLength: function(theYear, theMonth, timeMeasure) {
             let thisMonth = new Date(theYear, theMonth, 1);
             return Math.ceil(timeSpanUtils.month(thisMonth) / timeSpanUtils.day());
         },
+
         monthIdxToStr: function(monthIdx) {
             return theMonths[monthIdx];
         },
+
         dayStamp: function() {
             if (arguments.length == 0) { //if the function is called without arguments, returns today as dateStamp
                 let d = new Date();
@@ -82,6 +88,7 @@ const dateUtils = (function() {
                 (arguments[1] + 1).toString().padStart(2, '0') + separator +
                 (arguments[2]).toString().padStart(2, '0');
         },
+
         dayStampToDate: function(dayStamp) {
             let dateParts = dayStamp.split(separator);
             return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);

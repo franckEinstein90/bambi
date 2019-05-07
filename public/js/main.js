@@ -242,7 +242,7 @@ AJS.toInit(function($) {
         calendarSettings.setValues(
             parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
             document.dateChooser.chooseMonth.selectedIndex);
-        calendarUI.populateCalendarTable();
+        calendarUI.constructCalendarUI();
     }
 
     populateFormOptions();
