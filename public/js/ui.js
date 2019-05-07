@@ -92,6 +92,7 @@ const calendarSettings = (function() {
     let today = new Date(),
         month = today.getMonth(),
         year = today.getFullYear();
+    
 
     return {
 	    beginYear : function(){
@@ -100,34 +101,35 @@ const calendarSettings = (function() {
 	    endYear: function(){
 		    return 2030;
 	    },
+	getMonth: month, 
         setMonth: function(y, m) {
             year = y;
             month = m;
         },
         nextMonth: function() {
             let m, y;
-            if (this.month < 11) {
-                m = this.month + 1;
-                y = this.year;
+            if (month < 11) {
+                m = month + 1;
+                y = year;
             } else {
                 m = 0;
-                y = this.year + 1;
+                y = year + 1;
             }
             calendarSettings.setValues(y, m);
         },
         previousMonth: function() {
             let m, y;
-            if (this.month > 0) {
-                m = this.month - 1;
-                y = this.year;
+            if (month > 0) {
+                m = month - 1;
+                y = year;
             } else {
                 m = 11;
-                y = this.year - 1;
+                y = year - 1;
             }
             calendarSettings.setValues(y, m);
         },
 	yearIdx: function(){
-		return this.year - calendarSettings.beginYear();
+		return year - calendarSettings.beginYear();
 	},
         getYear: function() {
             return year;
@@ -135,27 +137,35 @@ const calendarSettings = (function() {
         firstDay: function() {
             return dateUtils.firstDayOfMonth(year, month);
         },
-        setValues: function(year, month) {
+
+	dayOfWeek: function(monthDay){
+	    //returns the weekday idx (0 to 6 - Sunday to Saturday)
+	    //for the given date 
+	    let d = new Date(year, month, monthDay);
+	    return d.getDay();
+	},
+	firstDayOfMonth : dateUtils.firstDayOfMonth(year, month), 
+	monthLength : dateUtils.monthLength(year, month), 
+        setValues: function(y, m) {
             if (arguments.length == 0) {
                 let today = new Date();
                 calendarSettings.setValues(today.getFullYear(), today.getMonth());
                 return;
             }
-            this.month = month;
-            this.year = year;
-            this.firstDayOfMonth = dateUtils.firstDayOfMonth(this.year, this.month);
-            this.monthLength = dateUtils.monthLength(this.year, this.month);
+            month = m;
+            year = y;
         }
     };
 })();
 
 const calendarUI = (function() {
-    let calendarTableTitle,
-        tag = (t, content, id) => `<${t}> ${content} </${t}>`,
+    let dayIds = [], 
+	calendarTableTitle,
+	tag = (t, content, id) => `<${t}> ${content} </${t}>`,
         setCalendarTitle = function() {
             calendarTableTitle =
-                dateUtils.monthIdxToStr(calendarSettings.month) +
-                " " + calendarSettings.year
+                dateUtils.monthIdxToStr(calendarSettings.getMonth) +
+                " " + calendarSettings.getYear();
             AJS.$("#tableCalendar-title").html("<h1 style='color:white'>" +
                 calendarTableTitle + "</h1>");
         },
@@ -173,26 +183,31 @@ const calendarUI = (function() {
         addTableBody = function() {
             let firstWeekday = calendarSettings.firstDay(),
                 currentDay = 1,
-                lastMonthDay = calendarSettings.monthLength,
-                dayIds = [];
-            while (currentDay <= lastMonthDay) {
+                lastMonthDay = calendarSettings.monthLength;
+	    //empty the dayIds array
+	    dayIds.length = 0;
+	
+            while (currentDay < lastMonthDay) {
                 currentDay = addWeekRow(currentDay);
             }
         },
 
         addWeekRow = function(currentDay) {
-	    let weekDayCell = (day) => {
+	    let weekRow = "", 
+	        weekDayCell = (day) => {
+			weekRow += `<td>${day === undefined?"--":day}</td>`;
+			return day;
 		}, 
             newWeekRow = dateUtils.weekDays.map((dayName, dayIdx) => {
                 //has the month begun yet?
-                if (currentDay.weekDayIdx > dayIdx) {
+                if (calendarSettings.dayOfWeek(currentDay) > dayIdx) {
                    weekDayCell();
                 } else if (currentDay > calendarSettings.monthLength) { //has the month already ended?
 		   weekDayCell();
                 } else { //make a regular week day cell
                     let dayID = weekDayCell(currentDay);
                     currentDay += 1; //increment current day
-                    dayIds.push[dayID]
+                    dayIds.push(dayID)
                 }
             });
 
@@ -204,8 +219,6 @@ const calendarUI = (function() {
          * builds the calendar user interface on the page
          * **********************************************************/
         constructCalendarUI: function() {
-            let dayCounter = 1;
-            let weekday1st = calendarSettings.firstDayOfMonth;
             setCalendarTitle();
             addTableBody();
         }

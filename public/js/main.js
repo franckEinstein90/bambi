@@ -233,7 +233,7 @@ AJS.toInit(function($) {
     }
 
     let setFormValues = function() { //updates the form values based on the calendarSettings values
-        document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
+        document.dateChooser.chooseMonth.selectedIndex = calendarSettings.getMonth;
         let yearIDX = calendarSettings.yearIdx();
         document.dateChooser.chooseYear.selectedIndex = yearIDX;
     }
