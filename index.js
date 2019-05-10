@@ -28,13 +28,6 @@ router.use(function(req, res, next){
 	next();
 });
 
-const scheduler = require('./src/scheduler').scheduler;
-router.get('/scheduler', function(req, res){
-scheduler.setValues([1,15,10,13,16]);
-        let max = scheduler.calculated(0,4);
- 
-	res.send('in about page');
-});
 
 
 router.get('/about', function(req, res){
