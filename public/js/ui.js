@@ -43,6 +43,7 @@ const eventDialogController = (function() {
         setEventDialogHeader = function(headerTitle) {
             AJS.$("#event-dialog-action").text(headerTitle);
         },
+
         validateFormInfo = function() {
             let fieldAsDate = function(fieldID) {
                     return dateUtils.dayStampToDate(AJS.$(fieldID).val());
@@ -51,6 +52,7 @@ const eventDialogController = (function() {
                 endDate = fieldAsDate(eventEndDateField);
             console.log("validating");
         }
+
     return {
 
         dialogActions: {

@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+	<!--  AUI Core -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="https://aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui.min.js"></script>
+	<link rel="stylesheet" href="https://aui-cdn.atlassian.com/aui-adg/6.0.9/css/aui.min.css" media="all">
+
+	<!-- AUI Experimental components -->
+	<link rel="stylesheet" href="https://aui-cdn.atlassian.com/aui-adg/6.0.9/css/aui-experimental.min.css" media="all">
+	<script src="https://aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-experimental.min.js"></script>
+
+	<!-- AUI Datepicker and Soy templates -->
+	<script src="https://aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-datepicker.min.js"></script>
+	<script src="https://aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-soy.min.js"></script>
+	<link rel="stylesheet" href="/css/styles.css" media="all">
+</head>
+<body>
+
+<script src="015_dateUtils.js" type="text/javascript"></script>
+<script src="009_a_ui.js" type="text/javascript"></script>
+
+
+<section id="event-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main" id="event-dialog-action">fgdse</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+
+    <div class="aui-dialog2-content">
+
+           <form class="aui">
+          <fieldset>
+            <div class="field-group">
+              <label for="d-fname">Event Description<span class="aui-icon icon-required"> required</span></label>
+              <input class="text" type="text" id="event-dialog-title" name="d-fname" title="Event Title">
+              <div class="description">Description of event</div>
+            </div>
+            <div class="field-group">
+                <label for="event-dialog-begin-date">When<span class="aui-icon icon-required"> required</span></label>
+                <input id="event-dialog-begin-date" type="date" /> to
+                <input id="event-dialog-end-date" type="date" />
+            </div>
+<div class="field-group">
+            <label for="dBase">Event Type</label>
+            <select class="select" id="dBase" name="dBase" title="database select">
+                <option>Event</option>
+                <option>Leave</option>
+                <option>JIRA Issue Dates</option>
+                <option>JIRA Agile Sprints</option>
+            </select>
+        </div>
+<div class="field-group">
+            <label for="descr">Description</label>
+            <textarea class="textarea" rows="6" cols="10" name="descr" id="descr"></textarea>
+        </div>
+          </fieldset>
+       </form>
+
+ </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+            <button id="dialog-cancel-button"  class="aui-button">Cancel</button>
+            <button id="dialog-submit-button" class="aui-button aui-button-primary">OK</button>
+        </div>
+    </footer>
+</section>
+
+
+
+<script type= "text/javascript" defer="defer">
+const appData = {
+	"monthsEn" :  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+}
+
+
+  AJS.toInit(function($){
+
+          console.log("1. setting up event dialog controller");
+
+
+
+
+
+
+ /****************************
+  * Calendar Settings Settings
+  *****************************/
+  console.log("UI event handlers");
+  calendarSettings.setValues();
+  AJS.$("#select-previous-month").click(function(e) {
+      calendarSettings.previousMonth();
+      setFormValues();
+      calendarUI.populateCalendarTable();
+    });
+
+    AJS.$("#select-next-month").click(function(e) {
+      calendarSettings.nextMonth();
+      setFormValues();
+      calendarUI.populateCalendarTable();
+    });
+
+ /***********************************************
+ * Event handlers for event dialog
+ ***********************************************/
+  AJS.$("#dialog-submit-button").click(function (e) {
+         eventDialogController.publish();
+  });
+
+
+  /************************************************/
+ /*Event List Settings **************************/
+  $("h1:contains('Events')").before("<div id='eventlist' class='eventList'></div>");
+    let re = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\:\s(.+)/;
+    dateUtils.setSeparator("-");
+
+  AJS.$("h1:contains('Events') + ul li").each(function(index) {
+        let found = ($(this).text()).match(re);
+        if (found) {
+            let eventViewPanel = eventsUI.makeEventView(index, found[1], found[2], found[3]);
+            AJS.$("#eventlist").append(eventViewPanel.html);
+            AJS.$("#" + eventViewPanel.id + "Edit").click(function() {
+                eventDialogController.showEdit(eventViewPanel.id);
+            });
+        }
+    });
+
+
+    AJS.$("h1:contains('Events') + ul").remove();
+    AJS.$("h1:contains('Events')").remove();
+
+
+// Shows the dialog when the "Show dialog" button is clicked
+AJS.$("#dialog-show-button").click(function(e) {
+    e.preventDefault();
+    AJS.dialog2("#event-dialog").show();
+});
+
+    //furnction  to capture variables from get request
+/*     jQuery.extend({
+            getValues:function(url){
+              var result=null;
+              jQuery.ajax({
+                url:url,
+                type: 'get',
+                async:false,
+                success: function(data){
+                  result=data;
+                }
+              });
+              return result;
+            }
+        });
+
+        //gets the current page's information
+       var currentPage =  {
+               pageID : $content.getIdAsString(),
+               setValues: function(){
+                 this.path = contextPath + "/rest/api/content/" + this.pageID;
+                 this.result = jQuery.getValues(this.path + "?expand=body.storage,version");
+                 this.pageTitle = this.result["title"];
+                 this.versionNumber = this.result["version"]["number"];
+                 this.pageBody = this.result["body"]["storage"]["value"];
+               }
+             };
+
+
+       currentPage.setValues();*/
+
+
+if (typeof dateUtils === 'object') {
+  console.log('dateUtils loaded');
+}else{
+console.log('dateUtils notloaded');
+}
+
+
+//function called when user clicks on a day
+
+
+let populateFormOptions = function() {
+        let makeOption = (idx, value) => `<option value="${idx}">${value}</option>`;
+        let yearChooser = document.dateChooser.chooseYear;
+        for (i = calendarSettings.beginYear(); i < calendarSettings.endYear(); i++) {
+            yearChooser.options[yearChooser.options.length] = new Option(i, i)
+        }
+        appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
+        setFormValues();
+    }
+
+
+    var setFormValues = function() { //updates the form values based on the calendarSettings values
+      document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
+      let yearIDX =calendarSettings.yearIdx();
+      document.dateChooser.chooseYear.selectedIndex = yearIDX;
+    }
+
+    var getFormValues = function() { //updates the calendarSettings values based on the form values
+      calendarSettings.setValues(
+            parseInt(document.dateChooser.chooseYear.options[document.dateChooser.chooseYear.selectedIndex].text),
+            document.dateChooser.chooseMonth.selectedIndex);
+        calendarUI.populateCalendarTable();
+    }
+
+  populateFormOptions();
+  $("#dateChooser").change(function(){
+    getFormValues();
+  });
+  getFormValues();
+});
+</script>
+
+<HR>
+<TABLE ID="calendarTable" class="aui">
+<thead id="tableCalendar-header">
+<TR>
+    <TH><button id="dialog-show-button" class="aui-button">Add an event</button></TH>
+    <TH><span id="select-previous-month" class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span></TH>
+    <TH ID="tableCalendar-title" COLSPAN=4></TH>
+    <TH><span id="select-next-month" class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span></TH>
+</TR>
+
+<TR><TH scope="col">Sun</TH><TH scope="col">Mon</TH><TH scope="col">Tue</TH><TH scope="col">Wed</TH>
+<TH scope="col">Thu</TH><TH scope="col">Fri</TH><TH scope="col">Sat</TH></TR>
+</thead>
+<TBODY ID="tableBody"></TBODY>
+<TR>
+    <TD COLSPAN=7>
+    <FORM name="dateChooser" ID="dateChooser" class="aui">
+        <SELECT ID="chooseMonth" name="chooseMonth">
+    	</SELECT>
+    <SELECT NAME="chooseYear">
+    </SELECT>
+    </FORM>
+   </TD>
+</TR>
+</TABLE>
+</body>
+</html>
