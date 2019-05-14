@@ -79,30 +79,12 @@ const appData = {
 
 
   AJS.toInit(function($){
-
-          console.log("1. setting up event dialog controller");
-
-
-
-
-
-
- /****************************
-  * Calendar Settings Settings
-  *****************************/
-  console.log("UI event handlers");
-  calendarSettings.setValues();
-  AJS.$("#select-previous-month").click(function(e) {
-      calendarSettings.previousMonth();
-      setFormValues();
-      calendarUI.populateCalendarTable();
-    });
-
-    AJS.$("#select-next-month").click(function(e) {
-      calendarSettings.nextMonth();
-      setFormValues();
-      calendarUI.populateCalendarTable();
-    });
+    console.log("1. setting up event dialog controller");
+    /****************************
+     * Calendar Settings Settings
+     *****************************/
+    console.log("UI event handlers");
+    calendarUI.onReady();
 
  /***********************************************
  * Event handlers for event dialog
@@ -189,15 +171,9 @@ let populateFormOptions = function() {
             yearChooser.options[yearChooser.options.length] = new Option(i, i)
         }
         appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
-        setFormValues();
+        calendarUI.setFormValues();
     }
 
-
-    var setFormValues = function() { //updates the form values based on the calendarSettings values
-      document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
-      let yearIDX =calendarSettings.yearIdx();
-      document.dateChooser.chooseYear.selectedIndex = yearIDX;
-    }
 
     var getFormValues = function() { //updates the calendarSettings values based on the form values
       calendarSettings.setValues(

@@ -13,7 +13,7 @@ jQuery.extend({
        }
    });
 
-   //gets the current page's information
+//gets the current page's information
 const currentPage =  {
           pageID : $content.getIdAsString(),
           setValues: function(){
@@ -27,6 +27,9 @@ const currentPage =  {
 
 currentPage.setValues();
 
+const pageContainer = (function(){
+	
+})();
 
 const eventDialogController = (function() {
   let eventBeginDate, eventEndDate, eventTitle, eventDescription;
@@ -104,6 +107,7 @@ const eventDialogController = (function() {
          }
      }
  })();
+
 const eventsUI = (function(){
 
   return{
@@ -140,27 +144,70 @@ const eventsUI = (function(){
   }
   }
 })();
+
 const calendarUI = (function(){
 
+ let uiElementsIds = {
+	/* ui chrome and body elements                  */
+ 	CalendarTitle	: "tableCalendar-title",	
+	CalendarBody	: "tableBody", 
+	/* user cmds                                    */
+	PreviousMonth 	: "select-previous-month", 
+	NextMonth 	: "select-next-month"
+	}, 
+
+  getUIHandle = (uiID) => AJS.$("#" + uiID), 
+
+  redrawUiAction = (action) => {
+	action();
+	calendarUI.setFormValues();
+	calendarUI.populateCalendarTable();
+  }, 
+
+  assignAction = (cmd, action) => 
+	getUIHandle(cmd).click(function(e) {
+		redrawUiAction(action);
+	});
+
   let newWeekRow = (rowContent) => `<TR>${rowContent}</TR>`,
+
   formatCalendarUIEventView = function(ev){
     return "<a data-aui-trigger aria-controls='more-details' href='#more-details'>" +
             ev.eventTitle.substring(0,5) + "..." +
   		      "</a>";
     },
-    showDayDialog = function(dayID){
-       eventDialogController.showNew(dayID);
-    }
-  return{
-    populateCalendarTable : function( ) {
 
+  showDayDialog = function(dayID){
+    eventDialogController.showNew(dayID);
+  }
+
+  return{
+
+  setFormValues : ( ) => { 
+    //updates the form values based on the calendarSettings values
+    document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
+    let yearIDX =calendarSettings.yearIdx();
+    document.dateChooser.chooseYear.selectedIndex = yearIDX;
+  },
+  
+  onReady : ( ) => {
+    calendarSettings.setValues();
+
+    //attach event handlers to user controls
+    assignAction(uiElementsIds.PreviousMonth, x => calendarSettings.previousMonth());
+    assignAction(uiElementsIds.NextMonth, x => calendarSettings.nextMonth());
+  },
+
+  populateCalendarTable : ( ) => {
       // initialize date-dependent variables
       let firstDay = calendarSettings.firstDayOfMonth,
            howMany = calendarSettings.monthLength,
-           dayCounter = 1;
+           dayCounter = 1, 
+	   calendarBody = getUIHandle(uiElementsIds.CalendarBody);
 
-      AJS.$("#tableCalendar-title").html("<h1>" + dateUtils.monthIdxToStr(calendarSettings.month) + " " + calendarSettings.year + "</h1>");
-      AJS.$("#tableBody").empty();
+      getUIHandle(uiElementsIds.CalendarTitle).html("<h1>" + dateUtils.monthIdxToStr(calendarSettings.month) + " " + calendarSettings.year + "</h1>");
+      calendarBody.empty();
+
       while (dayCounter <= howMany) {
     	  let newRow = "";
     	  let addedDays = [];
@@ -183,8 +230,8 @@ const calendarUI = (function(){
   			  newRow += "<td class='day'></td>";
   		  }
   	  }
-  	  AJS.$("#tableBody").append(newWeekRow(newRow));
-    for(let i=0; i<addedDays.length; i++){
+  	calendarBody.append(newWeekRow(newRow));
+    	for(let i=0; i<addedDays.length; i++){
         $("#"+addedDays[i]).click(function(){showDayDialog(addedDays[i]);});
       }
     }
