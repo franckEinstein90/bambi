@@ -26,9 +26,58 @@ const currentPage =  {
         };
 
 currentPage.setValues();
+    dateUtils.setSeparator("-");
+
+        let found = ($(this).text()).match(re);
+        if (found) {
+            let eventViewPanel = eventsUI.makeEventView(index, found[1], found[2], found[3]);
+            AJS.$("#eventlist").append(eventViewPanel.html);
+            AJS.$("#" + eventViewPanel.id + "Edit").click(function() {
+                eventDialogController.showEdit(eventViewPanel.id);
+            });
+        }
+    });
+
 
 const pageContainer = (function(){
-	
+
+  let evRegExp = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\:\s(.+)/, 
+      matchEvDescription  = (evStr) => {
+		let found = evStr.match(evRegExp);
+		if (found) {
+			return {
+				beginDate: found[1], 
+				endDate: found[2], 
+				textDescription: found[3]
+		    }
+		}
+	  }, 
+      processEvDescription = ( evInfo ) => {
+		 let beginDate = dateUtils.dayStampToDate(evInfo.beginDate), 
+		     endDate = dateUtils.dayStampToDate(evInfo.endDate), 
+		     description = evInfo.split(':').filter(x => x.length > 1);
+
+         let calendarEvent = new eventUtils.CalendarEvent(
+				beginDate, 
+				endDate, 
+				description[0], 
+				description[1]); 
+
+         eventUtils.register(calendarEvent);
+         return calendarEvent.id;
+        }
+
+  return {
+    onReady : (eventStrings) => {
+	  eventStrings.forEach( str => {
+		let wellFormedEventDescription = matchEvDescription(str); 
+		if(wellFormedEventDescription) {
+			processEvDescription(wellFormedEventDescription);
+		}
+      });
+      calendarUI.onReady();  
+    } 
+  }
 })();
 
 const eventDialogController = (function() {
@@ -120,7 +169,7 @@ const eventsUI = (function(){
           eventTitle = found[1];
           eventDescription = found[2];
       }
-      evID = eventUtils.processDateRange(bDate, eDate, eventTitle, eventDescription);
+      evID = processDateRange(bDate, eDate, eventTitle, eventDescription);
       let htmlStr = "<div class='hidden'>" + evID + "</div>" +
           "<div class='eventHeaderRow'><div class='eventTitle'>" + eventTitle + "</div>" +
           "<div class='event-controls'>" +
@@ -159,19 +208,19 @@ const calendarUI = (function(){
   getUIHandle = (uiID) => AJS.$("#" + uiID), 
 
   redrawUiAction = (action) => {
-	action();
-	calendarUI.setFormValues();
-	calendarUI.populateCalendarTable();
+  	action();
+	  calendarUI.setFormValues();
+	  calendarUI.populateCalendarTable();
   }, 
 
   assignAction = (cmd, action) => 
-	getUIHandle(cmd).click(function(e) {
+	  getUIHandle(cmd).click(function(e) {
 		redrawUiAction(action);
-	});
+	})
 
-  let newWeekRow = (rowContent) => `<TR>${rowContent}</TR>`,
+  newWeekRow = (rowContent) => `<TR>${rowContent}</TR>`,
 
-  formatCalendarUIEventView = function(ev){
+  formatCalendarUIEventView = (ev) => {
     return "<a data-aui-trigger aria-controls='more-details' href='#more-details'>" +
             ev.eventTitle.substring(0,5) + "..." +
   		      "</a>";
@@ -183,21 +232,20 @@ const calendarUI = (function(){
 
   return{
 
-  setFormValues : ( ) => { 
+  onReady : ( ) => {
+     calendarSettings.setValues();
+     //attach event handlers to user controls
+     assignAction(uiElementsIds.PreviousMonth, x => calendarSettings.previousMonth());
+     assignAction(uiElementsIds.NextMonth, x => calendarSettings.nextMonth());
+  },
+
+ setFormValues : ( ) => { 
     //updates the form values based on the calendarSettings values
     document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month;
     let yearIDX =calendarSettings.yearIdx();
     document.dateChooser.chooseYear.selectedIndex = yearIDX;
   },
   
-  onReady : ( ) => {
-    calendarSettings.setValues();
-
-    //attach event handlers to user controls
-    assignAction(uiElementsIds.PreviousMonth, x => calendarSettings.previousMonth());
-    assignAction(uiElementsIds.NextMonth, x => calendarSettings.nextMonth());
-  },
-
   populateCalendarTable : ( ) => {
       // initialize date-dependent variables
       let firstDay = calendarSettings.firstDayOfMonth,

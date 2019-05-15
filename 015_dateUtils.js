@@ -71,15 +71,26 @@ const timeSpan = (function() {
         monthAfter = function(monthAsDate) {
             return new Date(monthAsDate.getFullYear(),
                 monthAsDate.getMonth() + 1, 1);
-        };
+        }, 
+		validSpan = (beginDate, endDate)=>{
+			return validDate(beginDate) && validDate(endDate);
+		}
     return {
+		TimeSpan: (beginDate, endDate) => {
+			if(!validSpan(beginDate, endDate)){
+				throw TimeSpan.invalidTimeSpan;
+			}
+			this.beginDate = beginDate;
+			this.endDate = endDate; 
+		},
         day: function() {
             return daySpanMs;
         },
         month: function(monthAsDate) {
             let thisMonth = new Date(monthAsDate.getFullYear(), monthAsDate.getMonth(), 1);
             return monthAfter(thisMonth).getTime() - thisMonth.getTime();
-        }
+        }, 
+		invalidTimeSpan: "Invalid Time Span"
     };
 })();
 
@@ -132,84 +143,84 @@ const dateUtils = (function() {
             return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
         }
     }
-})(); //end dateUtils
+})(); 
 
-/*module.exports = {
-    timeSpan,
-    dateUtils
-};*/var Events = (function() {
-    function generateUUID() {
-        var d = new Date().getTime();
-        if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
+const events = (function(){
+	generateUUID = () => {
+    	let d = new Date().getTime();
+  		if (typeof performance !== 'undefined' && 
+				typeof performance.now === 'function') {
             d += performance.now(); //use high-precision timer if available
         }
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = (d + Math.random() * 16) % 16 | 0;
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+        	let r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
         });
-    };
-    return {
-        Event: function() {
-            this.id = generateUUID();
-            this.status = "ongoing";
-            this.flip = function() {
-                console.log("flipping status");
-            };
-        }
-    }
+    };		
+	return{
+		eventState:{
+			on: 1, 
+			off: 0
+		}, 
+		Event: => (state){
+			this.id = generateUUID();
+			if (state === undefined) {
+				this.state = events.eventState.on; 
+			} else {
+				this.state = state
+			}
+		}
+	}
 })();
-
 
 //****************************//
 // begin eventUtils namespace //
 //****************************//
 var eventUtils = (function() {
-    const events = new Map();
-    let filter = function(filterPred) {
+    const calendar = new Map();
+    let filter = (filterPred) => {
             //returns an array of calendar events filtered
             //as per the predicate argument
             let arrayRes = [];
-            events.forEach((value, key) => {
+            calendar.forEach((value, key) => {
                 if (filterPred(value)) {
                     arrayRes.push(value)
                 }
             });
             return arrayRes;
         },
-        logEvent = function(ev) {
+        logEvent = (ev) => {
             console.log(
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
                 dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle);
         },
 
-        isValidDate = function(date) {
+        isValidDate = (date) => {
             return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
         };
     return {
-        Event: function Event(beginDate, endDate, title, description) {
-            Events.Event.call(this);
-            this.beginDate = beginDate;
-            this.endDate = endDate;
-            this.eventTitle = title;
-            this.eventDescription = description;
+        CalendarEvent: (beginDate, endDate, title, description) => {
+			try {
+				events.Event.call(this);
+            	this.timeSpan = new timeSpanUtils(beginDate, endDate);
+            	this.eventTitle = title;
+            	this.eventDescription = description;
+			}
+			catch (err) {
+				throw err; 
+			}
         },
-        register(calendarEvent) {
-            events.set(calendarEvent.id, calendarEvent);
+        register: (calendarEvent) => {
+            calendar.set(calendarEvent.id, calendarEvent);
         },
         remove: function(eventId) {},
-        get: function(eventId) {
+        get: (eventId) => {
             //returns the event with the given evID
-		return events.get(eventId);
+		return calendar.get(eventId);
         },
-        newEvent: function(begDate, endDate, eventTitle, eventDescription) {
-            if (isValidDate(begDate) && isValidDate(endDate) && typeof(eventTitle) === 'string') {
-                return new eventUtils.Event(begDate, endDate, eventTitle, eventDescription);
-            } else {
-                throw ("unexpected argument");
-            }
-        },
-        eventToString: function(ev) {
+
+       eventToString: function(ev) {
             let eventStr = dateUtils.dateToDayStamp(ev['beginDate']) + " " +
                 dateUtils.dateToDayStamp(ev['endDate']) + " " +
                 ev['eventTitle'];
@@ -220,11 +231,12 @@ var eventUtils = (function() {
         },
         flush: function() {
             //empties the list of events
-            events.clear();
+            calendar.clear();
         },
         size: function() {
-            return events.size;
+            return calendar.size;
         },
+
         eventsToStringArray: function() {
             //returns a copied array of the events in the event store
             let eventArray = [];
@@ -233,17 +245,8 @@ var eventUtils = (function() {
             }
             return eventArray;
         },
-        processDateRange: function(begDateStamp, endDateStamp, strShortTitle, description) {
-            //To Do: Data Validation here
-            let calendarEvent = eventUtils.newEvent(
-                dateUtils.dayStampToDate(begDateStamp),
-                dateUtils.dayStampToDate(endDateStamp),
-                strShortTitle, description);
-            eventUtils.register(calendarEvent);
-            return calendarEvent.id;
-        },
-        removeEvent: function(eventId) {
-            events.delete(eventId);
+       removeEvent: (eventId) => {
+            calendar.delete(eventId);
         },
         processEventStrArray: function(eventStrArray, format) {
             //evenStrArray is an an array of string containing event information
@@ -258,15 +261,18 @@ var eventUtils = (function() {
             var stampDate = dateUtils.dayStampToDate(dateStamp);
             return filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate)).length >= 1;
         },
-        eventsOn: function(dateStamp) {
+        eventsOn: (dateStamp) => {
             let stampDate = dateUtils.dayStampToDate(dateStamp);
             return filter(ev => (ev.beginDate <= stampDate) && (ev.endDate >= stampDate));
         },
-        logEvents: function() {
-            events.forEach(logEvent);
+        logEvents: () => {
+            calendar.forEach(logEvent);
         }
     }
     //****************************//
     // end eventUtils namespace //
     //****************************//
 })();
+
+eventUtils.CalendarEvent.prototype = Object.create(events.Event.prototype);
+eventUtils.CalendarEvent.constructor = events.Event

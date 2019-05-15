@@ -73,25 +73,29 @@
 
 
 <script type= "text/javascript" defer="defer">
-const appData = {
-	"monthsEn" :  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-}
 
-
+	    appData = {
+		 "monthsEn" :  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+	    }
+            
   AJS.toInit(function($){
-    console.log("1. setting up event dialog controller");
-    /****************************
-     * Calendar Settings Settings
-     *****************************/
-    console.log("UI event handlers");
-    calendarUI.onReady();
+   /*********************************************************************
+    * Collect the events already published on page
+    ********************************************************************/
+  	let eventStringsOnPage = [];
+  	AJS.$("h1:contains('Events') + ul li").each(function(index) {
+		eventStringsOnPage.push($(this).text());
+	});
 
- /***********************************************
- * Event handlers for event dialog
- ***********************************************/
-  AJS.$("#dialog-submit-button").click(function (e) {
-         eventDialogController.publish();
-  });
+    console.log("1. Initializartion");
+    pageContainer.onReady(eventStringsOnPage);
+
+   /***********************************************
+    * Event handlers for event dialog
+    ***********************************************/
+   AJS.$("#dialog-submit-button").click(function (e) {
+     eventDialogController.publish();
+   });
 
 
   /************************************************/
