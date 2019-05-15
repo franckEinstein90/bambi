@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * calendarEvents namespace 
  * FranckEinstein
@@ -13,17 +14,17 @@ const dateUtils = require('./dateUtils').dateUtils;
 const events = require('./events').events;
 
 
-/******************************************************************************
- * 
- * 
- * ***************************************************************************/
 const calendarEvents = (function() {
 
     logEvent = function(ev) {
             console.log(
                 dateUtils.dateToDayStamp(ev.beginDate) + " " +
                 dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
-        }
+        },
+        /******************************************************************
+         * calendar is the event registrar for calendarEvents
+         ******************************************************************/
+        calendar = new events.Registrar();
 
     return {
         
@@ -38,9 +39,6 @@ const calendarEvents = (function() {
          ***********************************************************************/
 
         CalendarEvent: function(beginDate, endDate, title, description) {
-            if (!validDate(beginDate) || !validDate(endDate)) {
-                throw new calendarEvents.Exception("Invalid date parameters");
-            }
             try {
                 new timeSpanUtils.TimeSpan(beginDate, endDate);
                 events.Event.call(this);
@@ -52,11 +50,6 @@ const calendarEvents = (function() {
                 throw (e);
             }
         },
-
-        /******************************************************************
-         * calendar is the event registrar for calendarEvents
-         ******************************************************************/
-        calendar: new events.Registrar(),
 
         register: function(calendarEvent) { //registers a calendarEvent
             //calendar events are registered as on if the registration 
@@ -70,14 +63,15 @@ const calendarEvents = (function() {
             } else {
                 calendarEvent.off();
             }
-            calendarEvents.calendar.register(calendarEvent);
+            calendar.register(calendarEvent);
         },
 
         newEvent: function(begDate, endDate, eventTitle, eventDescription) {
-            if (validDate(begDate) && validDate(endDate) && typeof(eventTitle) === 'string') {
+            try{
                 return new calendarEvents.CalendarEvent(begDate, endDate, eventTitle, eventDescription);
-            } else {
-                throw new calendarEvent.Exception("unexpected argument");
+            } 
+            catch(e){
+                throw new calendarEvent.Exception("unexpected argument" + e);
             }
         },
 
