@@ -1,6 +1,14 @@
-//****************************//
-// begin timeSpan namespace //
-//****************************//
+/******************************************************************************
+ * The timeSpanUtils module defines several utilites related to time ranges. 
+ * It includes:
+ *
+ *  - A TimeSpan object that abstracts the concept of a length of a span 
+ *    between two time markers. 
+ *
+ *  - A Timer object
+ *
+ ******************************************************************************/
+
 const timeSpanUtils = (function() {
     const secondSpanMs = 1000,
         daySpanMs = secondSpanMs * 60 * 60 * 24,
@@ -8,44 +16,137 @@ const timeSpanUtils = (function() {
             return new Date(monthAsDate.getFullYear(),
                 monthAsDate.getMonth() + 1, 1);
         };
+
     return {
-        TimeSpan: function(beginDate, endDate, timeStep) {
+        isValidDate: function(date) {
+            return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
+        },
+
+        units : {
+            seconds: 5, 
+            minutes: 10, 
+            hours: 15, 
+            days: 20, 
+            months: 25, 
+            years: 30, 
+            decades: 35, 
+            centuries: 40
+        },
+
+        /**************************************************
+         * Includes definition for the following objects: 
+         * - TimeSpan
+         * - Timer
+         *************************************************/
+        TimeSpan: function(beginDate, endDate, units) {
+            if (!timeSpanUtils.isValidDate(beginDate)) {
+                timeSpanUtils.invalidDate(beginDate)
+            }
+            if (!timeSpanUtils.isValidDate(endDate)) {
+                timeSpanUtils.invalidDate(endDate)
+            }
+            if (endDate < beginDate) {
+                throw TimeSpan.invalidDateSpan
+            }
             this.beginDate = beginDate;
             this.endDate = endDate;
-            this.step = timeStep;
+            this.units = units;
+
+       },
+
+        Timer: function(settings) {
+            this.settings = settings;
+            this.timer = null;
+            this.fps = settings.fps || 30;
+            this.interval = Math.floor(1000 / this.fps);
+            this.timeInit = null;
+
+            return this;
         },
+
         day: function() {
             return daySpanMs;
         },
+
         month: function(monthAsDate) {
             let thisMonth = new Date(monthAsDate.getFullYear(), monthAsDate.getMonth(), 1);
             return monthAfter(thisMonth).getTime() - thisMonth.getTime();
-        }
+        },
+
+        /*****************************************************
+         * Errors and exceptions
+         ****************************************************/
+        invalidDate: function(aDate) {
+            throw `${aDate} is not a valid date`
+        },
+        invalidDateSpan: "Invalid Date Span"
     };
 })();
-timeSpanUtils.TimeSpan.prototype.setStep = function(step) {
-  this.step = step;
-}
-timeSpanUtils.TimeSpan.prototype.includes = function(targetDate) {
-    //returns true if the the timespan instance includes the targetDate
-    let targetYear = targetDate.getFullYear();
-    if(this.beginDate.getFullYear() <= targetYear && this.endDate.getFullYear() >= targetYear){
-        if(this.step === "year"){return true;}
-        let targetMonth = targetDate.getMonth();
-        if(this.beginDate.getMonth() <= targetMonth && this.endDate.getMonth() >= targetMonth){
-          if(this.step === "month"){return true;}
-          let targetDay = targetDate.getDate();
-          if(this.beginDate.getDate() <= targetDay && this.endDate.getDate() >= targetDay){
-            if(this.step === "day"){return true;}
-          }
+
+timeSpanUtils.TimeSpan.prototype = {
+
+    setUnits: function(units) {
+        this.units = units;
+    },
+
+    includes: function(targetDate) {
+        //returns true if the the timespan instance includes the targetDate
+        let targetYear = targetDate.getFullYear();
+        if (this.beginDate.getFullYear() <= targetYear && this.endDate.getFullYear() >= targetYear) {
+            if (this.units === timeSpanUtils.units.years) {
+                return true;
+            }
+            let targetMonth = targetDate.getMonth();
+            if (this.beginDate.getMonth() <= targetMonth && this.endDate.getMonth() >= targetMonth) {
+                if (this.step === timeSpanUtils.units.months) {
+                    return true;
+                }
+                let targetDay = targetDate.getDate();
+                if (this.beginDate.getDate() <= targetDay && this.endDate.getDate() >= targetDay) {
+                    if (this.step === timeSpanUtils.units.days) {
+                        return true;
+                    }
+                }
+            }
         }
+        return false;
     }
-    return false;
+
 }
 
-//****************************//
-// begin dateUtils namespace //
-//****************************//
+timeSpanUtils.Timer.prototype = 
+{
+    run: function()
+    {
+        let $this = this; 
+        this.settings.run();
+        this.timeInit += this.interval; 
+        this.timer = setTimeout(
+            function(){$this.run()}, 
+            this.timeInit - (new Date).getTime()
+        ); 
+    }, 
+    start: function()
+    {
+        if(this.timer == null){
+            this.timeInit = (new Date).getTime();
+            this.run();
+        }
+    }, 
+    stop: function()
+    {
+        clearTimeout(this.timer); 
+        this.timer = null;
+    }
+} 
+
+
+
+
+
+/******************************************************************************
+* dateUtils namespace 
+*******************************************************************************/
 const dateUtils = (function() {
     let theMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         dateOptions = {
@@ -55,9 +156,7 @@ const dateUtils = (function() {
             day: 'numeric'
         },
         separator = "_",
-        pad0 = function(digit) {
-            return digit.toString().padStart(2, '0');
-        };
+        pad0 = (digit) => digit.toString().padStart(2, '0');
 
     return {
         setSeparator: function(sep) {
@@ -90,5 +189,6 @@ const dateUtils = (function() {
             return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
         }
     }
-})(); //end dateUtils
+})(); 
+
 
