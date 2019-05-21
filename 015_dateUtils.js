@@ -110,15 +110,28 @@ const dateUtils = (function() {
         separator = "_",
         pad0 = function(digit) {
             return digit.toString().padStart(2, '0');
-        };
+        }, 
+	weekDay(dateArg) = function (){
+		let weekDay ={
+			weekIdx : dateArg.getDay();
+		};
+		return weekDay;
+	}
 
     return {
+
+	Day: function(dateArg){
+		this.weekDay = weekDay(dateArg);
+	},
+
         setSeparator: function(sep) {
             separator = sep;
         },
+
         firstDayOfMonth: function(theYear, monthIdx) {
-            return new Date(theYear, monthIdx, 1).getDay();
+            return new dateUtils.Day(Date(theYear, monthIdx, 1));
         },
+
         monthLength: function(theYear, theMonth, timeMeasure) {
             let thisMonth = new Date(theYear, theMonth, 1);
             return Math.ceil(timeSpan.month(thisMonth) / timeSpan.day());
