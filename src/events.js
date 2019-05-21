@@ -65,7 +65,7 @@ const events = (function() {
             if (state === undefined) {
                 this.state = events.eventState.on;
             } else {
-                this.state = state
+                this.state = state;
             }
 
 
@@ -138,13 +138,13 @@ events.Event.prototype = {
 
     flip: function() {
         if (this.isOn()) {
-            this.off()
+            this.off();
         } else {
-            this.on()
+            this.on();
         }
         this.onFlipActions.forEach(x => x());
-    },
-}
+    }
+};
 
 /******************************************************************************
  * Registrar class
@@ -186,7 +186,7 @@ events.Registrar.prototype = {
         let arrayRes = [];
         this.events.forEach((value, key) => {
             if (filterPred(value)) {
-                arrayRes.push(value)
+                arrayRes.push(value);
             }
         });
         return arrayRes;
@@ -204,10 +204,12 @@ events.Registrar.prototype = {
     }
 
 
-}
-
-
+};
 
 module.exports = {
     events
 };
+
+
+
+

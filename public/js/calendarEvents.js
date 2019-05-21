@@ -9,24 +9,11 @@
  *   - calendarEvents.EventSequence
  *
  ******************************************************************************/
-const timeSpanUtils = require('./dateUtils').timeSpanUtils;
-const dateUtils = require('./dateUtils').dateUtils;
-const events = require('./events').events;
-
 
 const calendarEvents = (function() {
 
-    logEvent = function(ev) {
-            console.log(
-                dateUtils.dateToDayStamp(ev.beginDate) + " " +
-                dateUtils.dateToDayStamp(ev.endDate) + " " + ev.eventTitle + " " + ev.eventDescription);
-        },
-        /******************************************************************
-         * calendar is the event registrar for calendarEvents
-         ******************************************************************/
-        calendar = new events.Registrar();
-
     return {
+        
         
         /******************************************************************
          *  A calendar event is a type of event that has the following
@@ -38,8 +25,7 @@ const calendarEvents = (function() {
          *  - A description (at most 510 chars)
          ***********************************************************************/
 
-
-   CalendarEvent: function(beginDate, endDate, title, description) {
+        CalendarEvent: function(beginDate, endDate, title, description) {
             let assignIfDefined = x => x !== undefined? x.trim():"";
 
             try {
@@ -78,7 +64,3 @@ calendarEvents.CalendarEvent.prototype = Object.create(events.Event.prototype);
 calendarEvents.CalendarEvent.constructor = events.Event;
 
 
-
-module.exports = {
-    calendarEvents
-};

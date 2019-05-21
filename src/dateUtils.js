@@ -180,9 +180,12 @@ const dateUtils = (function() {
             return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
         }
     }
-})(); //end dateUtils
+})(); 
 
 module.exports = {
-    timeSpanUtils,
+    timeSpanUtils, 
     dateUtils
 };
+
+
+
