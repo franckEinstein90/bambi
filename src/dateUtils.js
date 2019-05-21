@@ -28,21 +28,24 @@ const timeSpanUtils = (function() {
          *************************************************/
         TimeSpan: function(beginDate, endDate, timeStep) {
             if (!timeSpanUtils.isValidDate(beginDate)) {
-                timeSpanUtils.invalidDate(beginDate)
+                throw timeSpanUtils.invalidDate(beginDate)
             }
             if (!timeSpanUtils.isValidDate(endDate)) {
-                timeSpanUtils.invalidDate(endDate)
+                throw timeSpanUtils.invalidDate(endDate)
             }
-            if (endDate <= beginDate) {
-                throw TimeSpan.invalidDateSpan
+            if (endDate < beginDate) {
+                throw timeSpanUtils.invalidDateSpan
             }
             this.beginDate = beginDate;
             this.endDate = endDate;
             this.step = timeStep;
-
-            return this; 
         },
-
+	Day: function(argDate){
+            if (!timeSpanUtils.isValidDate(argDate)) {
+                throw timeSpanUtils.invalidDate(argDate);
+            }
+		this.date = argDate;	    
+	}, 
         Timer: function(settings) {
             this.settings = settings;
             this.timer = null;
@@ -100,42 +103,45 @@ timeSpanUtils.TimeSpan.prototype = {
         }
         return false;
     }
-
 }
 
-timeSpanUtils.Timer.prototype = 
-{
-    run: function()
-    {
-        let $this = this; 
+timeSpanUtils.Day.prototype = {
+	get weekDayIdx() {
+		return this.date.getDay();
+	}
+}
+
+timeSpanUtils.Timer.prototype = {
+    run: function() {
+        let $this = this;
         this.settings.run();
-        this.timeInit += this.interval; 
+        this.timeInit += this.interval;
         this.timer = setTimeout(
-            function(){$this.run()}, 
+            function() {
+                $this.run()
+            },
             this.timeInit - (new Date).getTime()
-        ); 
-    }, 
-    start: function()
-    {
-        if(this.timer == null){
+        );
+    },
+    start: function() {
+        if (this.timer == null) {
             this.timeInit = (new Date).getTime();
             this.run();
         }
-    }, 
-    stop: function()
-    {
-        clearTimeout(this.timer); 
+    },
+    stop: function() {
+        clearTimeout(this.timer);
         this.timer = null;
     }
-} 
+}
 
 
 
 
 
 /******************************************************************************
-* dateUtils namespace 
-*******************************************************************************/
+ * dateUtils namespace 
+ *******************************************************************************/
 const dateUtils = (function() {
     let theMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         dateOptions = {
@@ -180,12 +186,9 @@ const dateUtils = (function() {
             return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
         }
     }
-})(); 
+})();
 
 module.exports = {
-    timeSpanUtils, 
+    timeSpanUtils,
     dateUtils
 };
-
-
-
