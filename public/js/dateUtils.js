@@ -22,14 +22,14 @@ const timeSpanUtils = (function() {
             return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
         },
 
-        units : {
-            seconds: 5, 
-            minutes: 10, 
-            hours: 15, 
-            days: 20, 
-            months: 25, 
-            years: 30, 
-            decades: 35, 
+        units: {
+            seconds: 5,
+            minutes: 10,
+            hours: 15,
+            days: 20,
+            months: 25,
+            years: 30,
+            decades: 35,
             centuries: 40
         },
 
@@ -52,7 +52,7 @@ const timeSpanUtils = (function() {
             this.endDate = endDate;
             this.units = units;
 
-       },
+        },
 
         Timer: function(settings) {
             this.settings = settings;
@@ -114,39 +114,37 @@ timeSpanUtils.TimeSpan.prototype = {
 
 }
 
-timeSpanUtils.Timer.prototype = 
-{
-    run: function()
-    {
-        let $this = this; 
+timeSpanUtils.Timer.prototype = {
+    run: function() {
+        let $this = this;
         this.settings.run();
-        this.timeInit += this.interval; 
+        this.timeInit += this.interval;
         this.timer = setTimeout(
-            function(){$this.run()}, 
+            function() {
+                $this.run()
+            },
             this.timeInit - (new Date).getTime()
-        ); 
-    }, 
-    start: function()
-    {
-        if(this.timer == null){
+        );
+    },
+    start: function() {
+        if (this.timer == null) {
             this.timeInit = (new Date).getTime();
             this.run();
         }
-    }, 
-    stop: function()
-    {
-        clearTimeout(this.timer); 
+    },
+    stop: function() {
+        clearTimeout(this.timer);
         this.timer = null;
     }
-} 
+}
 
 
 
 
 
 /******************************************************************************
-* dateUtils namespace 
-*******************************************************************************/
+ * dateUtils namespace 
+ *******************************************************************************/
 const dateUtils = (function() {
     let theMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         dateOptions = {
@@ -189,6 +187,4 @@ const dateUtils = (function() {
             return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
         }
     }
-})(); 
-
-
+})();

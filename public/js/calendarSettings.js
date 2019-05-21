@@ -9,19 +9,19 @@ const calendarSettings = (function() {
     let timeContext = function(month, year) {
             this.month = month; 
             this.year = year; 
-           // this.firstDayOfMonth = dateUtils.firstDayOfMonth(this.year, this.month);
-            //this.monthLength = dateUtils.monthLength(this.year, this.month);
         };
  
     return {
        
-        beginYear: function() {
-            return 2010;
+
+        beginYear: 2010, 
+        lastYear: 2030,
+
+        get weekSpan(){
+            return [1,2,3,4,5];
         },
-        endYear: function() {
-            return 2030;
-        },
-        setMonth: function(y, m) {
+
+setMonth: function(y, m) {
             year = y;
             month = m;
         },
@@ -59,7 +59,7 @@ const calendarSettings = (function() {
             return dateUtils.firstDayOfMonth(year, month);
         },
 
-        set: (year, month) => {
+        set: function(year, month) {
             if (arguments.length == 0) {
                 let today = new Date();
                 calendarSettings.set(today.getFullYear(), today.getMonth());
