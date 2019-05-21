@@ -18,7 +18,7 @@
     "helmet": "^3.16.0",
     "js-beautify": "^1.9.1",
     "jslint": "^0.12.1",
-    "mocha": "^6.0.2",
+    "mocha": "^6.1.4",
     "request": "^2.88.0",
     "validator": "^10.11.0"
   },

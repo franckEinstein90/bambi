@@ -34,13 +34,11 @@ const timeSpanUtils = (function() {
                 timeSpanUtils.invalidDate(endDate)
             }
             if (endDate <= beginDate) {
-                throw TimeSpan.invalidDateSpan
+                throw timeSpanUtils.invalidDateSpan
             }
             this.beginDate = beginDate;
             this.endDate = endDate;
             this.step = timeStep;
-
-            return this; 
         },
 
         Timer: function(settings) {
@@ -49,8 +47,6 @@ const timeSpanUtils = (function() {
             this.fps = settings.fps || 30;
             this.interval = Math.floor(1000 / this.fps);
             this.timeInit = null;
-
-            return this;
         },
 
         day: function() {

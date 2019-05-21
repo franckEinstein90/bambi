@@ -1,15 +1,23 @@
 /******************************************************************************
- * title
+ * ui.js 
  * FranckEinstein90
+ * --------------------------
+ *  contains all related to ui
  * ***************************************************************************/
 
+/****************************************************
+ * Module pageContainer
+ * ---------------------
+ *  All related to the page that contains the various uis
+ ***************************************************/
+const pageContainer = (function() {
 
+})();
 
- /****************************************************
-  * Module eventDialogController
-  ***************************************************/
+/****************************************************
+ * Module eventDialogController
+ ***************************************************/
  const eventDialogController = (function() {
-
     let dialogAction = undefined,
     eventBeginDateField = "#event-dialog-begin-date",
     eventEndDateField = "#event-dialog-end-date",

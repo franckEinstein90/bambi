@@ -45,8 +45,8 @@ const eventDecoder = (function() {
         },
 
         makeEventObject = (evFieldValues) => {
-            let beginDate = p.toDate(evFieldValues.beginDate);
-            endDate = p.toDate(evFieldValues.endDate);
+            let beginDate = p.toDate(evFieldValues.beginDate),
+            endDate = p.toDate(evFieldValues.endDate),
             description = evFieldValues.description.split(':').filter(x => x.length > 1);
 
             try {
