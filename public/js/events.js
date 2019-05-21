@@ -112,30 +112,30 @@ const events = (function() {
 
 events.Event.prototype = {
 
-    on: function() { //event is ongoing
-        if (this.isOff()) {
+    get  isOn() {
+        return (this.state === events.eventState.on);
+    },
+
+    get isOff() {
+        return (this.state === events.eventState.off);
+    },
+
+   on: function() { //event is ongoing
+        if (this.isOff) {
             this.state = events.eventState.on;
             this.onOnActions.forEach(x => x());
         }
     },
 
     off: function() { //event is offgoing
-        if (this.isOn()) {
+        if (this.isOn) {
             this.state = events.eventState.off;
             this.onOffActions.forEach(x => x());
         }
     },
 
-    isOn: function() {
-        return (this.state == events.eventState.on);
-    },
-
-    isOff: function() {
-        return (this.state === events.eventState.off);
-    },
-
     flip: function() {
-        if (this.isOn()) {
+        if (this.isOn) {
             this.off();
         } else {
             this.on();
