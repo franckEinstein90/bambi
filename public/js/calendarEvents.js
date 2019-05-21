@@ -32,13 +32,12 @@ const calendarEvents = (function() {
                   this.timeSpan = new timeSpanUtils.TimeSpan(
                                      beginDate, endDate, 
                                      timeSpanUtils.units.days);
-
-                  this.eventTitle = assignIfDefined(title);
+                  this.title = assignIfDefined(title);
                   this.eventDescription = assignIfDefined(description);
 
                 events.Event.call(
                     this, 
-                    events.eventState[this.span.includes(new Date())?"on":"off"]);
+                    events.eventState[this.timeSpan.includes(new Date())?"on":"off"]);
             } 
             catch (e) {
                 throw (e);

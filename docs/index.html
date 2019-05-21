@@ -1,9 +1,96 @@
+<!doctype html>
 <html>
-    <head>
+<head>
+    <meta charset="utf-8" />
         <title>bambi show</title>
-    </head>
 
-    <body>
-    </body>
+	<!--  AUI Core -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+	<script src="//aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui.min.js"></script>
+	<link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/6.0.9/css/aui.min.css" media="all">
 
+	<!-- AUI Experimental components -->
+	<link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/6.0.9/css/aui-experimental.min.css" media="all">
+	<script src="//aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-experimental.min.js"></script>
+
+	<!-- AUI Datepicker and Soy templates -->
+	<script src="//aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-datepicker.min.js"></script>
+	<script src="//aui-cdn.atlassian.com/aui-adg/6.0.9/js/aui-soy.min.js"></script> 
+	<link rel="stylesheet" href="/css/styles.css" media="all">
+</head>
+<body>
+  <div id="page">
+    <header id="header" role="banner">
+	    {{> page/header}}
+    </header>
+
+<div class="aui-page-panel">
+    <div class="aui-page-panel-inner">
+        <div class="aui-page-panel-nav">
+        <h1>Events</h1>
+<ul>
+    <li>Event from 2019-04-14 to 2019-05-10: event with a  long title : Santa claus is not coming this year</li>
+    <li>Event from 2019-04-10 to 2019-04-10: Christmas : Santa claus is not coming this year</li>
+    <li>Event from 2019-04-11 to 2019-04-11: cvdsa : expect it to do something and something else</li>
+    <li>Event from 2019-04-24 to 2019-06-25: testEv</li>
+    <li>Event from 2019-04-24 to 2019-06-24: gfds : whatever happens there</li>
+    <li><a href="/yell">Yell</a></li>
+    <li><a href="/exclaim">Exclaim</a></li>
+    <li><a href="/echo/Hello">Echo: Hello</a></li>
+</ul>
+        </div>
+
+        <section class="aui-page-panel-content">
+ {{>page/eventDialog}}
+<h1>{{>page/title}}</h1>
+
+
+<HR>
+<TABLE ID="calendarTable" class="aui">
+<thead ID="tableCalendar-header">
+<TR>
+    <TH><button id="dialog-show-button" class="aui-button">Add an event</button></TH>
+    <TH><span id="select-previous-month"
+                class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span></TH>
+    <TH ID="tableCalendar-title" COLSPAN=4></TH>
+    <TH><span id="select-next-month"
+                class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span></TH>
+</TR>
+<TR>
+    <TH scope="col">Sun</TH><TH scope="col">Mon</TH><TH scope="col">Tue</TH><TH scope="col">Wed</TH>
+<TH scope="col">Thu</TH><TH scope="col">Fri</TH><TH scope="col">Sat</TH></TR>
+<TBODY ID="tableBody"></TBODY>
+<TR>
+</thead>
+    <TD COLSPAN=7>
+    <FORM name="dateChooser" ID="dateChooser" class="aui">
+        <SELECT ID="chooseMonth" name="chooseMonth">
+    	</SELECT>
+    <SELECT NAME="chooseYear">
+    </SELECT>
+    </FORM>
+   </TD>
+</TR>
+</TABLE>
+        </section>
+    </div>
+</div>
+
+
+  <footer id="footer" role="contentinfo">
+	{{> page/footer}}
+  </footer>
+  </div>
+
+
+<script src="/data/appData.json"></script>
+<script src="/js/calendarSettings.js"></script>
+<script src="/js/dateUtils.js"></script>
+<script src="/js/events.js"></script>
+<script src="/js/eventUtils.js"></script>
+<script src="/js/calendarUI.js"></script>
+<script src="main.js"></script>
+
+
+</body>
 </html>
