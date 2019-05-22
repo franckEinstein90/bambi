@@ -4,19 +4,11 @@
 /**************************************************************/
 const dateUtils = require('./dateUtils.js').dateUtils;
 const calendarSettings = (function() {
-    let today = new Date(),
-        month = today.getMonth(),
-        year = today.getFullYear(), 
-	firstYear = 2010, 
-	lastYear  = 2030;
-
+	let _year, _month; 
     return {
-        beginYear: function() {
-            return firstYear;
-        },
-        endYear: function() {
-            return lastYear;
-        },
+        beginYear: 2010,  
+        endYear: 2030,  
+        
         setMonth: function(y, m) {
             year = y;
             month = m;
@@ -44,10 +36,7 @@ const calendarSettings = (function() {
             calendarSettings.init(y, m);
         },
         yearIdx: function() {
-            return this.year - calendarSettings.beginYear();
-        },
-        getYear: function() {
-            return year;
+            return _year - calendarSettings.beginYear;
         },
         firstDay: function() {
             dateUtils.firstDayOfMonth(year, month);
