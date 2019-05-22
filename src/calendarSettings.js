@@ -1,16 +1,17 @@
-/**************************************************************/
-/*  calendarSettings module ***********************************/
-/*  abstracts the data element of the calendar ****************/
-/**************************************************************/
+/**************************************************************
+ *  calendarSettings module 
+ *  abstracts the data element of the calendar 
+ **************************************************************/
 const dateUtils = require('./dateUtils.js').dateUtils;
+
 const calendarSettings = (function() {
-    let today = new Date(),
-        month = today.getMonth(),
-        year = today.getFullYear(), 
-	firstYear = 2010, 
-	lastYear  = 2030;
+
+    let _year, _month; 
 
     return {
+	year: () => _year, 
+	month: () => _month, 
+
         beginYear: function() {
             return firstYear;
         },
@@ -49,13 +50,18 @@ const calendarSettings = (function() {
         getYear: function() {
             return year;
         },
-        firstDay: function() {
-            dateUtils.firstDayOfMonth(year, month);
+
+        firstDay: () => {
+            return dateUtils.firstDayOfMonth(_year, _month);
         },
+	monthLength: ()=> { //returns the number of days in the month
+	    return dateUtils.monthLength(_year, _month);
+	}
+
         init: function(year, month) {
             //when no arguments is provided, sets the calendar controls
             //to today's date, and begin year to 5 years ago,
-            //end year, to 5 years from now
+            //ed year, to 5 years from now
             if (arguments.length == 0) {
                 let today = new Date();
                 calendarSettings.init(today.getFullYear(), today.getMonth());
