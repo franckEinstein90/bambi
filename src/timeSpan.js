@@ -66,12 +66,7 @@ const timeSpanUtils = (function() {
         },
 
         
-        month: function(monthAsDate) {
-            let thisMonth = new Date(monthAsDate.getFullYear(), monthAsDate.getMonth(), 1);
-            return monthAfter(thisMonth).getTime() - thisMonth.getTime();
-        },
-
-        /*****************************************************
+       /*****************************************************
          * Errors and exceptions
          ****************************************************/
         invalidDate: function(aDate) {
