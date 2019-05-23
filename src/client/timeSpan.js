@@ -20,12 +20,30 @@ const timeSpan = (function() {
         isValidDate: function(date) {
             return date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
         },
+
+        units: {
+            seconds: 5,
+            minutes: 10,
+            hours: 15,
+            days: 20,
+            months: 25,
+            years: 30,
+            decades: 35,
+            centuries: 40
+        },
+        msSpanLength: { // lengths of time in ms
+            day: secondSpanMs * 60 * 60 * 24,
+            month: function(year, monthIdx) {
+                let day1 = new Date(year, monthIdx, 1);
+                return monthAfter(day1).getTime() - day1.getTime();
+            }
+        },
         /**************************************************
          * Includes definition for the following objects: 
          * - TimeSpan
          * - Timer
          *************************************************/
-        Span: function(beginDate, endDate, timeStep) {
+        Span: function(beginDate, endDate, units) {
             if (!timeSpan.isValidDate(beginDate)) {
                 throw timeSpan.invalidDate(beginDate)
             }
@@ -37,13 +55,8 @@ const timeSpan = (function() {
             }
             this.beginDate = beginDate;
             this.endDate = endDate;
-            this.step = timeStep;
-        },
-        Day: function(argDate) {
-            if (!timeSpan.isValidDate(argDate)) {
-                throw timeSpan.invalidDate(argDate);
-            }
-            this.date = argDate;
+            this.units = units;
+
         },
         Timer: function(settings) {
             this.settings = settings;
@@ -55,13 +68,11 @@ const timeSpan = (function() {
             return this;
         },
 
-        day: function() {
-            return daySpanMs;
-        },
-
-        month: function(monthAsDate) {
-            let thisMonth = new Date(monthAsDate.getFullYear(), monthAsDate.getMonth(), 1);
-            return monthAfter(thisMonth).getTime() - thisMonth.getTime();
+        Day: function(date) {
+            if (!timeSpan.isValidDate(date)) {
+                throw timeSpan.invalidDate(argDate);
+            }
+            this.date = date;
         },
 
         /*****************************************************
@@ -76,25 +87,25 @@ const timeSpan = (function() {
 
 timeSpan.Span.prototype = {
 
-    setStep: function(step) {
-        this.step = step;
+    setUnits: function(units) {
+        this.units = units;
     },
 
     includes: function(targetDate) {
         //returns true if the the timespan instance includes the targetDate
         let targetYear = targetDate.getFullYear();
         if (this.beginDate.getFullYear() <= targetYear && this.endDate.getFullYear() >= targetYear) {
-            if (this.step === "year") {
+            if (this.units === timeSpan.units.years) {
                 return true;
             }
             let targetMonth = targetDate.getMonth();
             if (this.beginDate.getMonth() <= targetMonth && this.endDate.getMonth() >= targetMonth) {
-                if (this.step === "month") {
+                if (this.units === "month") {
                     return true;
                 }
                 let targetDay = targetDate.getDate();
                 if (this.beginDate.getDate() <= targetDay && this.endDate.getDate() >= targetDay) {
-                    if (this.step === "day") {
+                    if (this.unit === timeSpan.units.days) {
                         return true;
                     }
                 }
