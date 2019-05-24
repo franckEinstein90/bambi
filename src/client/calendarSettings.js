@@ -15,23 +15,23 @@ const calendarSettings = (function() {
         },
         nextMonth: function() {
             let m, y;
-            if (this.month < 11) {
-                m = this.month + 1;
-                y = this.year;
+            if (_month < 11) {
+                m = _month + 1;
+                y = _year;
             } else {
                 m = 0;
-                y = this.year + 1;
+                y = _year + 1;
             }
             calendarSettings.init(y, m);
         },
         previousMonth: function() {
             let m, y;
-            if (this.month > 0) {
-                m = this.month - 1;
-                y = this.year;
+            if (_month > 0) {
+                m = _month - 1;
+                y = _year;
             } else {
                 m = 11;
-                y = this.year - 1;
+                y = _year - 1;
             }
             calendarSettings.init(y, m);
         },
