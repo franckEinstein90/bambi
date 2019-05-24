@@ -45,8 +45,10 @@ const calendarUI = (function() {
 
         },
 
-        setTitle = () => {
-
+        setTitle = (calendar) => {
+		getUIHandle(uiElementsIds.CalendarTitle).html("<h1>" +
+                dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
+                calendarSettings.year() + "</h1>");
         },
         setFormValues = () => {
 		document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
@@ -54,7 +56,7 @@ const calendarUI = (function() {
 	},
         renderCalendar = (calendar) => {
             clear();
-            setTitle();
+            setTitle(calendar);
             calendarSettings.weekSpan.forEach(addCalendarRow);
         }, 
 
