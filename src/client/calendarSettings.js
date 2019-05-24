@@ -1,19 +1,22 @@
-/**************************************************************/
-/*  calendarSettings module ***********************************/
-/*  abstracts the data element of the calendar ****************/
-/**************************************************************/
+/**************************************************************
+ *  calendarSettings module 
+ *  abstracts the data element of the calendar 
+ **************************************************************/
+
 const dateUtils = require('./dateUtils.js').dateUtils;
+
 const calendarSettings = (function() {
-	let _year, _month; 
+    let _month, _year;
+
     return {
-        beginYear: 2010,  
-        endYear: 2030,  
+	year: () => _year, 
+        month: () => _month, 
+        firstDay: () => dateUtils.firstDayOfMonth(_year, _month), 
+        monthLength: () => dateUtils.monthLength(_year, _month), 
+	beginYear : 2010, 
+	endYear: 2030, 
         
-        setMonth: function(y, m) {
-            year = y;
-            month = m;
-        },
-        nextMonth: function() {
+       	nextMonth: function() { //set calendarSettings to following month
             let m, y;
             if (_month < 11) {
                 m = _month + 1;
@@ -22,9 +25,9 @@ const calendarSettings = (function() {
                 m = 0;
                 y = _year + 1;
             }
-            calendarSettings.init(y, m);
+            calendarSettings.setValues(y, m);
         },
-        previousMonth: function() {
+        previousMonth: function() { //set calendarSettings to previous month
             let m, y;
             if (_month > 0) {
                 m = _month - 1;
@@ -33,27 +36,19 @@ const calendarSettings = (function() {
                 m = 11;
                 y = _year - 1;
             }
-            calendarSettings.init(y, m);
+            calendarSettings.setValues(y, m);
         },
-        yearIdx: function() {
-            return _year - calendarSettings.beginYear;
-        },
-        firstDay: function() {
-            dateUtils.firstDayOfMonth(year, month);
-        },
-        init: function(year, month) {
-            //when no arguments is provided, sets the calendar controls
-            //to today's date, and begin year to 5 years ago,
-            //end year, to 5 years from now
+	yearIdx: function(){
+		return _year - calendarSettings.beginYear;
+	}, 
+        setValues: function(year, month) {
             if (arguments.length == 0) {
                 let today = new Date();
-                calendarSettings.init(today.getFullYear(), today.getMonth());
+                calendarSettings.setValues(today.getFullYear(), today.getMonth());
                 return;
             }
-            this.month = month;
-            this.year = year;
-            this.firstDayOfMonth = dateUtils.firstDayOfMonth(this.year, this.month);
-            this.monthLength = dateUtils.monthLength(this.year, this.month);
+            _month = month;
+            _year = year;       
         }
     };
 })();
