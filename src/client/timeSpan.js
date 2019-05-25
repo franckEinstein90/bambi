@@ -55,8 +55,7 @@ const timeSpan = (function() {
             }
             this.beginDate = beginDate;
             this.endDate = endDate;
-            this.units = units;
-
+            this.units = (units === undefined) ? timeSpan.units.days : units;
         },
         Timer: function(settings) {
             this.settings = settings;
@@ -92,20 +91,22 @@ timeSpan.Span.prototype = {
     },
 
     includes: function(targetDate) {
-        //returns true if the the timespan instance includes the targetDate
-        let targetYear = targetDate.getFullYear();
-        if (this.beginDate.getFullYear() <= targetYear && this.endDate.getFullYear() >= targetYear) {
+        targetYear = targetDate.getFullYear();
+        if (this.beginDate.getFullYear() <= targetYear &&
+            this.endDate.getFullYear() >= targetYear) {
             if (this.units === timeSpan.units.years) {
                 return true;
             }
             let targetMonth = targetDate.getMonth();
-            if (this.beginDate.getMonth() <= targetMonth && this.endDate.getMonth() >= targetMonth) {
-                if (this.units === "month") {
+            if (this.beginDate.getMonth() <= targetMonth &&
+                this.endDate.getMonth() >= targetMonth) {
+                if (this.units === timeSpan.units.months) {
                     return true;
                 }
                 let targetDay = targetDate.getDate();
-                if (this.beginDate.getDate() <= targetDay && this.endDate.getDate() >= targetDay) {
-                    if (this.unit === timeSpan.units.days) {
+                if (this.beginDate.getDate() <= targetDay &&
+                    this.endDate.getDate() >= targetDay) {
+                    if (this.units === timeSpan.units.days) {
                         return true;
                     }
                 }
