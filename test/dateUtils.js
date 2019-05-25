@@ -1,6 +1,6 @@
 const expect = require('chai').expect;
-const timeSpan = require('../src/timeSpan.js').timeSpan;
-const dateUtils = require('../src/dateUtils.js').dateUtils;
+const timeSpan = require('../src/client/timeSpan.js').timeSpan;
+const dateUtils = require('../src/client/dateUtils.js').dateUtils;
 
 
 const todayDate = new Date();
