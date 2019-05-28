@@ -1,8 +1,6 @@
 /*******************************************************************
- * events namespace
- * FranckEinstein90
+ * events Module
  * ---------------
- *
  *  events.Event: Include implementations for:
  *
  *  - object events.Event, base class for all other event object in system
@@ -13,7 +11,7 @@
  *  - object events.Chain, implements concept of a chain of events
  *    . sets of events that are linked to one another
  *
- *  - object events.Register, keeps tracks of all objects and their status
+ *  - object events.Registrar, a container for objects of type events.Event
  *
  *  ------------
  *  Unit tests: /test/events.js
@@ -149,7 +147,7 @@ events.Event.prototype = {
 };
 
 /******************************************************************************
- * Registrar class
+ * Registrar objects
  * -----------------
  *  data structure that holds and registers events, 
  *  keeping track of their status

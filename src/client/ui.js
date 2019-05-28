@@ -7,8 +7,9 @@
  *  - calendarUI: all to do with the calendar event
  *
  * ***************************************************************************/
-
-
+const calendarSettings = require('./calendarSettings.js').calendarSettings;
+const appData = require('./appData.js').appData;
+ 
 const ui = (function() {
 
     let uiHandle = (uiID) => AJS.$("#" + uiID);
@@ -112,3 +113,5 @@ const eventsUI = (function() {
     }
 
 })();
+
+module.exports = { calendarUI }

@@ -79,6 +79,4 @@ calendarEvents.CalendarEvent.constructor = events.Event;
 
 
 
-module.exports = {
-    calendarEvents
-};
+module.exports = { calendarEvents };

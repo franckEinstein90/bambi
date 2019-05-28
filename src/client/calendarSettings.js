@@ -25,7 +25,7 @@ const calendarSettings = (function() {
                 m = 0;
                 y = _year + 1;
             }
-            calendarSettings.setValues(y, m);
+            calendarSettings.set(y, m);
         },
         previousMonth: function() { //set calendarSettings to previous month
             let m, y;
@@ -36,15 +36,15 @@ const calendarSettings = (function() {
                 m = 11;
                 y = _year - 1;
             }
-            calendarSettings.setValues(y, m);
+            calendarSettings.set(y, m);
         },
 	yearIdx: function(){
 		return _year - calendarSettings.beginYear;
 	}, 
-        setValues: function(year, month) {
+        set: function(year, month) {
             if (arguments.length == 0) {
                 let today = new Date();
-                calendarSettings.setValues(today.getFullYear(), today.getMonth());
+                calendarSettings.set(today.getFullYear(), today.getMonth());
                 return;
             }
             _month = month;
@@ -54,4 +54,4 @@ const calendarSettings = (function() {
 })();
 
 //end calendarSettings
-module.exports = calendarSettings;
+module.exports = {calendarSettings};
