@@ -8,8 +8,9 @@
  *
  * ***************************************************************************/
 const calendarSettings = require('./calendarSettings.js').calendarSettings;
+const dateUtils = require('./dateUtils.js').dateUtils;
 const appData = require('./appData.js').appData;
- 
+
 const ui = (function() {
 
     let uiHandle = (uiID) => AJS.$("#" + uiID);
@@ -19,9 +20,9 @@ const ui = (function() {
             uiHandle(cmd).click(function(e) {
                 action();
             })
-        }, 
-        UI: function(uiIds){
-            this.ids = uiIds; 
+        },
+        UI: function(uiIds) {
+            this.ids = uiIds;
         }
     }
 })();
@@ -30,7 +31,7 @@ const ui = (function() {
 
 const calendarUI = (function() {
 
-    let uiCalendar = new ui.UI  ({
+    let uiCalendar = new ui.UI({
             calendarTitle: "tableCalendar-title",
             calendarBody: "tableBody",
             previousMonth: "select-previous-month",
@@ -38,53 +39,87 @@ const calendarUI = (function() {
             createNewEvent: "dialog-show-button"
         }),
 
-        addCalendarRow = (week) => {
+	dayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter) ,
 
-        },
-
-        clear = () => {
-
-        },
-
-        setTitle = (calendar) => {
-		getUIHandle(uiElementsIds.CalendarTitle).html("<h1>" +
-                dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
-                calendarSettings.year() + "</h1>");
-        },
-        setFormValues = () => {
-		document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
-		document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
-	},
         renderCalendar = (calendar) => {
             clear();
             setTitle(calendar);
-            calendarSettings.weekSpan.forEach(addCalendarRow);
-        }, 
+            populateCalendarTable(calendar);
+        },
 
-	populateDateSelectionForm = () => {
-	  let makeOption = (idx, value) => `<option value="${idx}">${value}</option>`, 
-          yearChooser = document.dateChooser.chooseYear;
-          for (i = calendarSettings.beginYear; i < calendarSettings.endYear; i++) {
-             yearChooser.options[yearChooser.options.length] = new Option(i, i)
-          }
-          appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
-          setFormValues();
-        }, 
+        clear = () => { },
+
+        setTitle = (calendar) => {
+/*            getUIHandle(uiElementsIds.CalendarTitle).html("<h1>" +
+                dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
+                calendarSettings.year() + "</h1>");*/
+        },
+        setFormValues = () => {
+            document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
+            document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
+        },
+        populateCalendarTable = function(calendar) {
+            let firstDay = calendarSettings.firstDay(),
+                howMany = calendarSettings.monthLength(),
+                dayCounter = 1;
+            while (dayCounter <= howMany) {
+                dayCounter = addWeekRow(calendar, dayCounter);
+            }
+        },
+
+        addWeekRow = (calendar, dayCounter) => {
+		let howMany = calendarSettings.monthLength(),
+		    weekRow = "" ,
+       		    calendarBody = AJS.$("#tableBody"), 
+		    firstDay = calendarSettings.firstDay();
+
+		for(let i=0; i<7 && dayCounter <= howMany; i++){
+			if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay.weekDayIdx)){ //are we within the month?
+				weekRow += `<td ID=${dayId(dayCounter)} class='day'>${cellContent(calendar, dayCounter++)}</td>`;
+			}
+			else{
+				weekRow += "<td class='day'></td>";
+			}
+		}
+		calendarBody.append(`<TR>${weekRow}</TR>`);
+            	return dayCounter;
+        },
+
+	cellContent = function(calendar, dayCounter) {
+		let day = new Date(calendarSettings.year(), calendarSettings.month(), dayCounter), 
+		    eventsOnDay = calendar.filter(ev.timeSpan.includes(day)), 
+		    eventList = "";
+		eventsOnDay.forEach(x => eventList += x.eventTitle);
+			
+		return `${dayCounter} ${eventList}`;
+	},
+
+        populateDateSelectionForm = () => {
+            let makeOption = (idx, value) => `<option value="${idx}">${value}</option>`,
+                yearChooser = document.dateChooser.chooseYear;
+            for (i = calendarSettings.beginYear; i < calendarSettings.endYear; i++) {
+                yearChooser.options[yearChooser.options.length] = new Option(i, i);
+            }
+            appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
+            setFormValues();
+        },
 
         assignActions = () => {
             ui.assignAction(uiCalendar.ids.previousMonth, x => calendarSettings.previousMonth());
             ui.assignAction(uiCalendar.ids.nextMonth, x => calendarSettings.nextMonth());
             ui.assignAction(uiCalendar.ids.createNewEvent, x => alert("new event"));
-        }
-      return {
+        };
+
+    return {
+
         onReady: (calendar) => {
             calendarSettings.set();
-	    populateDateSelectionForm();
+            populateDateSelectionForm();
             assignActions();
             renderCalendar(calendar);
-	    setFormValues();
+            setFormValues();
         }
-    }
+    };
 })();
 
 
@@ -103,15 +138,17 @@ const eventsUI = (function() {
         rendereventsview = (calendar) => {
             eventlist = rendereventsframe();
             calendar.forEach(x => eventlist.append(rendereventpane(x)));
-        }
+        };
 
     return {
 
         onReady: (calendar) => {
             rendereventsview(calendar);
         }
-    }
+    };
 
 })();
 
-module.exports = { calendarUI }
+module.exports = {
+    calendarUI
+};
