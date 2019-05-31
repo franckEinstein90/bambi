@@ -142,7 +142,7 @@ events.Event.prototype = {
         if (this.isOn) {
             this.off();
         } else {
-            this.on;
+            this.on();
         }
         this.onFlipActions.forEach(x => x());
     }

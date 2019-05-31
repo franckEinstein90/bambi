@@ -1,8 +1,12 @@
 /*****************************************************************************/
 const timeSpan = require('./timeSpan').timeSpan;
 const dateUtils= require('./dateUtils').dateUtils;
+const calendarEvents = require('./calendarEvents').calendarEvents;
 /*****************************************************************************/
 
+
+
+let ev = new calendarEvents.CalendarEvent(new Date(), new Date(), "x");
             let April24_2010 = new Date(2010, 03, 24), 
                 April27_2010 = new Date(2010, 03, 27),
                 ts = new timeSpan.Span(April24_2010, April27_2010, "day");

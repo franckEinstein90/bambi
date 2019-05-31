@@ -7,7 +7,7 @@
 
 const expect = require('chai').expect;
 const validator = require('validator');
-const events = require('../src/events').events;
+const events = require('../src/client/events').events;
 
 /*************************************************************
  * events.Registrar
@@ -18,7 +18,78 @@ const events = require('../src/events').events;
  *  filter, reduce
  * **********************************************************/
 
+
+
+describe('events.event Object', function() {
+
+ /******************************************************
+  * construction tests
+  * ***************************************************/
+    it("is created with state 'on' by default", function() {
+        let ev = new events.Event();
+        expect(ev).to.not.be.undefined;
+        expect(ev.state).to.equal(events.eventState.on);
+        expect(ev.isOn).to.equal(true);
+    })
+
+    it("can be created with state 'off' by argument", function() {
+        let ev = new events.Event(events.eventState.off);
+        expect(ev.isOn).to.equal(false);
+        expect(ev.isOff).to.equal(true);
+        expect(ev.state).to.equal(events.eventState.off);
+    })
+
+    it("has a unique identifier", function() {
+        let ev = new events.Event();
+        expect(validator.isUUID(ev.id)).to.equal(true);
+    })
+
+    describe("events.Event.off()", function() {
+        it("turns off the event", function() {
+            let ev = new events.Event();
+            ev.off();
+            expect(ev.state).to.equal(events.eventState.off);
+            expect(ev.isOff).to.equal(true);
+            expect(ev.isOn).to.equal(false);
+        })
+    })
+
+    it("can be attached to one or several event handlers", function() {
+            let ev = new events.Event(), 
+                localVar = 0;
+ 
+            ev.onOffActions.push( () => localVar += 1);
+            ev.off();
+            expect(ev.state).to.equal(events.eventState.off);
+            expect(ev.isOff).to.equal(true);
+            expect(localVar).to.equal(1);
+        })
+});
+
+
+describe("events.Event.flip()", function() {
+        it("flips the current state of the event", function() {
+            let ev = new events.Event();
+            ev.off();
+            ev.flip();
+            expect(ev.state).to.equal(events.eventState.on);
+            ev.flip();
+            expect(ev.isOff).to.equal(true);
+        })
+
+        it("can be attached to event handlers", function(){
+           let ev = new events.Event(), 
+               hereVar = 0; 
+
+           ev.onFlipActions.push(() => hereVar += 1);
+           ev.flip();
+           expect(hereVar).to.equal(1);
+        })
+})
+
+
 describe('events.Registrar Object', function() {
+
     let evRegistrar = new events.Registrar();
 
     it('has the following methods and properties', function() {
@@ -30,60 +101,59 @@ describe('events.Registrar Object', function() {
             expect(evRegistrar).to.have.property(x));
     })
 
-    describe('events.Registrar.filter', function() {
-        it("filters the registrar according to a given predicate", function() {
-            let evOff1 = new events.Event(events.eventState.off),
-                evOff2 = new events.Event(events.eventState.off),
-                evOn1 = new events.Event(events.eventState.on);
-
+    describe('events.Registrar.register ', function() {
+        it('stores events in the register', function() {
+            let evOff1 = new events.Event(events.eventState.off), 
+            evOff2 = new events.Event(events.eventState.off), 
+            evOn1 = new events.Event();
             [evOff1, evOff2, evOn1].forEach(x => evRegistrar.register(x));
-
-            expect(evRegistrar.filter(x => x.isOn()).length).to.equal(1);
-            expect(evRegistrar.filter(x => x.isOff()).length).to.equal(2);
-        })
-
-    })
-
-    describe('events.Registrar.register', function() {
-
-        it('registers an event in the registrar', function() {
-            let ev = new events.Event();
-            evRegistrar.flush();
-            evRegistrar.register(ev);
-            expect(evRegistrar.size()).to.equal(1);
-        })
-
-        it('it registers an array of events in the registrar', function() {
-
-        })
-    })
-
-    describe('events.Registrar.get', function() {
-
-        it('gets an event from the registrar', function() {
-            let ev = new events.Event();
-            evRegistrar.register(ev);
-            expect(evRegistrar.get(ev.id).id).to.equal(ev.id);
-        });
-
-    })
-
-    describe('events.Registrar.forEach', function() {
-
-        it('applies a callback to every member of the registrar', function() {
-            let ev1 = new events.Event();
-            evRegistrar.register(ev1);
-            evRegistrar.forEach(x => expect(x.state).to.equal(events.eventState.on));
-
+            expect(evRegistrar.size).to.equal(3);
         })
     })
 
     describe('events.Registrar.flush()', function() {
-
         it('empties the registrar', function() {
             evRegistrar.flush();
-            expect(evRegistrar.size()).to.equal(0);
-        });
+            expect(evRegistrar.size).to.equal(0);
+        })
+    })
+})
+
+
+
+/*********************************************************************/
+/* Bread and butter handlers 
+/*********************************************************************/
+
+describe('calendarEvent.remove(evId)', function() {
+    let evRegistrar = new events.Registrar();
+
+    beforeEach(function() {
+        evRegistrar.flush();
     })
 
-});
+    it("throws a non-existing event exception if the argument id doesn't exists", function() {
+        let ev = new events.Event();
+        expect(function() {
+            evRegistrar.remove(ev.id);
+        }).to.throw('Event does not exist');
+        expect(evRegistrar.size).to.equal(0);
+    })
+})
+
+describe('Registrar object get method', function() {
+    let evRegistrar = new events.Registrar();
+
+    beforeEach(function() {
+        evRegistrar.flush();
+    })
+
+    it('returns an event stored in the event store with the given id', function() {
+        let ev = new events.Event();
+        evRegistrar.register(ev);
+        let ev2 = evRegistrar.get(ev.id);
+        expect(ev2.id).to.equal(ev.id);
+    })
+})
+
+

@@ -21,7 +21,8 @@
     "mocha": "^6.1.4",
     "mongodb": "^3.2.5",
     "request": "^2.88.0",
-    "validator": "^10.11.0"
+    "validator": "^10.11.0",
+    "watchify": "^3.11.1"
   },
   "directories": {
     "test": "test"

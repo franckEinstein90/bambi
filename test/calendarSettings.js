@@ -1,23 +1,21 @@
-var expect = require('chai').expect;
-var calendarSettings = require('../src/calendarSettings.js');
+const expect = require('chai').expect;
+const calendarSettings = require('../src/client/calendarSettings.js');
 
 
-describe('init', function(){
+describe('set', function(){
 	context('with no arguments', function(){
-		calendarSettings.init();
+		calendarSettings.set();
 		it('should set the calendar controller to handle +/- 10 years', function(){
-			expect(calendarSettings.beginYear()).to.be.equal(2010);
+			expect(calendarSettings.beginYear).to.be.equal(2010);
 		});
 	});
 });
-describe('setMonth', function(){
-	it('changes the month setting of the calendar ', function(){
-		expect(calendarSettings.getYear()).to.be.equal(2019);
+
+describe('calendarSettings.year', function(){
+	it('return the current year at which is set', function(){
+		expect(calendarSettings.year()).to.equal(2019);
 	});
 });
 
-describe('setSeparator', function(){
-	it('should ', function(){
-		expect(calendarSettings.getYear()).to.be.equal(2019);
-	});
-});
+
+

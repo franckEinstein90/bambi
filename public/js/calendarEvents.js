@@ -9,7 +9,7 @@
  *   - calendarEvents.EventSequence
  *
  ******************************************************************************/
-
+const timeSpan = require('./timeSpan').timeSpan;
 const calendarEvents = (function() {
 
     return {
@@ -29,9 +29,9 @@ const calendarEvents = (function() {
             let assignIfDefined = x => x !== undefined? x.trim():"";
 
             try {
-                  this.timeSpan = new timeSpanUtils.TimeSpan(
+                  this.timeSpan = new timeSpan.Span(
                                      beginDate, endDate, 
-                                     timeSpanUtils.units.days);
+                                     timeSpan.units.days);
                   this.title = assignIfDefined(title);
                   this.eventDescription = assignIfDefined(description);
 
