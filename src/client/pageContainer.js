@@ -1,6 +1,7 @@
 const events = require('./events.js').events;
 const calendarEvents = require('./calendarEvents.js').calendarEvents;
 const calendarUI = require('./ui.js').calendarUI;
+const calendarSideBarUI = require('./ui.js').calendarSideBarUI;
 
 const p = (function() {
     return {
@@ -31,8 +32,8 @@ const eventDecoder = (function() {
 
         makeEventObject = (evFieldValues) => {
             let beginDate = p.toDate(evFieldValues.beginDate),
-            endDate = p.toDate(evFieldValues.endDate),
-            description = evFieldValues.description.split(':').filter(x => x.length > 1);
+                endDate = p.toDate(evFieldValues.endDate),
+                description = evFieldValues.description.split(':').filter(x => x.length > 1);
 
             try {
                 return new calendarEvents.CalendarEvent(
@@ -61,16 +62,19 @@ const eventDecoder = (function() {
     }
 })()
 
-const pageContainer = (function(){
+const pageContainer = (function() {
 
- let calendar = new events.Registrar();
+    let calendar = new events.Registrar();
 
-                    return {
-                        onReady: (eventStrings) => {
-                            eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
-                            calendarUI.onReady(calendar);
-                        }
-                    }
+    return {
+        onReady: (eventStrings) => {
+            eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
+            calendarSideBarUI.onReady(calendar);
+            calendarUI.onReady(calendar);
+        }
+    }
 })()
 
-module.exports = { pageContainer }
+module.exports = {
+    pageContainer
+}

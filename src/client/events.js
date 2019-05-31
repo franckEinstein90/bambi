@@ -26,8 +26,8 @@ const events = (function() {
 
         generateUUID = () => {
             let d = new Date().getTime();
-            if (    typeof performance !== 'undefined' && 
-                    typeof performance.now === 'function') {
+            if (typeof performance !== 'undefined' &&
+                typeof performance.now === 'function') {
                 d += performance.now(); //use high-precision timer if available
             }
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {

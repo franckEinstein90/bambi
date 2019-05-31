@@ -9,14 +9,14 @@ const calendarSettings = (function() {
     let _month, _year;
 
     return {
-	year: () => _year, 
-        month: () => _month, 
-        firstDay: () => dateUtils.firstDayOfMonth(_year, _month), 
-        monthLength: () => dateUtils.monthLength(_year, _month), 
-	beginYear : 2010, 
-	endYear: 2030, 
-        
-       	nextMonth: function() { //set calendarSettings to following month
+        year: () => _year,
+        month: () => _month,
+        firstDay: () => dateUtils.firstDayOfMonth(_year, _month),
+        monthLength: () => dateUtils.monthLength(_year, _month),
+        beginYear: 2010,
+        endYear: 2030,
+
+        nextMonth: function() { //set calendarSettings to following month
             let m, y;
             if (_month < 11) {
                 m = _month + 1;
@@ -38,9 +38,9 @@ const calendarSettings = (function() {
             }
             calendarSettings.set(y, m);
         },
-	yearIdx: function(){
-		return _year - calendarSettings.beginYear;
-	}, 
+        yearIdx: function() {
+            return _year - calendarSettings.beginYear;
+        },
         set: function(year, month) {
             if (arguments.length == 0) {
                 let today = new Date();
@@ -48,10 +48,12 @@ const calendarSettings = (function() {
                 return;
             }
             _month = month;
-            _year = year;       
+            _year = year;
         }
     };
 })();
 
 //end calendarSettings
-module.exports = {calendarSettings};
+module.exports = {
+    calendarSettings
+};
