@@ -67,6 +67,11 @@ const pageContainer = (function() {
     let calendar = new events.Registrar();
 
     return {
+	Command : function(execute, undo, value){
+		this.execute = execute;
+		this.undo = undo;
+		this.value = value;
+	},
         onReady: (eventStrings) => {
             eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
             calendarSideBarUI.onReady(calendar);

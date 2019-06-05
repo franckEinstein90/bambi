@@ -9,18 +9,18 @@
  * ***************************************************************************/
 const calendarSettings = require('./calendarSettings.js').calendarSettings;
 const dateUtils = require('./dateUtils.js').dateUtils;
+const eventDialogController = require('./eventDialogController.js');
 const appData = require('./appData.js').appData;
 
 const ui = (function() {
-
     let uiHandle = (uiID) => AJS.$("#" + uiID);
-
     return {
         assignAction: (cmd, action) => {
             uiHandle(cmd).click(function(e) {
                 action(e);
             })
         },
+
         UI: function(uiIds) {
             this.ids = uiIds;
         }
@@ -69,9 +69,10 @@ const calendarUI = (function() {
         clear = () => {},
 
         setTitle = (calendar) => {
-            /*            getUIHandle(uiElementsIds.CalendarTitle).html("<h1>" +
-                            dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
-                            calendarSettings.year() + "</h1>");*/
+		let calendarTitle = 
+                        dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
+			calendarSettings.year();
+		AJS.$("#tableCalendar-title").html("<h1>"+ calendarTitle +"</h1>");
         },
         setFormValues = () => {
             document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
@@ -151,14 +152,9 @@ const eventsUI = (function() {
 
     let ui = {
             eventlistpane: "eventlist"
-
         },
-
-
         rendereventsframe = () => AJS.$("#eventlist"),
-
         rendereventpane = (calendarevent) => `<h1>${calendarevent.title}</h1>`,
-
         rendereventsview = (calendar) => {
             eventlist = rendereventsframe();
             calendar.forEach(x => eventlist.append(rendereventpane(x)));
