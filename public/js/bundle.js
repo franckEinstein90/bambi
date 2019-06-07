@@ -1,3 +1,98 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+/******************************************************************************
+ * The dateUtils module defines several utilites related to time 
+ * It includes:
+ *
+ ******************************************************************************/
+
+const timeSpan = require('./timeSpan').timeSpan;
+
+const dateUtils = (function() {
+
+    let theMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        dateOptions = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        },
+
+        separator = "_", //used as separator for time stamps
+
+        pad0 = (digit) => digit.toString().padStart(2, '0'); //pads with 0 up to 2 chars
+
+    return {
+
+        setSeparator: (sep) => separator = sep,
+
+        firstDayOfMonth: (theYear, monthIdx) => 
+            new timeSpan.Day(new Date(theYear, monthIdx, 1)),
+
+        monthLength: (year, monthIdx, timeMeasure) =>
+            Math.ceil(
+                timeSpan.msSpanLength.month(year, monthIdx) / 
+                timeSpan.msSpanLength.day),
+
+        monthIdxToStr: (monthIdx) => theMonths[monthIdx],
+
+        dayStamp: function(){
+            if (arguments.length == 0) { //if the function is called without arguments, returns today as dateStamp
+                let d = new Date();
+                return dateUtils.dayStamp(d.getFullYear(), d.getMonth(), d.getDate());
+            }
+            return arguments[0].toString() + separator +
+                (arguments[1] + 1).toString().padStart(2, '0') + separator +
+                (arguments[2]).toString().padStart(2, '0');
+        },
+
+        dayStampToDate: (dayStamp) => {
+            let dateParts = dayStamp.split(separator);
+            return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+        },
+
+        dateToDayStamp: (someDate) => {
+            return dateUtils.dayStamp(someDate.getFullYear(), someDate.getMonth(), someDate.getDate());
+        }
+    }
+})();
+
+module.exports = {
+    dateUtils
+};
+
+},{"./timeSpan":3}],2:[function(require,module,exports){
+/*****************************************************************************/
+const timeSpan = require('./timeSpan').timeSpan;
+const dateUtils= require('./dateUtils').dateUtils;
+/*****************************************************************************/
+
+            let April24_2010 = new Date(2010, 03, 24), 
+                April27_2010 = new Date(2010, 03, 27),
+                ts = new timeSpan.Span(April24_2010, April27_2010, "day");
+
+console.log(ts.beginDate);
+console.log(dateUtils.monthIdxToStr(1));
+
+/*AJS.toInit(function($) {
+
+    /*********************************************************************
+     * Collects everything that looks like an event description 
+     * already on the page into an array of strings
+     ********************************************************************/
+ /*   let eventDescriptions= [];
+    AJS.$("h1:contains('Events') + ul li").each(function(index) {
+        eventDescriptions.push($(this).text());
+    });
+
+    /*********************************************************************
+     * inits and sets-up the varous ui elements
+     * using array of event description as input
+     ********************************************************************/
+  /*  pageContainer.onReady(eventDescriptions);
+
+});*/
+
+},{"./dateUtils":1,"./timeSpan":3}],3:[function(require,module,exports){
 /******************************************************************************
  * The timeSpan module defines several utilites related to time ranges. 
  * It includes:
@@ -90,17 +185,16 @@ timeSpan.Span.prototype = {
         this.units = units;
     },
 
-    includes: function(targetDate) { //returns true if the span includes this date or part of this date
-
-        let inOrder = ( x1, x2, x3 ) => (x1 <= x2 && x2 <= x3)?  true : false, 
-            mapInOrder = (x1, x2, x3, mapFunc) => inOrder(mapFunc(x1), mapFunc(x2), mapFunc(x3));
-
-        if (mapInOrder(this.beginDate, targetDate, this.endDate, x => x.getFullYear())){
+    includes: function(targetDate) {
+        targetYear = targetDate.getFullYear();
+        if (this.beginDate.getFullYear() <= targetYear &&
+            this.endDate.getFullYear() >= targetYear) {
             if (this.units === timeSpan.units.years) {
                 return true;
             }
             let targetMonth = targetDate.getMonth();
-            if (inOrder(this.beginDate.getMonth(),  targetMonth, this.endDate.getMonth())) {
+            if (this.beginDate.getMonth() <= targetMonth &&
+                this.endDate.getMonth() >= targetMonth) {
                 if (this.units === timeSpan.units.months) {
                     return true;
                 }
@@ -153,3 +247,5 @@ timeSpan.Timer.prototype = {
 module.exports = {
     timeSpan
 };
+
+},{}]},{},[2]);

@@ -24,17 +24,17 @@ const dateUtils = (function() {
 
         setSeparator: (sep) => separator = sep,
 
-        firstDayOfMonth: (theYear, monthIdx) => 
+        firstDayOfMonth: (theYear, monthIdx) =>
             new timeSpan.Day(new Date(theYear, monthIdx, 1)),
 
         monthLength: (year, monthIdx, timeMeasure) =>
             Math.ceil(
-                timeSpan.msSpanLength.month(year, monthIdx) / 
+                timeSpan.msSpanLength.month(year, monthIdx) /
                 timeSpan.msSpanLength.day),
 
         monthIdxToStr: (monthIdx) => theMonths[monthIdx],
 
-        dayStamp: function(){
+        dayStamp: function() {
             if (arguments.length == 0) { //if the function is called without arguments, returns today as dateStamp
                 let d = new Date();
                 return dateUtils.dayStamp(d.getFullYear(), d.getMonth(), d.getDate());

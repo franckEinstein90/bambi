@@ -1,4 +1,3 @@
-
 /******************************************************************************
  * calendarEvents namespace 
  * FranckEinstein
@@ -27,7 +26,7 @@ const calendarEvents = (function() {
         calendar = new events.Registrar();
 
     return {
-        
+
         /******************************************************************
          *  A calendar event is a type of event that has the following
          *  properties:
@@ -39,33 +38,32 @@ const calendarEvents = (function() {
          ***********************************************************************/
 
 
-   CalendarEvent: function(beginDate, endDate, title, description) {
-            let assignIfDefined = x => x !== undefined? x.trim():"";
+        CalendarEvent: function(beginDate, endDate, title, description) {
+            let assignIfDefined = x => x !== undefined ? x.trim() : "";
 
             try {
-                  this.timeSpan = new timeSpan.Span(
-                                     beginDate, endDate, 
-                                     timeSpan.units.days);
+                this.timeSpan = new timeSpan.Span(
+                    beginDate, endDate,
+                    timeSpan.units.days);
 
-                  this.eventTitle = assignIfDefined(title);
-                  this.eventDescription = assignIfDefined(description);
+                this.eventTitle = assignIfDefined(title);
+                this.eventDescription = assignIfDefined(description);
 
                 events.Event.call(
-                    this, 
-                    events.eventState[this.timeSpan.includes(new Date())?"on":"off"]);
-            } 
-            catch (e) {
+                    this,
+                    events.eventState[this.timeSpan.includes(new Date()) ? "on" : "off"]);
+            } catch (e) {
                 throw (e);
             }
         },
 
-       /*********************************************************************/
+        /*********************************************************************/
         /* Errors, exceptions, and logs
         /*********************************************************************/
         Exception: function(err) {
             this.message = err;
         }
-   }
+    }
     //****************************//
     // end calendarEvents namespace //
     //****************************//

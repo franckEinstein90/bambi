@@ -54,4 +54,6 @@ const calendarSettings = (function() {
 })();
 
 //end calendarSettings
-module.exports = calendarSettings;
+module.exports = {
+    calendarSettings
+};
