@@ -7,16 +7,8 @@
 <HR>
 
 <div class="calendar-container">
-
-
-<div class="calendar-sidebar">
-	<div class="sidebar-nav">
-		<h2 id="sidebar-heading"></h2>	
-	</div>
-</div>
-<div class="calendar-table-container">
-<TABLE ID="calendarTable" class="aui">
-<thead ID="tableCalendar-header">
+<table class="aui">
+<thead id="calendar-container-header">
 <TR>
     <TH><button id="dialog-show-button" class="aui-button">Add an event</button></TH>
     <TH><span id="select-previous-month"
@@ -25,6 +17,17 @@
     <TH><span id="select-next-month"
                 class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span></TH>
 </TR>
+</thead>
+</table>
+<div style="height:15px"></div>
+<div class="calendar-sidebar">
+	<div class="sidebar-nav">
+		<h2 id="sidebar-heading"></h2>	
+	</div>
+</div>
+<div class="calendar-table-container">
+<TABLE ID="calendarTable" class="aui">
+<thead ID="tableCalendar-header">
 <TR>
     <TH scope="col">Sun</TH><TH scope="col">Mon</TH><TH scope="col">Tue</TH><TH scope="col">Wed</TH>
 <TH scope="col">Thu</TH><TH scope="col">Fri</TH><TH scope="col">Sat</TH></TR>
