@@ -13,21 +13,21 @@ const eventDialogController = require('./eventDialogController.js');
 const appData = require('./appData.js').appData;
 
 const ui = (function() {
-    let uiHandle = (uiID) => AJS.$("#" + uiID), 
+    let uiHandle = (uiID) => AJS.$("#" + uiID),
         cmdHistory = [],
-        preProcessAction = function(){
-		cmdHistory.push(1);
-	};
+        preProcessAction = function() {
+            cmdHistory.push(1);
+        };
     return {
         assignAction: (cmd) => {
             uiHandle(cmd.triggerHandle).click(function(e) {
-		if(cmd.preProcess) {
-			cmd.preProcess();
-		}
-		cmd.action(e);
-		if(cmd.postProcess){
-			cmd.postProcess();
-		}
+                if (cmd.preProcess) {
+                    cmd.preProcess();
+                }
+                cmd.action(e);
+                if (cmd.postProcess) {
+                    cmd.postProcess();
+                }
             })
         },
 
@@ -56,24 +56,29 @@ const calendarSideBarUI = (function() {
             }
         }
     }
-})()
+})();
+
 
 const calendarUI = (function() {
 
     let uiCalendar = new ui.UI({
-            calendarTitle: "tableCalendar-title",
-            calendarBody: "tableBody",
+            calendarTable: "calendar-table",
+            title: "tableCalendar-title",
+            tableBody: "calendar-table-body",
             previousMonth: "select-previous-month",
             nextMonth: "select-next-month",
             createNewEvent: "dialog-show-button"
         }),
 
-        dayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter),
+        dayId = (dayCounter) => dateUtils.dayStamp( //ids for each cell in calendar 
+            calendarSettings.year(), 
+            calendarSettings.month(), 
+            dayCounter),
 
-	redrawUI = (calendar) => {
-		renderCalendar(calendar)
-		setFormValues();
-	},
+        redrawUI = (calendar) => {
+            renderCalendar(calendar)
+            setFormValues();
+        },
 
         renderCalendar = (calendar) => {
             clear();
@@ -81,43 +86,49 @@ const calendarUI = (function() {
             populateCalendarTable(calendar);
         },
 
-        clear = () => {
-		AJS.$("#tableBody").empty();	
-	},
+        clear = () => uiCalendar.tableBody.empty(), 
 
         setTitle = (calendar) => {
-		let calendarTitle = 
-                        dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
-			calendarSettings.year();
-		AJS.$("#tableCalendar-title").html("<h1>"+ calendarTitle +"</h1>");
+            let calendarTitle =
+                dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
+                calendarSettings.year();
+            uiCalendar.title.html(`<h1>${calendarTitle}</h1>`);
         },
+
         setFormValues = () => {
             document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
             document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
         },
-        populateCalendarTable = function(calendar) {
+
+        renderCalendarTable = function(calendar) {
             let firstDay = calendarSettings.firstDay(),
                 howMany = calendarSettings.monthLength(),
                 dayCounter = 1;
             while (dayCounter <= howMany) {
-                dayCounter = addWeekRow(calendar, dayCounter);
+                dayCounter = renderWeekRow(calendar, dayCounter);
             }
         },
 
-        addWeekRow = (calendar, dayCounter) => {
-            let howMany = calendarSettings.monthLength(),
+        renderWeekRow = (calendar, dayCounter) => {
+            let howManyDaysInMonth = calendarSettings.monthLength(),
                 weekRow = "",
-                calendarBody = AJS.$("#tableBody"),
-                firstDay = calendarSettings.firstDay();
+                firstDay = calendarSettings.firstDay(),
+                makeDayCell = (cellID, content) => 
+                    `<td ID='${cellID}' class='day'>${content}</td>`, 
+                renderDay = day => weekRow += day;
 
-            for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
+            for (let i = 0; i < 7 && dayCounter <= howManyDaysInMonth; i++) {
                 if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
-                    weekRow += `<td ID=${dayId(dayCounter)} class='day'>${cellContent(calendar, dayCounter++)}</td>`;
+                    renderDay(makeDayCell(
+                                    dayId(dayCounter), 
+                                    cellContent(calendar, dayCounter++)));
                 } else {
-                    weekRow += "<td class='day'></td>";
+                    renderDay(makeDayCell()); 
                 }
             }
-            calendarBody.append(`<TR>${weekRow}</TR>`);
+            [`<TR>${weekRow}</TR>`, eventsRowDisplay(calendar, weekRow) ].map(
+                    x => uiCalendar.tableBody.append(x)
+            );
             return dayCounter;
         },
 
@@ -140,24 +151,25 @@ const calendarUI = (function() {
             appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
             setFormValues();
         },
-	assignActions = (calendar) => {
+
+        assignActions = (calendar) => {
             ui.assignAction({
-		triggerHandle: uiCalendar.ids.previousMonth,
-		action: x => calendarSettings.previousMonth(), 
-		postProcess: x => redrawUI(calendar)
-	    });
-	    ui.assignAction({
-		triggerHandle: uiCalendar.ids.nextMonth, 
-		action: x => calendarSettings.nextMonth(),
-		postProcess: x => redrawUI(calendar)
-	    });
+                triggerHandle: uiCalendar.ids.previousMonth,
+                action: x => calendarSettings.previousMonth(),
+                postProcess: x => redrawUI(calendar)
+            });
             ui.assignAction({
-		triggerHandle: uiCalendar.ids.createNewEvent, 
-		action : (e) => {
-		  e.preventDefault();
-		  AJS.dialog2("#event-dialog").show();
-		}
-	    });
+                triggerHandle: uiCalendar.ids.nextMonth,
+                action: x => calendarSettings.nextMonth(),
+                postProcess: x => redrawUI(calendar)
+            });
+            ui.assignAction({
+                triggerHandle: uiCalendar.ids.createNewEvent,
+                action: (e) => {
+                    e.preventDefault();
+                    AJS.dialog2("#event-dialog").show();
+                }
+            });
         };
 
     return {
@@ -166,7 +178,7 @@ const calendarUI = (function() {
             calendarSettings.set();
             populateDateSelectionForm();
             assignActions(calendar);
-	    redrawUI(calendar);
+            redrawUI(calendar);
         }
     };
 })();
