@@ -25,24 +25,32 @@
 		<h2 id="sidebar-heading"></h2>	
 	</div>
 </div>
+
 <div class="calendar-table-container">
-<TABLE ID="calendarTable" class="aui">
-<thead ID="tableCalendar-header">
-<TR>
-    <TH scope="col">Sun</TH><TH scope="col">Mon</TH><TH scope="col">Tue</TH><TH scope="col">Wed</TH>
-<TH scope="col">Thu</TH><TH scope="col">Fri</TH><TH scope="col">Sat</TH></TR>
-<TBODY ID="tableBody"></TBODY>
-<TR>
-</thead>
-    <TD COLSPAN=7>
-    <FORM name="dateChooser" ID="dateChooser" class="aui">
-        <SELECT ID="chooseMonth" name="chooseMonth">
-    	</SELECT>
-    <SELECT NAME="chooseYear">
-    </SELECT>
-    </FORM>
-   </TD>
-</TR>
-</TABLE>
+
+    <table ID="calendar-table" class="aui">
+
+    <thead ID="calendar-table-header">
+        <tr ID="calendar-table-weekdays-labels"></tr>
+    </thead>
+
+    <tbody ID="calendar-table-body"></tbody>
+
+    <tfoot>
+       <tr>
+       <TD COLSPAN=7>
+       <FORM name="dateChooser" ID="dateChooser" class="aui">
+       <SELECT ID="chooseMonth" name="chooseMonth">
+       </SELECT>
+       <SELECT NAME="chooseYear">
+       </SELECT>
+       </FORM>
+       </TD>
+       </tr>
+    </tfoot>
+
+    </table>
+
 </div>
+
 </div>
