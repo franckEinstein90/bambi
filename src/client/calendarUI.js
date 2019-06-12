@@ -150,11 +150,32 @@ const eventsUI = (function() {
     let uiEvents = ui.newUI({
             eventlistpane: "eventlist"
         }),
-        rendereventsframe = () => AJS.$("#eventlist"),
-        rendereventpane = (calendarevent) => `<h1>${calendarevent.title}</h1>`,
-        rendereventsview = (calendar) => {
-            eventlist = rendereventsframe();
-            calendar.forEach(x => eventlist.append(rendereventpane(x)));
+	controlIcon = function(icon, controlID, accessibilityText){
+		  let tag = `<span class='aui-icon aui-icon-small ${icon} event-edit-btn' `;
+		  tag +=  `id='${controlID}'>${accessibilityText}</span>`;
+		  return tag;
+	},
+
+//+ "Edit'>Insert meaningful text here for accessibility</span>" +
+//"<span class='aui-icon aui-icon-small aui-iconfont-edit event-edit-btn' id='" + evID + "Edit'>Insert meaningful text here for accessibility</span>" +
+ //       "<span class='aui-icon aui-icon-small aui-iconfont-delete event-edit-btn'>Insert meaningful text here for accessibility</span>" +
+ 		
+	eventControls = function(eventID){
+		let editButton = `${controlIcon('aui-iconfont-edit', eventID+"-edit", "modify this event")}`, 
+		deleteButton = `${controlIcon('aui-iconfont-delete', eventID+"-delete", "delete this event")}`;
+		return `<div class='event-controls'>${editButton}${deleteButton}</div>`;
+	},
+        renderEventPane = function({id, timeSpan, eventTitle, eventDescription, eventState}) {
+	    let htmlStr = `<div class='hidden'>${id}</div>`; 
+		//eventPane header
+	        htmlStr +=`<div class='eventTitle'>${eventTitle}</div>`;
+		htmlStr += eventControls(id);
+		htmlStr = `<div class='eventHeaderRow'>${htmlStr}</div>`;
+		return `<div class='event-view'>${htmlStr}</div>`; 
+	},
+	rendereventsview = (calendar) => {
+            eventList = AJS.$("#eventlist");
+            calendar.forEach(calendarEvent => eventList.append(renderEventPane(calendarEvent)));
         };
 
     return {

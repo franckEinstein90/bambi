@@ -10,6 +10,12 @@ const pageContainer = require('./pageContainer.js').pageContainer;
 AJS.toInit(function($) {
 
     /*********************************************************************
+     * add the section that displays event sidebar ui 
+     ********************************************************************/
+     AJS.$("h1:contains('Events')").before(
+	"<div id='eventlist' class='eventList'></div>");	
+
+    /*********************************************************************
      * Collects everything that looks like an event description 
      * already on the page into an array of strings
      ********************************************************************/
@@ -17,12 +23,6 @@ AJS.toInit(function($) {
     AJS.$("h1:contains('Events') + ul li").each(function(index) {
         eventDescriptions.push($(this).text());
     });
-
-    /*********************************************************************
-     * Collects everything that looks like an event description 
-     * already on the page into an array of strings
-     ********************************************************************/
-   
  
     /*********************************************************************
      * inits and sets-up the varous ui elements
