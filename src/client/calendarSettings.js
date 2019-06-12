@@ -27,6 +27,7 @@ const calendarSettings = (function() {
             }
             calendarSettings.set(y, m);
         },
+
         previousMonth: function() { //set calendarSettings to previous month
             let m, y;
             if (_month > 0) {
@@ -38,9 +39,11 @@ const calendarSettings = (function() {
             }
             calendarSettings.set(y, m);
         },
+
         yearIdx: function() {
             return _year - calendarSettings.beginYear;
         },
+
         set: function(year, month) {
             if (arguments.length == 0) {
                 let today = new Date();

@@ -1,6 +1,11 @@
 const expect = require('chai').expect;
-const calendarSettings = require('../src/client/calendarSettings.js');
+const calendarSettings = require('../src/client/calendarSettings.js').calendarSettings;
 
+describe ('calendarSettings module', function(){
+	it('should be defined', function(){
+		expect(calendarSettings).to.not.be.undefined;
+	})
+});
 
 describe('set', function(){
 	context('with no arguments', function(){

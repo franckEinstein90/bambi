@@ -13,8 +13,8 @@ const appData = require('./appData.js').appData;
 const ui = require('./ui.js').ui;
 
 const calendarSideBarUI = (function() {
-    let uiSideBar = new ui.UI({
-            sideBarHeading: "sidebar_heading"
+    let uiSideBar = ui.newUI({
+            sideBarHeading: "sidebar-heading"
         }),
         today = new Date(),
         sidebarTitle = () =>
@@ -23,7 +23,7 @@ const calendarSideBarUI = (function() {
     return {
         onReady: function(calendar) {
             try {
-                AJS.$("#sidebar-heading").text(sidebarTitle());
+               uiSideBar.sideBarHeading.text(sidebarTitle());
             } catch (e) {
                 console.log("error " + e);
                 throw e;
@@ -34,14 +34,14 @@ const calendarSideBarUI = (function() {
 
 const calendarUI = (function() {
 
-    let uiCalendar = new ui.UI({
+    let uiCalendar = ui.newUI({
             calendarTitle: "tableCalendar-title",
-            calendarBody: "tableBody",
+            weekdaysLabels: "calendar-table-weekdays-labels",
+            calendarBody: "calendar-table-body",
             previousMonth: "select-previous-month",
             nextMonth: "select-next-month",
             createNewEvent: "dialog-show-button"
         }),
-
         dayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter),
 
         redrawUI = (calendar) => {
@@ -50,25 +50,22 @@ const calendarUI = (function() {
         },
 
         renderCalendar = (calendar) => {
-            clear();
+	    uiCalendar.calendarBody.empty(); 
             setTitle(calendar);
             populateCalendarTable(calendar);
-        },
-
-        clear = () => {
-            AJS.$("#tableBody").empty();
         },
 
         setTitle = (calendar) => {
             let calendarTitle =
                 dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
                 calendarSettings.year();
-            AJS.$("#tableCalendar-title").html("<h1>" + calendarTitle + "</h1>");
+            	uiCalendar.calendarTitle.html("<h1>" + calendarTitle + "</h1>");
         },
         setFormValues = () => {
             document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
             document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
         },
+
         populateCalendarTable = function(calendar) {
             let firstDay = calendarSettings.firstDay(),
                 howMany = calendarSettings.monthLength(),
@@ -81,17 +78,16 @@ const calendarUI = (function() {
         addWeekRow = (calendar, dayCounter) => {
             let howMany = calendarSettings.monthLength(),
                 weekRow = "",
-                calendarBody = AJS.$("#tableBody"),
                 firstDay = calendarSettings.firstDay();
 
             for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
-                if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
+                if ((AJS.$("#calendar-table-body tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
                     weekRow += `<td ID=${dayId(dayCounter)} class='day'>${cellContent(calendar, dayCounter++)}</td>`;
                 } else {
                     weekRow += "<td class='day'></td>";
                 }
             }
-            calendarBody.append(`<TR>${weekRow}</TR>`);
+            uiCalendar.calendarBody.append(`<TR>${weekRow}</TR>`);
             return dayCounter;
         },
 
@@ -114,19 +110,20 @@ const calendarUI = (function() {
             appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
             setFormValues();
         },
+
         assignActions = (calendar) => {
             ui.assignAction({
-                triggerHandle: uiCalendar.ids.previousMonth,
+                triggerHandle: uiCalendar.previousMonth,
                 action: x => calendarSettings.previousMonth(),
                 postProcess: x => redrawUI(calendar)
             });
             ui.assignAction({
-                triggerHandle: uiCalendar.ids.nextMonth,
+                triggerHandle: uiCalendar.nextMonth,
                 action: x => calendarSettings.nextMonth(),
                 postProcess: x => redrawUI(calendar)
             });
             ui.assignAction({
-                triggerHandle: uiCalendar.ids.createNewEvent,
+                triggerHandle: uiCalendar.createNewEvent,
                 action: (e) => {
                     e.preventDefault();
                     AJS.dialog2("#event-dialog").show();
@@ -138,6 +135,8 @@ const calendarUI = (function() {
 
         onReady: (calendar) => {
             calendarSettings.set();
+	    appData["weekDaysAbbrEn"].map(  //add the days of the week to the calendar's chrome
+		weekdayLabel => uiCalendar.weekdaysLabels.append(`<td>${weekdayLabel}</td>`));
             populateDateSelectionForm();
             assignActions(calendar);
             redrawUI(calendar);
@@ -148,27 +147,27 @@ const calendarUI = (function() {
 
 const eventsUI = (function() {
 
-    let uiEvents = new ui.UI ({
-        eventlistpane: "eventlist"
-    }),
-rendereventsframe = () => AJS.$("#eventlist"),
-rendereventpane = (calendarevent) => `<h1>${calendarevent.title}</h1>`,
-rendereventsview = (calendar) => {
-    eventlist = rendereventsframe();
-    calendar.forEach(x => eventlist.append(rendereventpane(x)));
-};
+    let uiEvents = ui.newUI({
+            eventlistpane: "eventlist"
+        }),
+        rendereventsframe = () => AJS.$("#eventlist"),
+        rendereventpane = (calendarevent) => `<h1>${calendarevent.title}</h1>`,
+        rendereventsview = (calendar) => {
+            eventlist = rendereventsframe();
+            calendar.forEach(x => eventlist.append(rendereventpane(x)));
+        };
 
-return {
+    return {
 
-    onReady: (calendar) => {
-        try {
-            rendereventsview(calendar);
-        } catch (e) {
-            console.log(e);
-            throw e + " at eventsUI.onReady";
+        onReady: (calendar) => {
+            try {
+                rendereventsview(calendar);
+            } catch (e) {
+                console.log(e);
+                throw e + " at eventsUI.onReady";
+            }
         }
-    }
-};
+    };
 
 })();
 
