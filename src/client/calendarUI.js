@@ -86,20 +86,25 @@ const calendarUI = (function() {
             let howMany = calendarSettings.monthLength(),
                 weekRow = "",
                 firstDay = calendarSettings.firstDay(),
-        	getDayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter);
+		localDayCounter = dayCounter, 
+        	getDayId = () => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), localDayCounter);
             for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
                 if ((AJS.$("#calendar-table-body tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
-			let dayCell = cellContent(calendar, dayCounter++),
-			    dayId = getDayId(dayCounter),  
+			let dayCell = cellContent(calendar, localDayCounter++),
+			    dayId = getDayId(),  
 			    dayCssClass = dayId.localeCompare(dateUtils.dayStamp()) == 0 ? "today" : "day";
 			weekRow += `<td ID = ${dayId} class='${dayCssClass}'> ${dayCell} </td>`; 
                 } else {
                     weekRow += "<td class='day'></td>";
                 }
             }
-            uiCalendar.calendarBody.append(`<TR>${weekRow}</TR>`);
-            return dayCounter;
+            uiCalendar.calendarBody.append(`<TR class="week-row">${weekRow}</TR>`);
+	    addEventRow(calendar, dayCounter, localDayCounter-1);
+            return localDayCounter;
         },
+	addEventRow = (calendar, dayBegin, dayEnd) =>{
+            uiCalendar.calendarBody.append(`<TR class="event-row"><td colspan=7>events go here</td></TR>`);
+	},
 
         cellContent = function(calendar, dayCounter) {
             let day = new Date(calendarSettings.year(), calendarSettings.month(), dayCounter),

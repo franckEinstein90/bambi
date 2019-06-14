@@ -41,8 +41,11 @@
   position:relative;
   z-index: 100;
  }
- #calendar-table-body TR TD{
+ #calendar-table-body TR.week-row TD{
    height:50px;
+ }
+ #calendar-table-body TR.event-row TD{
+   background-color: black;
  }
 
 .event-list{
