@@ -68,15 +68,15 @@ const pageContainer = (function() {
     let calendar = new events.Registrar();
 
     return {
-	Command : function(execute, undo, value){
-		this.execute = execute;
-		this.undo = undo;
-		this.value = value;
-	},
+        Command: function(execute, undo, value) {
+            this.execute = execute;
+            this.undo = undo;
+            this.value = value;
+        },
         onReady: (eventStrings) => {
-	    //get all events on the page into the event registrar (calendar)
+            //get all events on the page into the event registrar (calendar)
             eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
-	    eventsUI.onReady(calendar);	    
+            eventsUI.onReady(calendar);
             calendarSideBarUI.onReady(calendar);
             calendarUI.onReady(calendar);
         }

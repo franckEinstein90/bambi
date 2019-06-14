@@ -17,13 +17,11 @@ const calendarSideBarUI = (function() {
             sideBarHeading: "sidebar-heading"
         }),
         today = new Date(),
-        sidebarTitle = () =>
-        appData["weekDays"][today.getDay()] + " " +
-        today.getDate();
+        sidebarTitle = () => appData["weekDays"][today.getDay()] + " " + today.getDate();
     return {
         onReady: function(calendar) {
             try {
-               uiSideBar.sideBarHeading.text(sidebarTitle());
+                uiSideBar.sideBarHeading.text(sidebarTitle());
             } catch (e) {
                 console.log("error " + e);
                 throw e;
@@ -42,28 +40,37 @@ const calendarUI = (function() {
             nextMonth: "select-next-month",
             createNewEvent: "dialog-show-button"
         }),
-        dayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter),
 
         redrawUI = (calendar) => {
-            renderCalendar(calendar)
+            renderCalendarFrame();
+            renderCalendarBody(calendar);
+        },
+
+        renderCalendarFrame = () => {
+            let weekdaysHeader = "";
+            appData["weekDaysAbbrEn"].map( //add the days of the week to the calendar's chrome
+                weekdayLabel => weekdaysHeader += `<td>${weekdayLabel}</td>`);
+            uiCalendar.weekdaysLabels.html(weekdaysHeader);
+
+            setCalendarTitle();
             setFormValues();
         },
 
-        renderCalendar = (calendar) => {
-	    uiCalendar.calendarBody.empty(); 
-            setTitle(calendar);
-            populateCalendarTable(calendar);
-        },
-
-        setTitle = (calendar) => {
+        setCalendarTitle = () => {
             let calendarTitle =
                 dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
                 calendarSettings.year();
-            	uiCalendar.calendarTitle.html("<h1>" + calendarTitle + "</h1>");
+            uiCalendar.calendarTitle.html("<h1>" + calendarTitle + "</h1>");
         },
+
         setFormValues = () => {
             document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
             document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
+        },
+
+        renderCalendarBody = (calendar) => {
+            uiCalendar.calendarBody.empty();
+            populateCalendarTable(calendar);
         },
 
         populateCalendarTable = function(calendar) {
@@ -78,11 +85,14 @@ const calendarUI = (function() {
         addWeekRow = (calendar, dayCounter) => {
             let howMany = calendarSettings.monthLength(),
                 weekRow = "",
-                firstDay = calendarSettings.firstDay();
-
+                firstDay = calendarSettings.firstDay(),
+        	getDayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter);
             for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
                 if ((AJS.$("#calendar-table-body tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
-                    weekRow += `<td ID=${dayId(dayCounter)} class='day'>${cellContent(calendar, dayCounter++)}</td>`;
+			let dayCell = cellContent(calendar, dayCounter++),
+			    dayId = getDayId(dayCounter),  
+			    dayCssClass = dayId.localeCompare(dateUtils.dayStamp()) == 0 ? "today" : "day";
+			weekRow += `<td ID = ${dayId} class='${dayCssClass}'> ${dayCell} </td>`; 
                 } else {
                     weekRow += "<td class='day'></td>";
                 }
@@ -135,8 +145,6 @@ const calendarUI = (function() {
 
         onReady: (calendar) => {
             calendarSettings.set();
-	    appData["weekDaysAbbrEn"].map(  //add the days of the week to the calendar's chrome
-		weekdayLabel => uiCalendar.weekdaysLabels.append(`<td>${weekdayLabel}</td>`));
             populateDateSelectionForm();
             assignActions(calendar);
             redrawUI(calendar);
@@ -150,30 +158,44 @@ const eventsUI = (function() {
     let uiEvents = ui.newUI({
             eventlistpane: "eventlist"
         }),
-	controlIcon = function(icon, controlID, accessibilityText){
-		  let tag = `<span class='aui-icon aui-icon-small ${icon} event-edit-btn' `;
-		  tag +=  `id='${controlID}'>${accessibilityText}</span>`;
-		  return tag;
-	},
+        div = (htmlClass, content) => `<div class='${htmlClass}'>${content}</div>`,
+        controlIcon = function(icon, controlID, accessibilityText) {
+            let tag = `<span class='aui-icon aui-icon-small ${icon} event-edit-btn' `;
+            tag += `id='${controlID}'>${accessibilityText}</span>`;
+            return tag;
+        },
 
-//+ "Edit'>Insert meaningful text here for accessibility</span>" +
-//"<span class='aui-icon aui-icon-small aui-iconfont-edit event-edit-btn' id='" + evID + "Edit'>Insert meaningful text here for accessibility</span>" +
- //       "<span class='aui-icon aui-icon-small aui-iconfont-delete event-edit-btn'>Insert meaningful text here for accessibility</span>" +
- 		
-	eventControls = function(eventID){
-		let editButton = `${controlIcon('aui-iconfont-edit', eventID+"-edit", "modify this event")}`, 
-		deleteButton = `${controlIcon('aui-iconfont-delete', eventID+"-delete", "delete this event")}`;
-		return `<div class='event-controls'>${editButton}${deleteButton}</div>`;
-	},
-        renderEventPane = function({id, timeSpan, eventTitle, eventDescription, eventState}) {
-	    let htmlStr = `<div class='hidden'>${id}</div>`; 
-		//eventPane header
-	        htmlStr +=`<div class='eventTitle'>${eventTitle}</div>`;
-		htmlStr += eventControls(id);
-		htmlStr = `<div class='eventHeaderRow'>${htmlStr}</div>`;
-		return `<div class='event-view'>${htmlStr}</div>`; 
-	},
-	rendereventsview = (calendar) => {
+        eventControls = function(eventID) {
+            let editButton = `${controlIcon('aui-iconfont-edit', eventID+"-edit", "modify this event")}`,
+                deleteButton = `${controlIcon('aui-iconfont-delete', eventID+"-delete", "delete this event")}`;
+            return `<div class='event-controls'>${editButton}${deleteButton}</div>`;
+        },
+
+        renderEventPane = function({
+            id,
+            timeSpan,
+            eventTitle,
+            eventDescription,
+            eventState
+        }) {
+            let formatDate = (date) => date.getFullYear() + "/" + 
+				   date.getMonth() + "/" + 
+				   date.getDate(), 
+		dateHeader = formatDate(timeSpan.beginDate) + " to " + formatDate(timeSpan.endDate), 
+		htmlStr = 
+		   div('hidden', id) + div('eventTitle', eventTitle) + 	
+		   eventControls(id) + div('event-dates', dateHeader);
+            htmlStr = div('eventHeaderRow', htmlStr);
+    	    if (eventDescription) {
+		let divBodyID =`eventDescription-${id}`;
+		htmlStr +=  `<div id='${divBodyID}' class='aui-expander-content'>${eventDescription}</div>`;  
+		htmlStr += `<a id='replace-text-trigger' data-replace-text='Read less' class='aui-expander-trigger'`;
+		htmlStr += ` aria-controls='${divBodyID}'>Read more</a>`;
+	    }
+	    return div('event-view', htmlStr);
+        },
+
+        rendereventsview = (calendar) => {
             eventList = AJS.$("#eventlist");
             calendar.forEach(calendarEvent => eventList.append(renderEventPane(calendarEvent)));
         };

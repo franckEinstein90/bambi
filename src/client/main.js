@@ -12,8 +12,8 @@ AJS.toInit(function($) {
     /*********************************************************************
      * add the section that displays event sidebar ui 
      ********************************************************************/
-     AJS.$("h1:contains('Events')").before(
-	"<div id='eventlist' class='eventList'></div>");	
+    AJS.$("h1:contains('Events')").before(
+        "<div id='eventlist' class='eventList'></div>");
 
     /*********************************************************************
      * Collects everything that looks like an event description 
@@ -23,7 +23,7 @@ AJS.toInit(function($) {
     AJS.$("h1:contains('Events') + ul li").each(function(index) {
         eventDescriptions.push($(this).text());
     });
- 
+
     /*********************************************************************
      * inits and sets-up the varous ui elements
      * using array of event description as input

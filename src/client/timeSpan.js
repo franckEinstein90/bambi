@@ -92,15 +92,15 @@ timeSpan.Span.prototype = {
 
     includes: function(targetDate) { //returns true if the span includes this date or part of this date
 
-        let inOrder = ( x1, x2, x3 ) => (x1 <= x2 && x2 <= x3)?  true : false, 
+        let inOrder = (x1, x2, x3) => (x1 <= x2 && x2 <= x3) ? true : false,
             mapInOrder = (x1, x2, x3, mapFunc) => inOrder(mapFunc(x1), mapFunc(x2), mapFunc(x3));
 
-        if (mapInOrder(this.beginDate, targetDate, this.endDate, x => x.getFullYear())){
+        if (mapInOrder(this.beginDate, targetDate, this.endDate, x => x.getFullYear())) {
             if (this.units === timeSpan.units.years) {
                 return true;
             }
             let targetMonth = targetDate.getMonth();
-            if (inOrder(this.beginDate.getMonth(),  targetMonth, this.endDate.getMonth())) {
+            if (inOrder(this.beginDate.getMonth(), targetMonth, this.endDate.getMonth())) {
                 if (this.units === timeSpan.units.months) {
                     return true;
                 }
