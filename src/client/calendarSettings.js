@@ -3,7 +3,7 @@
  *  abstracts the data element of the calendar 
  **************************************************************/
 
-const dateUtils = require('./dateUtils.js').dateUtils;
+const dateUtils = require('./dateUtils/dateUtils.js').dateUtils;
 
 const calendarSettings = (function() {
     let _month, _year;

@@ -8,9 +8,9 @@
  *   - calendarEvents.EventSequence
  *
  ******************************************************************************/
-const timeSpan = require('./timeSpan').timeSpan;
-const dateUtils = require('./dateUtils').dateUtils;
-const events = require('./events').events;
+const timeSpan = require('./dateUtils/timeSpan').timeSpan;
+const dateUtils = require('./dateUtils/dateUtils').dateUtils;
+const events = require('./core/events').events;
 
 
 const calendarEvents = (function() {

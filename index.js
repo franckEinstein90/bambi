@@ -1,10 +1,13 @@
 'use strict';
 
 const express = require('express');
-const helmet = require('helmet');
 const router = express.Router();
+/*******************************************************
+ * rest api controllers
+ * ****************************************************/
+const eventController = require('./eventController.js').eventController;
 
-
+const helmet = require('helmet');
 const exphbs = require('express-handlebars');
 
 
@@ -29,7 +32,6 @@ router.use(function(req, res, next){
 });
 
 
-
 router.get('/about', function(req, res){
 	res.send('in about page');
 });
@@ -38,6 +40,32 @@ router.get('/about', function(req, res){
 router.get('/', function(req, res){
 	res.render('home');
 });
+
+router.get('/events', eventController.event_list);
+
+const MongoClient = require('mongodb').MongoClient;
+const url = "mongodb://localhost:27017";
+
+const newEvent = function(eventTitle){
+
+    MongoClient.connect(url, function(err, db){
+
+    if(err) throw err;
+    let dbo = db.db("bambi");
+    const myobj = {
+        eventName: eventTitle
+    };
+    dbo.collection("events").insertOne(myobj, function(err, res){
+        if(err) throw err;
+        console.log("1 document inserted");
+        db.close();
+    });
+  });
+}
+
+router.post('/event/create/:eventTitle', function(req, res){
+    newEvent( req.params.eventTitle );
+}); 
 
 app.use(router);
 app.use(express.static('public/'));

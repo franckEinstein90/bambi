@@ -46,7 +46,12 @@ const dateUtils = (function() {
 
         dayStampToDate: (dayStamp) => {
             let dateParts = dayStamp.split(separator);
-            return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            try {
+                return new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+            }
+            catch(e){
+                throw e + "Unable to build date from dayStamp at dateUtils.dayStampToDate";
+            }
         },
 
         dateToDayStamp: (someDate) => {

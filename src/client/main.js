@@ -1,5 +1,6 @@
 /*****************************************************************************/
-const pageContainer = require('./pageContainer.js').pageContainer;
+const bambi = require('../bambi').bambi;
+const pageContainer = require('./pageContainer').pageContainer;
 
 
 /*****************************************************************************

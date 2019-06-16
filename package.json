@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "test": "mocha --reporter spec",
-    "build": "babel src -d build",
+    "build": "browserify src/client/main.js -o public/js/lib/bundle.js",
     "flow": "flow"
   },
   "author": "",
@@ -19,7 +19,7 @@
     "js-beautify": "^1.9.1",
     "jslint": "^0.12.1",
     "mocha": "^6.1.4",
-    "mongodb": "^3.2.5",
+    "mongodb": "^3.2.7",
     "request": "^2.88.0",
     "validator": "^10.11.0",
     "watchify": "^3.11.1"

@@ -1,8 +1,9 @@
-const events = require('./events.js').events;
+const events = require('./core/events.js').events;
 const calendarEvents = require('./calendarEvents.js').calendarEvents;
-const eventsUI = require('./calendarUI.js').eventsUI;
-const calendarUI = require('./calendarUI.js').calendarUI;
-const calendarSideBarUI = require('./calendarUI.js').calendarSideBarUI;
+
+const eventsUI = require('./ui/calendarUI.js').eventsUI;
+const calendarUI = require('./ui/calendarUI.js').calendarUI;
+const calendarSideBarUI = require('./ui/calendarUI.js').calendarSideBarUI;
 
 const p = (function() {
     return {
@@ -67,12 +68,14 @@ const pageContainer = (function() {
 
     let calendar = new events.Registrar();
 
+
     return {
         Command: function(execute, undo, value) {
             this.execute = execute;
             this.undo = undo;
             this.value = value;
         },
+         
         onReady: (eventStrings) => {
             //get all events on the page into the event registrar (calendar)
             eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
