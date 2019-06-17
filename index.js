@@ -13,6 +13,8 @@ const exphbs = require('express-handlebars');
 
 const PORT = process.env.PORT || 3000;
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended:false}));
 
 var hbs = exphbs.create({
     defaultLayout: 'main', 
@@ -63,8 +65,15 @@ const newEvent = function(eventTitle){
   });
 }
 
-router.post('/event/create/:eventTitle', function(req, res){
-    newEvent( req.params.eventTitle );
+
+const fs = require('fs');
+
+router.use(express.json());
+router.post('/event/create/*', function(req, res){
+    let eventTitle = req.body.eventTitle;
+    console.log(eventTitle);
+    newEvent( eventTitle );
+    res.send("hello");
 }); 
 
 app.use(router);

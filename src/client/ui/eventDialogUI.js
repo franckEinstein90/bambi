@@ -60,9 +60,13 @@ const eventDialogUI = (function() {
         }, 
         createNewEvent = function({eventTitle}){
             jQuery.ajax({
-                type: "POST", 
+                type: "POST",
+                contentType:"application/json; charset=UTF-8",  
                 url:  "http://localhost:3000/event/create/" + eventTitle, 
-                success: x => console.log("ffdsa:w"), 
+                data: JSON.stringify({"eventTitle": eventTitle}), 
+                success: function(response){
+                      alert(response);
+                    },
                 dataType: "json"
             });
         };
