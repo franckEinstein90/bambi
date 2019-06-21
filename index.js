@@ -69,12 +69,14 @@ const newEvent = function(eventTitle){
 const fs = require('fs');
 
 router.use(express.json());
-router.post('/event/create/*', function(req, res){
+router.post('/event/create/*', eventController.create_event);
+
+/*function(req, res){
     let eventTitle = req.body.eventTitle;
     console.log(eventTitle);
     newEvent( eventTitle );
     res.send("hello");
-}); 
+}); */
 
 app.use(router);
 app.use(express.static('public/'));

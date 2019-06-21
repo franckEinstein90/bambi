@@ -1,9 +1,9 @@
 const events = require('./core/events.js').events;
 const calendarEvents = require('./calendarEvents.js').calendarEvents;
 
-const eventsUI = require('./ui/calendarUI.js').eventsUI;
 const calendarUI = require('./ui/calendarUI.js').calendarUI;
 const calendarSideBarUI = require('./ui/calendarUI.js').calendarSideBarUI;
+const eventsUI= require('./ui/eventsUI.js').eventsUI;
 
 const p = (function() {
     return {

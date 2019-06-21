@@ -8,15 +8,25 @@
 .calendar-container {
 
 }
+
+#calendar-container-header{
+    color:red;
+}
+
 .calendar-sidebar {
 	width: 10%;
 	margin: 0 auto;
 	float: left;
 	background:linear-gradient(120deg, lighten($blue-white, 5%), $blue-white);
 	padding-bottom: 0.7rem;
+    text-align:center;
 }
+/*********************************
+ * calendar-table-container holds
+ * the days of the week
+ * ******************************/
 .calendar-table-container{
-	width: 90%;
+	width: 80%;
 	float: right;
 }
 #calendar-table{
@@ -42,10 +52,11 @@
   z-index: 100;
  }
  #calendar-table-body TR.week-row TD{
-   height:50px;
+   height:30px;
  }
  #calendar-table-body TR.event-row TD{
-   background-color: black;
+   background-color: beige;
+    height:2px;
  }
 
 .event-list{
