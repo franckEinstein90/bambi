@@ -1,14 +1,17 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 const appData = {
-	"monthsEn" :  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-	"weekDays" : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    "monthsEn": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    "monthsFr": ["Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"],
+    "weekDaysAbbrEn": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "weekDaysAbbrFr": ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+    "weekDays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 }
 
 
-module.exports = { appData };
-
+module.exports = {
+    appData
+};
 },{}],2:[function(require,module,exports){
-
 /******************************************************************************
  * calendarEvents namespace 
  * FranckEinstein
@@ -37,7 +40,7 @@ const calendarEvents = (function() {
         calendar = new events.Registrar();
 
     return {
-        
+
         /******************************************************************
          *  A calendar event is a type of event that has the following
          *  properties:
@@ -49,33 +52,32 @@ const calendarEvents = (function() {
          ***********************************************************************/
 
 
-   CalendarEvent: function(beginDate, endDate, title, description) {
-            let assignIfDefined = x => x !== undefined? x.trim():"";
+        CalendarEvent: function(beginDate, endDate, title, description) {
+            let assignIfDefined = x => x !== undefined ? x.trim() : "";
 
             try {
-                  this.timeSpan = new timeSpan.Span(
-                                     beginDate, endDate, 
-                                     timeSpan.units.days);
+                this.timeSpan = new timeSpan.Span(
+                    beginDate, endDate,
+                    timeSpan.units.days);
 
-                  this.eventTitle = assignIfDefined(title);
-                  this.eventDescription = assignIfDefined(description);
+                this.eventTitle = assignIfDefined(title);
+                this.eventDescription = assignIfDefined(description);
 
                 events.Event.call(
-                    this, 
-                    events.eventState[this.timeSpan.includes(new Date())?"on":"off"]);
-            } 
-            catch (e) {
+                    this,
+                    events.eventState[this.timeSpan.includes(new Date()) ? "on" : "off"]);
+            } catch (e) {
                 throw (e);
             }
         },
 
-       /*********************************************************************/
+        /*********************************************************************/
         /* Errors, exceptions, and logs
         /*********************************************************************/
         Exception: function(err) {
             this.message = err;
         }
-   }
+    }
     //****************************//
     // end calendarEvents namespace //
     //****************************//
@@ -89,9 +91,10 @@ calendarEvents.CalendarEvent.constructor = events.Event;
 
 
 
-module.exports = { calendarEvents };
-
-},{"./dateUtils":4,"./events":5,"./timeSpan":8}],3:[function(require,module,exports){
+module.exports = {
+    calendarEvents
+};
+},{"./dateUtils":5,"./events":7,"./timeSpan":10}],3:[function(require,module,exports){
 /**************************************************************
  *  calendarSettings module 
  *  abstracts the data element of the calendar 
@@ -103,14 +106,14 @@ const calendarSettings = (function() {
     let _month, _year;
 
     return {
-	year: () => _year, 
-        month: () => _month, 
-        firstDay: () => dateUtils.firstDayOfMonth(_year, _month), 
-        monthLength: () => dateUtils.monthLength(_year, _month), 
-	beginYear : 2010, 
-	endYear: 2030, 
-        
-       	nextMonth: function() { //set calendarSettings to following month
+        year: () => _year,
+        month: () => _month,
+        firstDay: () => dateUtils.firstDayOfMonth(_year, _month),
+        monthLength: () => dateUtils.monthLength(_year, _month),
+        beginYear: 2010,
+        endYear: 2030,
+
+        nextMonth: function() { //set calendarSettings to following month
             let m, y;
             if (_month < 11) {
                 m = _month + 1;
@@ -121,6 +124,7 @@ const calendarSettings = (function() {
             }
             calendarSettings.set(y, m);
         },
+
         previousMonth: function() { //set calendarSettings to previous month
             let m, y;
             if (_month > 0) {
@@ -132,9 +136,11 @@ const calendarSettings = (function() {
             }
             calendarSettings.set(y, m);
         },
-	yearIdx: function(){
-		return _year - calendarSettings.beginYear;
-	}, 
+
+        yearIdx: function() {
+            return _year - calendarSettings.beginYear;
+        },
+
         set: function(year, month) {
             if (arguments.length == 0) {
                 let today = new Date();
@@ -142,15 +148,244 @@ const calendarSettings = (function() {
                 return;
             }
             _month = month;
-            _year = year;       
+            _year = year;
         }
     };
 })();
 
 //end calendarSettings
-module.exports = {calendarSettings};
+module.exports = {
+    calendarSettings
+};
+},{"./dateUtils.js":5}],4:[function(require,module,exports){
+/******************************************************************************
+ * calendarUI.js
+ * ----------------
+ *  includes modules 
+ *  - eventsUI: all to do with the events view
+ *  - calendarSideBarUI: 
+ *  - calendarUI: all to do with the calendar event
+ * ***************************************************************************/
+const calendarSettings = require('./calendarSettings.js').calendarSettings;
+const dateUtils = require('./dateUtils.js').dateUtils;
+const eventDialogController = require('./eventDialogController.js');
+const appData = require('./appData.js').appData;
+const ui = require('./ui.js').ui;
 
-},{"./dateUtils.js":4}],4:[function(require,module,exports){
+const calendarSideBarUI = (function() {
+    let uiSideBar = ui.newUI({
+            sideBarHeading: "sidebar-heading"
+        }),
+        today = new Date(),
+        sidebarTitle = () => appData["weekDays"][today.getDay()] + " " + today.getDate();
+    return {
+        onReady: function(calendar) {
+            try {
+                uiSideBar.sideBarHeading.text(sidebarTitle());
+            } catch (e) {
+                console.log("error " + e);
+                throw e;
+            }
+        }
+    }
+})();
+
+const calendarUI = (function() {
+
+    let uiCalendar = ui.newUI({
+            calendarTitle: "tableCalendar-title",
+            weekdaysLabels: "calendar-table-weekdays-labels",
+            calendarBody: "calendar-table-body",
+            previousMonth: "select-previous-month",
+            nextMonth: "select-next-month",
+            createNewEvent: "dialog-show-button"
+        }),
+
+        redrawUI = (calendar) => {
+            renderCalendarFrame();
+            renderCalendarBody(calendar);
+        },
+
+        renderCalendarFrame = () => {
+            let weekdaysHeader = "";
+            appData["weekDaysAbbrEn"].map( //add the days of the week to the calendar's chrome
+                weekdayLabel => weekdaysHeader += `<td>${weekdayLabel}</td>`);
+            uiCalendar.weekdaysLabels.html(weekdaysHeader);
+
+            setCalendarTitle();
+            setFormValues();
+        },
+
+        setCalendarTitle = () => {
+            let calendarTitle =
+                dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
+                calendarSettings.year();
+            uiCalendar.calendarTitle.html("<h1>" + calendarTitle + "</h1>");
+        },
+
+        setFormValues = () => {
+            document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
+            document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
+        },
+
+        renderCalendarBody = (calendar) => {
+            uiCalendar.calendarBody.empty();
+            populateCalendarTable(calendar);
+        },
+
+        populateCalendarTable = function(calendar) {
+            let firstDay = calendarSettings.firstDay(),
+                howMany = calendarSettings.monthLength(),
+                dayCounter = 1;
+            while (dayCounter <= howMany) {
+                dayCounter = addWeekRow(calendar, dayCounter);
+            }
+        },
+
+        addWeekRow = (calendar, dayCounter) => {
+            let howMany = calendarSettings.monthLength(),
+                weekRow = "",
+                firstDay = calendarSettings.firstDay(),
+		localDayCounter = dayCounter, 
+        	getDayId = () => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), localDayCounter);
+            for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
+                if ((AJS.$("#calendar-table-body tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
+			let dayCell = cellContent(calendar, localDayCounter++),
+			    dayId = getDayId(),  
+			    dayCssClass = dayId.localeCompare(dateUtils.dayStamp()) == 0 ? "today" : "day";
+			weekRow += `<td ID = ${dayId} class='${dayCssClass}'> ${dayCell} </td>`; 
+                } else {
+                    weekRow += "<td class='day'></td>";
+                }
+            }
+            uiCalendar.calendarBody.append(`<TR class="week-row">${weekRow}</TR>`);
+	    addEventRow(calendar, dayCounter, localDayCounter-1);
+            return localDayCounter;
+        },
+	addEventRow = (calendar, dayBegin, dayEnd) =>{
+            uiCalendar.calendarBody.append(`<TR class="event-row"><td colspan=7>events go here</td></TR>`);
+	},
+
+        cellContent = function(calendar, dayCounter) {
+            let day = new Date(calendarSettings.year(), calendarSettings.month(), dayCounter),
+                eventsOnDay = calendar.filter(ev =>
+                    ev.timeSpan.includes(day)),
+                eventList = "";
+            eventsOnDay.forEach(x => eventList += x.eventTitle);
+
+            return `${dayCounter} ${eventList}`;
+        },
+
+        populateDateSelectionForm = () => {
+            let makeOption = (idx, value) => `<option value="${idx}">${value}</option>`,
+                yearChooser = document.dateChooser.chooseYear;
+            for (i = calendarSettings.beginYear; i < calendarSettings.endYear; i++) {
+                yearChooser.options[yearChooser.options.length] = new Option(i, i);
+            }
+            appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
+            setFormValues();
+        },
+
+        assignActions = (calendar) => {
+            ui.assignAction({
+                triggerHandle: uiCalendar.previousMonth,
+                action: x => calendarSettings.previousMonth(),
+                postProcess: x => redrawUI(calendar)
+            });
+            ui.assignAction({
+                triggerHandle: uiCalendar.nextMonth,
+                action: x => calendarSettings.nextMonth(),
+                postProcess: x => redrawUI(calendar)
+            });
+            ui.assignAction({
+                triggerHandle: uiCalendar.createNewEvent,
+                action: (e) => {
+                    e.preventDefault();
+                    AJS.dialog2("#event-dialog").show();
+                }
+            });
+        };
+
+    return {
+
+        onReady: (calendar) => {
+            calendarSettings.set();
+            populateDateSelectionForm();
+            assignActions(calendar);
+            redrawUI(calendar);
+        }
+    };
+})();
+
+
+const eventsUI = (function() {
+
+    let uiEvents = ui.newUI({
+            eventlistpane: "eventlist"
+        }),
+        div = (htmlClass, content) => `<div class='${htmlClass}'>${content}</div>`,
+        controlIcon = function(icon, controlID, accessibilityText) {
+            let tag = `<span class='aui-icon aui-icon-small ${icon} event-edit-btn' `;
+            tag += `id='${controlID}'>${accessibilityText}</span>`;
+            return tag;
+        },
+
+        eventControls = function(eventID) {
+            let editButton = `${controlIcon('aui-iconfont-edit', eventID+"-edit", "modify this event")}`,
+                deleteButton = `${controlIcon('aui-iconfont-delete', eventID+"-delete", "delete this event")}`;
+            return `<div class='event-controls'>${editButton}${deleteButton}</div>`;
+        },
+
+        renderEventPane = function({
+            id,
+            timeSpan,
+            eventTitle,
+            eventDescription,
+            eventState
+        }) {
+            let formatDate = (date) => date.getFullYear() + "/" + 
+				   date.getMonth() + "/" + 
+				   date.getDate(), 
+		dateHeader = formatDate(timeSpan.beginDate) + " to " + formatDate(timeSpan.endDate), 
+		htmlStr = 
+		   div('hidden', id) + div('eventTitle', eventTitle) + 	
+		   eventControls(id) + div('event-dates', dateHeader);
+            htmlStr = div('eventHeaderRow', htmlStr);
+    	    if (eventDescription) {
+		let divBodyID =`eventDescription-${id}`;
+		htmlStr +=  `<div id='${divBodyID}' class='aui-expander-content'>${eventDescription}</div>`;  
+		htmlStr += `<a id='replace-text-trigger' data-replace-text='Read less' class='aui-expander-trigger'`;
+		htmlStr += ` aria-controls='${divBodyID}'>Read more</a>`;
+	    }
+	    return div('event-view', htmlStr);
+        },
+
+        rendereventsview = (calendar) => {
+            eventList = AJS.$("#eventlist");
+            calendar.forEach(calendarEvent => eventList.append(renderEventPane(calendarEvent)));
+        };
+
+    return {
+
+        onReady: (calendar) => {
+            try {
+                rendereventsview(calendar);
+            } catch (e) {
+                console.log(e);
+                throw e + " at eventsUI.onReady";
+            }
+        }
+    };
+
+})();
+
+module.exports = {
+    calendarSideBarUI,
+    calendarUI,
+    eventsUI
+};
+
+},{"./appData.js":1,"./calendarSettings.js":3,"./dateUtils.js":5,"./eventDialogController.js":6,"./ui.js":11}],5:[function(require,module,exports){
 /******************************************************************************
  * The dateUtils module defines several utilites related to time 
  * It includes:
@@ -177,17 +412,17 @@ const dateUtils = (function() {
 
         setSeparator: (sep) => separator = sep,
 
-        firstDayOfMonth: (theYear, monthIdx) => 
+        firstDayOfMonth: (theYear, monthIdx) =>
             new timeSpan.Day(new Date(theYear, monthIdx, 1)),
 
         monthLength: (year, monthIdx, timeMeasure) =>
             Math.ceil(
-                timeSpan.msSpanLength.month(year, monthIdx) / 
+                timeSpan.msSpanLength.month(year, monthIdx) /
                 timeSpan.msSpanLength.day),
 
         monthIdxToStr: (monthIdx) => theMonths[monthIdx],
 
-        dayStamp: function(){
+        dayStamp: function() {
             if (arguments.length == 0) { //if the function is called without arguments, returns today as dateStamp
                 let d = new Date();
                 return dateUtils.dayStamp(d.getFullYear(), d.getMonth(), d.getDate());
@@ -211,8 +446,85 @@ const dateUtils = (function() {
 module.exports = {
     dateUtils
 };
+},{"./timeSpan":10}],6:[function(require,module,exports){
+/******************************************************************************
+ * eventDialogController.js 
+ * FranckEinstein90
+ * --------------------------
+ * controls the form used to create or edit events 
+ * ***************************************************************************/
 
-},{"./timeSpan":8}],5:[function(require,module,exports){
+/****************************************************
+ * Module eventDialogController
+ ****************************************************/
+const eventDialogController = (function() {
+    let dialogAction = undefined,
+        eventBeginDateField = "#event-dialog-begin-date",
+        eventEndDateField = "#event-dialog-end-date",
+        dateStampToDate = function(dayStamp) {
+            dateUtils.setSeparator("-");
+            return dateUtils.dayStampToDate(dayStamp)
+        },
+        calendarBlankEvent = function(dayStamp) {
+            let beginDate = dateStampToDate(dayStamp);
+            return new eventUtils.Event(beginDate, beginDate, "", "");
+        },
+        setEventFormValues = function(ev) {
+            dateUtils.setSeparator('-');
+            AJS.$(eventBeginDateField).val(dateUtils.dateToDayStamp(ev.beginDate));
+            AJS.$(eventEndDateField).val(dateUtils.dateToDayStamp(ev.endDate));
+            if (ev.eventTitle) {
+                AJS.$("#event-dialog-title").val(ev.eventTitle);
+            }
+            if (ev.eventDescription) {
+                AJS.$("#event-dialog-description").val(ev.eventDescription);
+            }
+        },
+        setEventDialogHeader = function(headerTitle) {
+            AJS.$("#event-dialog-action").text(headerTitle);
+        },
+        validateFormInfo = function() {
+            let fieldAsDate = function(fieldID) {
+                    return dateUtils.dayStampToDate(AJS.$(fieldID).val());
+                },
+                beginDate = fieldAsDate(eventBeginDateField),
+                endDate = fieldAsDate(eventEndDateField);
+            console.log("validating");
+        }
+    return {
+
+        dialogActions: {
+            create: 1,
+            edit: 2
+        },
+
+        getDialogAction: function() {
+            return dialogAction;
+        },
+
+        showEdit: function(evID) {
+            dialogAction = eventDialogController.dialogActions.edit;
+            setEventDialogHeader("Modifying existing event");
+            let ev = eventUtils.get(evID);
+            setEventFormValues(ev);
+            AJS.dialog2("#event-dialog").show();
+        },
+
+        showNew: function(dayStamp) {
+            dialogAction = eventDialogController.dialogActions.create;
+            setEventDialogHeader("Creating new event");
+            let ev = calendarBlankEvent(dayStamp);
+            setEventFormValues(ev);
+            AJS.dialog2("#event-dialog").show();
+        },
+
+        publish: function(ev) {
+            console.log("publishing event to page" + ev.eventTitle);
+            validateFormInfo();
+        }
+    }
+})();
+},{}],7:[function(require,module,exports){
 /*******************************************************************
  * events Module
  * ---------------
@@ -241,8 +553,8 @@ const events = (function() {
 
         generateUUID = () => {
             let d = new Date().getTime();
-            if (    typeof performance !== 'undefined' && 
-                    typeof performance.now === 'function') {
+            if (typeof performance !== 'undefined' &&
+                typeof performance.now === 'function') {
                 d += performance.now(); //use high-precision timer if available
             }
             return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -355,7 +667,7 @@ events.Event.prototype = {
         if (this.isOn) {
             this.off();
         } else {
-            this.on;
+            this.on();
         }
         this.onFlipActions.forEach(x => x());
     }
@@ -425,19 +737,29 @@ events.Registrar.prototype = {
 module.exports = {
     events
 };
-
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /*****************************************************************************/
 const pageContainer = require('./pageContainer.js').pageContainer;
-/*****************************************************************************/
+
+
+/*****************************************************************************
+
+
+*****************************************************************************/
 
 AJS.toInit(function($) {
+
+    /*********************************************************************
+     * add the section that displays event sidebar ui 
+     ********************************************************************/
+    AJS.$("h1:contains('Events')").before(
+        "<div id='eventlist' class='eventList'></div>");
 
     /*********************************************************************
      * Collects everything that looks like an event description 
      * already on the page into an array of strings
      ********************************************************************/
-    let eventDescriptions= [];
+    let eventDescriptions = [];
     AJS.$("h1:contains('Events') + ul li").each(function(index) {
         eventDescriptions.push($(this).text());
     });
@@ -449,12 +771,12 @@ AJS.toInit(function($) {
     pageContainer.onReady(eventDescriptions);
 
 });
-
-},{"./pageContainer.js":7}],7:[function(require,module,exports){
+},{"./pageContainer.js":9}],9:[function(require,module,exports){
 const events = require('./events.js').events;
 const calendarEvents = require('./calendarEvents.js').calendarEvents;
-const calendarUI = require('./ui.js').calendarUI;
-const  calendarSideBarUI = require('./ui.js').calendarSideBarUI;
+const eventsUI = require('./calendarUI.js').eventsUI;
+const calendarUI = require('./calendarUI.js').calendarUI;
+const calendarSideBarUI = require('./calendarUI.js').calendarSideBarUI;
 
 const p = (function() {
     return {
@@ -485,8 +807,8 @@ const eventDecoder = (function() {
 
         makeEventObject = (evFieldValues) => {
             let beginDate = p.toDate(evFieldValues.beginDate),
-            endDate = p.toDate(evFieldValues.endDate),
-            description = evFieldValues.description.split(':').filter(x => x.length > 1);
+                endDate = p.toDate(evFieldValues.endDate),
+                description = evFieldValues.description.split(':').filter(x => x.length > 1);
 
             try {
                 return new calendarEvents.CalendarEvent(
@@ -515,22 +837,30 @@ const eventDecoder = (function() {
     }
 })()
 
-const pageContainer = (function(){
+const pageContainer = (function() {
 
- let calendar = new events.Registrar();
+    let calendar = new events.Registrar();
 
-                    return {
-                        onReady: (eventStrings) => {
-                            eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
-			    calendarSideBarUI.onReady(calendar); 
-                            calendarUI.onReady(calendar);
-                        }
-                    }
+    return {
+        Command: function(execute, undo, value) {
+            this.execute = execute;
+            this.undo = undo;
+            this.value = value;
+        },
+        onReady: (eventStrings) => {
+            //get all events on the page into the event registrar (calendar)
+            eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
+            eventsUI.onReady(calendar);
+            calendarSideBarUI.onReady(calendar);
+            calendarUI.onReady(calendar);
+        }
+    }
 })()
 
-module.exports = { pageContainer }
-
-},{"./calendarEvents.js":2,"./events.js":5,"./ui.js":9}],8:[function(require,module,exports){
+module.exports = {
+    pageContainer
+}
+},{"./calendarEvents.js":2,"./calendarUI.js":4,"./events.js":7}],10:[function(require,module,exports){
 /******************************************************************************
  * The timeSpan module defines several utilites related to time ranges. 
  * It includes:
@@ -623,16 +953,17 @@ timeSpan.Span.prototype = {
         this.units = units;
     },
 
-    includes: function(targetDate) {
-        targetYear = targetDate.getFullYear();
-        if (this.beginDate.getFullYear() <= targetYear &&
-            this.endDate.getFullYear() >= targetYear) {
+    includes: function(targetDate) { //returns true if the span includes this date or part of this date
+
+        let inOrder = (x1, x2, x3) => (x1 <= x2 && x2 <= x3) ? true : false,
+            mapInOrder = (x1, x2, x3, mapFunc) => inOrder(mapFunc(x1), mapFunc(x2), mapFunc(x3));
+
+        if (mapInOrder(this.beginDate, targetDate, this.endDate, x => x.getFullYear())) {
             if (this.units === timeSpan.units.years) {
                 return true;
             }
             let targetMonth = targetDate.getMonth();
-            if (this.beginDate.getMonth() <= targetMonth &&
-                this.endDate.getMonth() >= targetMonth) {
+            if (inOrder(this.beginDate.getMonth(), targetMonth, this.endDate.getMonth())) {
                 if (this.units === timeSpan.units.months) {
                     return true;
                 }
@@ -685,187 +1016,48 @@ timeSpan.Timer.prototype = {
 module.exports = {
     timeSpan
 };
-
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /******************************************************************************
  * ui.js
- * FranckEinstein90
  * ----------------
- *  includes modules 
- *  - eventsUI: all to do with the events view
- *  - calendarUI: all to do with the calendar event
- *
+ *  Abstracts a user interface object
  * ***************************************************************************/
-const calendarSettings = require('./calendarSettings.js').calendarSettings;
-const dateUtils = require('./dateUtils.js').dateUtils;
-const appData = require('./appData.js').appData;
 
 const ui = (function() {
-
-    let uiHandle = (uiID) => AJS.$("#" + uiID);
-
+    let uiHandle = (uiID) => AJS.$("#" + uiID),
+        cmdHistory = [],
+        preProcessAction = function() {
+            cmdHistory.push(1);
+        };
     return {
-        assignAction: (cmd, action) => {
-            uiHandle(cmd).click(function(e) {
-                action(e);
+        assignAction: (cmd) => {
+            cmd.triggerHandle.click(function(e) {
+                if (cmd.preProcess) {
+                    cmd.preProcess();
+                }
+                cmd.action(e);
+                if (cmd.postProcess) {
+                    cmd.postProcess();
+                }
             })
         },
-        UI: function(uiIds) {
-            this.ids = uiIds;
-        }
-    }
-})();
 
-
-const calendarSideBarUI = (function() {
-    let uiSideBar = new ui.UI({
-            sideBarHeading: "sidebar_heading"
-        }),
-        today = new Date(),
-        sidebarTitle = () => 
-		appData["weekDays"][today.getDay()] + " " +  
-		today.getDate();
-    return {
-        onReady: function(calendar) {
-		try{
-            AJS.$("#sidebar-heading").text(sidebarTitle());
-	}
-	catch (e){
-		console.log("error " + e);
-		throw e;
-	}
-        }
-    }
-})()
-
-const calendarUI = (function() {
-
-    let uiCalendar = new ui.UI({
-            calendarTitle: "tableCalendar-title",
-            calendarBody: "tableBody",
-            previousMonth: "select-previous-month",
-            nextMonth: "select-next-month",
-            createNewEvent: "dialog-show-button"
-        }),
-
-        dayId = (dayCounter) => dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), dayCounter),
-
-        renderCalendar = (calendar) => {
-            clear();
-            setTitle(calendar);
-            populateCalendarTable(calendar);
-        },
-
-        clear = () => {},
-
-        setTitle = (calendar) => {
-            /*            getUIHandle(uiElementsIds.CalendarTitle).html("<h1>" +
-                            dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
-                            calendarSettings.year() + "</h1>");*/
-        },
-        setFormValues = () => {
-            document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
-            document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
-        },
-        populateCalendarTable = function(calendar) {
-            let firstDay = calendarSettings.firstDay(),
-                howMany = calendarSettings.monthLength(),
-                dayCounter = 1;
-            while (dayCounter <= howMany) {
-                dayCounter = addWeekRow(calendar, dayCounter);
-            }
-        },
-
-        addWeekRow = (calendar, dayCounter) => {
-            let howMany = calendarSettings.monthLength(),
-                weekRow = "",
-                calendarBody = AJS.$("#tableBody"),
-                firstDay = calendarSettings.firstDay();
-
-            for (let i = 0; i < 7 && dayCounter <= howMany; i++) {
-                if ((AJS.$("#tableBody tr").length >= 1) || (i >= firstDay.weekDayIdx)) { //are we within the month?
-                    weekRow += `<td ID=${dayId(dayCounter)} class='day'>${cellContent(calendar, dayCounter++)}</td>`;
-                } else {
-                    weekRow += "<td class='day'></td>";
+        newUI: function(uiIds) {
+            let obj = {};
+            for (let property in uiIds) {
+                if (uiIds.hasOwnProperty(property)) {
+                    Object.defineProperty(obj, property, {
+                        enumerable: false,
+                        value: uiHandle(uiIds[property])
+                    });
                 }
             }
-            calendarBody.append(`<TR>${weekRow}</TR>`);
-            return dayCounter;
-        },
-
-        cellContent = function(calendar, dayCounter) {
-            let day = new Date(calendarSettings.year(), calendarSettings.month(), dayCounter),
-                eventsOnDay = calendar.filter(ev =>
-                    ev.timeSpan.includes(day)),
-                eventList = "";
-            eventsOnDay.forEach(x => eventList += x.eventTitle);
-
-            return `${dayCounter} ${eventList}`;
-        },
-
-        populateDateSelectionForm = () => {
-            let makeOption = (idx, value) => `<option value="${idx}">${value}</option>`,
-                yearChooser = document.dateChooser.chooseYear;
-            for (i = calendarSettings.beginYear; i < calendarSettings.endYear; i++) {
-                yearChooser.options[yearChooser.options.length] = new Option(i, i);
-            }
-            appData['monthsEn'].forEach((month, idx) => AJS.$("#chooseMonth").append(makeOption(idx, month)));
-            setFormValues();
-        },
-
-        assignActions = () => {
-            ui.assignAction(uiCalendar.ids.previousMonth, x => calendarSettings.previousMonth());
-            ui.assignAction(uiCalendar.ids.nextMonth, x => calendarSettings.nextMonth());
-            ui.assignAction(uiCalendar.ids.createNewEvent, newEventDialogAction);
-        },
-
-        newEventDialogAction = (e) => {
-            e.preventDefault();
-            AJS.dialog2("#event-dialog").show();
-        };
-
-    return {
-
-        onReady: (calendar) => {
-            calendarSettings.set();
-            populateDateSelectionForm();
-            assignActions();
-            renderCalendar(calendar);
-            setFormValues();
+            return obj;
         }
-    };
-})();
-
-
-const eventsUI = (function() {
-
-    let ui = {
-            eventlistpane: "eventlist"
-
-        },
-
-
-        rendereventsframe = () => AJS.$("#eventlist"),
-
-        rendereventpane = (calendarevent) => `<h1>${calendarevent.title}</h1>`,
-
-        rendereventsview = (calendar) => {
-            eventlist = rendereventsframe();
-            calendar.forEach(x => eventlist.append(rendereventpane(x)));
-        };
-
-    return {
-
-        onReady: (calendar) => {
-            rendereventsview(calendar);
-        }
-    };
-
+    }
 })();
 
 module.exports = {
-    calendarSideBarUI,
-    calendarUI
+    ui
 };
-
-},{"./appData.js":1,"./calendarSettings.js":3,"./dateUtils.js":4}]},{},[6]);
+},{}]},{},[8]);
