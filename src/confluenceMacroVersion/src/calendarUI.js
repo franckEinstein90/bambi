@@ -18,8 +18,8 @@ const calendarUIChrome = (function() {
     let uiCalendar,
         setCalendarTitle = () => {
             let calendarTitle =
-                dateUtils.monthIdxToStr(calendarSettings.month()) + " " +
-                calendarSettings.year();
+                dateUtils.monthIdxToStr(calendarSettings.selectedMonth()) + " " +
+                calendarSettings.selectedYear();
             uiCalendar.calendarTitle.html("<h1>" + calendarTitle + "</h1>");
         };
 
@@ -36,7 +36,7 @@ const calendarUIChrome = (function() {
 
         update: () => {
             setCalendarTitle();
-            document.dateChooser.chooseMonth.selectedIndex = calendarSettings.month();
+            document.dateChooser.chooseMonth.selectedIndex = calendarSettings.selectedMonth();
             document.dateChooser.chooseYear.selectedIndex = calendarSettings.yearIdx();
         }
     }
@@ -53,14 +53,14 @@ const calendarInnerTable = (function() {
         },
 	insertDayId = function(day){ //create a new day ID and inserts it into the displayedDayIds array
 		dateUtils.setSeparator("-");
-		let id = dateUtils.dayStamp(calendarSettings.year(), calendarSettings.month(), day);
+		let id = dateUtils.dayStamp(calendarSettings.selectedYear(), calendarSettings.selectedMonth(), day);
 		displayedDayIds.push(id);
 		return id;
 	},
 	dayCell = function(calendar, day){
 		let cssClass = (dateUtils.today.monthIDX === day && calendarSettings.current())? "today" : "day",
 		    eventsOnDay = calendar.filter(ev => 
-			ev.timeSpan.includes(new Date(calendarSettings.year(), calendarSettings.month(), day))),
+			ev.timeSpan.includes(new Date(calendarSettings.selectedYear(), calendarSettings.selectedMonth(), day))),
 		    eventList = "", 
 		    description = function(ce) {return ce.eventDescription === ""?"No Description":ce.eventDescription}, 
 		    makeListItem = function(calendarEvent) {
@@ -144,7 +144,7 @@ const calendarUI = (function() {
                 let theMonth = document.dateChooser.chooseMonth.selectedIndex,
                     yearIDX = document.dateChooser.chooseYear.selectedIndex,
                     theYear = parseInt(document.dateChooser.chooseYear.options[yearIDX].text);
-                calendarSettings.set(theYear, theMonth);
+                calendarSettings.set({year:theYear, month:theMonth, day:1});
                 update(calendar);
             });
         },
@@ -162,7 +162,6 @@ const calendarUI = (function() {
         }
     return {
         onReady: (calendar) => {
-            calendarSettings.set();
             calendarUIChrome.onReady(uiCalendar);
             calendarInnerTable.onReady(uiCalendar);
             renderCalendarFrame();

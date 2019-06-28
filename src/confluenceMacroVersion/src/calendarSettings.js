@@ -1,60 +1,89 @@
 /**************************************************************
  *  calendarSettings module 
- *  abstracts the data element of the calendar 
+ *  keeps tracks of the current settings of the calendar
+ *  - currentSelectedDate
+ *  - mode: {year, month, day}
  **************************************************************/
 
+const timeSpan = require('./dateUtils/timeSpan.js').timeSpan;
 const dateUtils = require('./dateUtils/dateUtils.js').dateUtils;
 
 const calendarSettings = (function() {
-    let _month, _year;
+    let today = new Date(),
+        selectedDate = {  //by default, selected date is set to today
+	   _year: today.getFullYear(), 
+	   _month: today.getMonth(),
+	   _day: today.getDate()
+	},
+	_mode = timeSpan.units.months 
 
     return {
-	current: function(){ //returns true if the current settings of the calendar correpond to today's date
-		return (_month === dateUtils.today.month) && (_year === dateUtils.today.year)	
+	mode:{
+		day: timeSpan.units.days, 
+		week: timeSpan.units.weeks,
+		month: timeSpan.units.months, 
+		year: timeSpan.units.years
 	},
-	year: () => _year,
-        month: () => _month,
-        firstDay: () => dateUtils.firstDayOfMonth(_year, _month),
-        monthLength: () => dateUtils.monthLength(_year, _month),
+        selectedYear:  () => selectedDate["_year"],
+	selectedMonth: () => selectedDate["_month"],
+        selectedDay:   () => selectedDate["_day"], 
+	selectedMode: ()=> _mode,
+	current: function(){
+		//returns true if the selected date is today's
+		return  (calendarSettings.selectedYear() === today.getFullYear()) &&
+			(calendarSettings.selectedMonth() === today.getMonth()) &&
+			(calendarSettings.selectedDay() === today.getDate());
+	},
+        firstDay: function(){ 
+		return dateUtils.firstDayOfMonth( 
+				calendarSettings.selectedYear(), 		
+				calendarSettings.selectedMonth());
+		},
+        monthLength: () => dateUtils.monthLength(
+			calendarSettings.selectedYear(), 
+			calendarSettings.selectedMonth()), 
         beginYear: 2010,
         endYear: 2030,
 
         nextMonth: function() { //set calendarSettings to following month
-            let m, y;
-            if (_month < 11) {
-                m = _month + 1;
-                y = _year;
+            let newSelectedDate = {day:1}; 
+            if (calendarSettings.selectedMonth() < 11) {
+                newSelectedDate.month = calendarSettings.selectedMonth() + 1;
+                newSelectedDate.year = calendarSettings.selectedYear(); 
             } else {
-                m = 0;
-                y = _year + 1;
+                newSelectedDate.month = 0; 
+		newSelectedDate.year = calendarSettings.selectedYear() + 1;
             }
-            calendarSettings.set(y, m);
+	    newSelectedDate.day = 1;
+            calendarSettings.set(newSelectedDate);
         },
 
         previousMonth: function() { //set calendarSettings to previous month
-            let m, y;
-            if (_month > 0) {
-                m = _month - 1;
-                y = _year;
+            let newSelectedDate = {day:1}; 
+            if (calendarSettings.selectedMonth() > 0) {
+                newSelectedDate.month = calendarSettings.selectedMonth() - 1;
+                newSelectedDate.year = calendarSettings.selectedYear(); 
             } else {
-                m = 11;
-                y = _year - 1;
+                newSelectedDate.month =  11;
+                newSelectedDate.year = calendarSettings.selectedYear() - 1;
             }
-            calendarSettings.set(y, m);
+            calendarSettings.set(newSelectedDate);
         },
 
         yearIdx: function() {
-            return _year - calendarSettings.beginYear;
+            return calendarSettings.selectedYear() - calendarSettings.beginYear;
         },
-
-        set: function(year, month) {
-            if (arguments.length == 0) {
-                let today = new Date();
-                calendarSettings.set(today.getFullYear(), today.getMonth());
-                return;
-            }
-            _month = month;
-            _year = year;
+	reset: function() { //reset to today's date
+		calendarSettings.set({
+				year:today.getFullYear(), 
+				month:today.getMonth(), 
+				day: today.getDate()
+			})
+	},
+        set: function({year, month, day}) {
+		selectedDate._year = year;
+		selectedDate._month = month;
+		selectedDate._day = day;
         }
     };
 })();

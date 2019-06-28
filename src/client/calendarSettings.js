@@ -71,7 +71,7 @@ const calendarSettings = (function() {
         },
 
         yearIdx: function() {
-            return calendarSettings.currentYear() - calendarSettings.beginYear;
+            return calendarSettings.selectedYear() - calendarSettings.beginYear;
         },
 	reset: function() { //reset to today's date
 		calendarSettings.set({
