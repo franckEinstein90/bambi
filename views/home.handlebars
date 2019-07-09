@@ -5,50 +5,23 @@
 
 
 <HR>
+<div class="calendarContainer" ID="calendar-container">
 
-<div class="calendar-container">
-<table class="aui">
-<thead id="calendar-container-header">
-<TR>
-    <TH style="width:20%"><button id="dialog-show-button" class="aui-button">Add an event</button></TH>
-    <TH style="width:10%"><span id="select-previous-month" class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span></TH>
-    <TH  style="width:60%;text-align:center" ID="tableCalendar-title" COLSPAN=4></TH>
-    <TH style="width:10%"><span id="select-next-month" class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span></TH>
-</TR>
-</thead>
-</table>
-<div style="height:15px"></div>
-<div class="calendar-sidebar">
-	<div class="sidebar-nav">
-		<h2 id="sidebar-heading"></h2>	
-	</div>
-</div>
+	<table class="aui calendarContainerHeader" ID="calendar-container-header">
+	<thead>
+	<tr>
 
-<div class="calendar-table-container">
 
-    <table ID="calendar-table" class="aui">
+	<TH style="text-align:center" ID="tableCalendar-title"></TH>
+	</tr>
+	</thead>
+	</table><!--end calendar-container-header-->
 
-    <thead ID="calendar-table-header">
-        <tr ID="calendar-table-weekdays-labels"></tr>
-    </thead>
 
-    <tbody ID="calendar-table-body"></tbody>
 
-    <tfoot>
-       <tr>
-       <TD COLSPAN=7>
-       <FORM name="dateChooser" ID="dateChooser" class="aui">
-       <SELECT ID="chooseMonth" name="chooseMonth">
-       </SELECT>
-       <SELECT NAME="chooseYear">
-       </SELECT>
-       </FORM>
-       </TD>
-       </tr>
-    </tfoot>
+	<div class="calendarSidebar" ID="calendar-sidebar">
 
-    </table>
+	</div><!--end calendar-sidebar-->
 
-</div>
 
-</div>
+</div><!--end calendar-container-->
