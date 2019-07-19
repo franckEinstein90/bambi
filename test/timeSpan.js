@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const timeSpan = require('../src/client/timeSpan.js').timeSpan;
+const timeSpan = require('../src/client/dateUtils/timeSpan.js').timeSpan;
 
 
 const todayDate = new Date();
@@ -27,17 +27,34 @@ describe('timeSpan.Span object', function() {
     })
 
     describe('timeSpanUtils.TimeSpan.includes', function() {
-        it('indicates if a given date is included in a time span', function() {
-            let April24_2010 = new Date(2010, 03, 24),
-                April27_2013 = new Date(2013, 03, 27),
-                ts = new timeSpan.Span(April24_2010, April27_2013, timeSpan.units.years);
-            expect(ts.includes(new Date(2010, 03, 24))).to.equal(true);
-            expect(ts.includes(new Date(2016, 03, 28))).to.equal(false);
-            ts.setUnits(timeSpan.units.months);
-            expect(ts.includes(new Date(2010, 03, 28))).to.equal(true);
-            expect(ts.includes(new Date(2010, 02, 28))).to.equal(false);
-            ts.setUnits(timeSpan.units.days);
-        })
+        describe('indicates if a given date is included in a time span', function() {
+            it('can be used with units set to years', function(){
+                let April24_2010 = new Date(2010, 03, 24),
+                    April27_2013 = new Date(2013, 03, 27),
+                    ts = new timeSpan.Span(April24_2010, April27_2013, timeSpan.units.years);
+                expect(ts.includes(new Date(2010, 03, 24))).to.equal(true);
+                expect(ts.includes(new Date(2012, 03, 24))).to.equal(true);
+                expect(ts.includes(new Date(2016, 03, 28))).to.equal(false);
+            })
+
+            it('can be used with units set to months', function(){
+                let April24_2010 = new Date(2010, 03, 24),
+                    April27_2013 = new Date(2013, 03, 27),
+                    ts = new timeSpan.Span(April24_2010, April27_2013, timeSpan.units.months);
+                expect(ts.includes(new Date(2010, 03, 28))).to.equal(true); 
+                expect(ts.includes(new Date(2010, 02, 28))).to.equal(false);
+                expect(ts.includes(new Date(2010, 04, 28))).to.equal(true);
+            })
+
+            it('can be used with units set to days', function(){
+                let April24_2010 = new Date(2010, 03, 24),
+                    April27_2013 = new Date(2013, 03, 27),
+                    ts = new timeSpan.Span(April24_2010, April27_2013, timeSpan.units.days);
+                expect(ts.includes(new Date(2010, 03, 28))).to.equal(true); 
+                expect(ts.includes(new Date(2010, 02, 28))).to.equal(false);
+                expect(ts.includes(new Date(2013, 04, 28))).to.equal(false);
+            })
+       })
     })
 })
 
