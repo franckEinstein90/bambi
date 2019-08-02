@@ -33,12 +33,14 @@ const calendarSettings = (function() {
 		return  (calendarSettings.selectedYear() === today.getFullYear()) &&
 			(calendarSettings.selectedMonth() === today.getMonth()) &&
 			(calendarSettings.selectedDay() === today.getDate());
-	},
-        firstDay: function(){ 
+    },
+
+    firstDay: function(){ 
 		return dateUtils.firstDayOfMonth( 
 				calendarSettings.selectedYear(), 		
 				calendarSettings.selectedMonth());
-		},
+    },
+
         monthLength: () => dateUtils.monthLength(
 			calendarSettings.selectedYear(), 
 			calendarSettings.selectedMonth()), 

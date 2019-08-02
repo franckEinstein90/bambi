@@ -6,13 +6,14 @@
  *  - calendarSideBarUI: 
  *  - calendarUI: all to do with the calendar event
  * ***************************************************************************/
-const appData = require('./bambi.js').bambi.clientData;
+const appData = require('../../bambi.js').bambi.clientData;
 
-const calendarSettings = require('./calendarSettings.js').calendarSettings;
-const dateUtils = require('./dateUtils/dateUtils').dateUtils;
+const calendarSettings = require('../calendarSettings.js').calendarSettings;
+const dateUtils = require('../dateUtils/dateUtils').dateUtils;
 
-const ui = require('./ui.js').ui;
-const eventDialogUI = require('./eventDialogUI.js').eventDialogUI;
+const ui = require('./ui').ui;
+const dayUI = require('./dayUI').dayUI;
+const eventDialogUI = require('./eventDialogUI').eventDialogUI;
 const moment = require('moment');
 
 const calendarUIChrome = (function() {
@@ -47,155 +48,111 @@ const calendarUIChrome = (function() {
 
 const calendarInnerTable = (function() {
 
-    let uiCalendar,
-        rowHeight,
-
-        DisplayedDay, 
-        displayedDays; 
+    let uiCalendar, displayedDays,
+        rows, cols, 
+        layoutMonth, addCalendarHTMLBodyRow, dayCell,//layout the dayCells and draw them
+        addEventControlHandlers;
 
         /**************************** */
-        DisplayedDay = function(dayID, eventArray){
-            this.dayID = dayID;
-            this.events = eventArray;
-        };
         displayedDays = [];
+        rows = {
+            numRows: 5, 
+            rowHeight: 40
+        };
         /**************************** */
-
-        let displayedEventsEditIds = [],
-
-        eventInlineControl = function(listItemID, calendarEvent) {
-            let editID = new EditEventID(listItemID, calendarEvent.id),
-                deleteID = "delete" + listItemID,
-                toolbar = '<div style="text-align:right">' +
-                '<span ID="' + editID.htmlEditID + '" class="event-edit-btn aui-icon aui-icon-small aui-iconfont-edit">' +
-                'Edit event</span>&nbsp;&nbsp;' +
-                '<span ID="' + editID.htmlDeleteID + '" class="event-edit-btn aui-icon aui-icon-small aui-iconfont-delete">Delete event</span>' +
-                '</div>',
-                description = calendarEvent.eventDescription === "" ? "No Description" : calendarEvent.eventDescription;
-            //add the edit and delete icons to the corresponding arrays
-            displayedEventsEditIds.push(editID);
-            return "<aui-inline-dialog id='" + listItemID + "' style='width:200px'>" + toolbar +
-                "<p>" + calendarEvent.eventTitle + "</p><p>" + description + "</p></aui-inline-dialog>";
-        },
-
-        dayCell = function(calendar, {dayID, events}) {
-            //returns an html TD that displays the day and its events
-            let cssClasses,
-                cellClass,
-                cellEvents,
-
-                cellHeader,
-                dayLabel, 
-                dayCommands, 
-                
-                isToday, 
-                isInThisMonth, 
-                datePart;
-
-            datePart = dayID.split("-");
-
-            dayCommands = `<span class='event-edit-btn aui-icon aui-icon-small aui-iconfont-add'>Add an event at this date</span>`;
-            dayCommmands = `<DIV class='dayCommands'>${dayCommands}</DIV>`;
-            cellHeader = `<DIV class='dayCellHeader'><DIV class='dayLabel'>${datePart[2]}</DIV>${dayCommands}</DIV>`;
- 
-
-            cellEvents = `<DIV class='dayCellEvents'><UL><LI>fd</LI></UL></DIV>` ;
-            isToday = (parseInt(datePart[0]) === dateUtils.today.year) &&
+        cols = {
+            numCols: 7
+        };
+        dayCell = function(dayProperties){
+            //returns and html TD that displays the day and its events
+            let datePart, 
+                cellEvents, cellHeader, 
+                isToday, isInThisMonth, 
+                cssClasses,
+                cellClass;
+    
+            datePart = dayProperties.dayID.split("-");
+            cellEvents = "No events today";
+            if (dayProperties.events.length > 0){
+                let listItem = function(eventInfo){
+                    return [    "<LI style='list-style-type:none'>", 
+                                    `<A data-aui-trigger aria-controls='${eventInfo.listItemId}' style="cursor:pointer">`,
+                                    "- " + eventInfo.label, 
+                                    "</A>",
+                                `<aui-inline-dialog id='${eventInfo.listItemId}' style='width:200px>`,
+                                    "<DIV style='text-align:right'>",
+                                        `<SPAN ID='${eventInfo.htmlEditID}' class='event-edit-btn aui-icon aui-icon-small aui-iconfont-edit'>`,
+                                            "Edit Event", 
+                                        "</span>",
+                                        `<SPAN ID='${eventInfo.htmlDeleteID}' class='event-edit-btn aui-icon aui-icon-small aui-iconfont-delete'>`,
+                                            "Delete Event", 
+                                        "</span>",
+                                         `<P>${eventInfo.label}</P>`,
+                                         `<P>${eventInfo.description}</P>`,
+                                    "</DIV>", 
+                                "</aui-inline-dialog></LI>"].join("");
+                };
+                cellEvents = dayProperties.events.map(evInfo => listItem(evInfo)).join("");
+                cellEvents = `${cellEvents}`;
+            }
+            cellHeader = [
+                    `<div> <span class='dayLabel'>${datePart[2]}</span>`,
+                    `<span class='dayCommands'>`,
+                        `<span class='event-edit-btn aui-icon aui-icon-small aui-iconfont-add' ID='${dayProperties.htmlEventAddID}'>`,
+                            `Add an event at this date`,
+                        `</span>`,
+                    `</span></div>`].join("");
+    
+            cssClasses = {
+                today: "today",
+                monthDay: "monthDay",
+                nonMonthDay: "nonMonthDay"
+            };
+    
+            isToday =   (parseInt(datePart[0])===dateUtils.today.year) && 
                         (parseInt(datePart[1]-1) === dateUtils.today.month) &&
                         (parseInt(datePart[2]) === dateUtils.today.day);
-            isInThisMonth =  parseInt(datePart[1] - 1) === calendarSettings.selectedMonth();
-            cssClasses = {
-                    today: "today",
-                    monthDay: "monthDay",
-                    nonMonthDay: "nonMonthDay"
-                };
-            
- 		    if(isToday){
-		        cellClass = cssClasses.today;
-		    } else if (isInThisMonth) {
-                cellClass = cssClasses.monthDay;
-            } else {
-                cellClass = cssClasses.nonMonthDay;
-            }
-
-
- 
-            return  `<TD class='${cellClass}' ID='${dayID}'> ${cellHeader}${cellEvents}</TD>`;
-
-          /* 
-            
-            return cell("<TD class='" + cssClass + "'>" + "<span ID ='" + dayID + "'>" + dayID.slice(-2) +
-            "&nbsp;&nbsp;<span class='event-edit-btn aui-icon aui-icon-small aui-iconfont-add'>Add an event at this date</span>" +
-            "</span><ul>" + eventList + "</ul></TD>";
- 
-		eventsDayIds = eventsOnDay.map(ev => new ui.DayEvent({dayStamp:dayID, eventID:ev.id})),
-                eventList = "",
-               makeListItem = function(calendarEvent) {
-                    let listItemID = "ev_id_day_" + dayID + "_" + calendarEvent.id;
-                    eventList += "<li><a data-aui-trigger aria-controls='" + listItemID + "'>" + calendarEvent.eventTitle + "</a></li>";
-                    eventList += eventInlineControl(listItemID, calendarEvent);
-                }
-
-            eventsOnDay.forEach(makeListItem);*/
-       },
-
-        addCalendarBodyRow = function(rowContent) { //renders a single calendar row
-            uiCalendar.calendarBody.append("<TR class='weekRow' style='height:" + rowHeight + "px'>" + rowContent + "</TR>");
-        },
-
-        layoutMonth = function(weekRow, calendar) { 
-	    //lays out the rows to be rendered in the displayedDays array
-            let days = [], 
-	      	    addNewDays = function() {
-                    let eventsOnDay = function(dayID) {
-                        return calendar.filter(ev => ev.timeSpan.includes(dayID))
-                     }; 
-	    		displayedDays.push(days.map(dayID => new DisplayedDay(dayID, eventsOnDay(dayID))));
-		    };
-
+            isInThisMonth = parseInt(datePart[1] - 1) === calendarSettings.selectedMonth();
+            cellClass = isToday? cssClasses.today : (isInThisMonth? cssClasses.monthDay:cssClasses.nonMonthDay);
+    
+            return [    `<TD class='${cellClass}' ID='${dayProperties.dayID}'>`, 
+                            "<DIV class='dayCellHeader'>",
+                            cellHeader,
+                            "</DIV><HR>",
+                            "<DIV class='dayCellEvents'>",
+                                cellEvents,
+                            "</DIV>",
+                        "</TD>"].join("");
+        };
+        layoutMonth = function(weekRow) {   
+            //returns an array of html cells representing the days for a given row of the calendar
+            let days = [];
+    
             if (weekRow === 1) {
-                this.firstDate = moment({
+                currentSelectedDate = moment({
                     year: calendarSettings.selectedYear(),
                     month: calendarSettings.selectedMonth(),
                     day: 1
                 });
-
-                let firstDayIDX = calendarSettings.firstDay().weekDayIdx;
-
-                if (firstDayIDX > 0) {
-                    let lastDate = moment({
-                        year: calendarSettings.selectedYear(),
-                        month: calendarSettings.selectedMonth(),
-                        day: 1
-                    });
-                    for (let i = 0; i < firstDayIDX; i++) {
-                        lastDate.subtract(1, "days");
-                        days.push(lastDate.format("YYYY-MM-DD"));
-                    }
-                    days.reverse();
-                }
-                for (let i = firstDayIDX; i <= 6; i++) {
+                let firstDate = currentSelectedDate.clone();
+                for (let i = 0; i < calendarSettings.firstDay().weekDayIdx; i++) {
+                    firstDate.subtract(1, "days");
                     days.push(firstDate.format("YYYY-MM-DD"));
-                    firstDate.add(1, "days");
                 }
-		addNewDays();
-                return; //end layout first row
+                days.reverse();
             }
-            for (let i = 0; i <= 6; i++) {
-                days.push(firstDate.format("YYYY-MM-DD"));
-                firstDate.add(1, "days");
+            while(days.length < cols.numCols){
+                days.push(currentSelectedDate.format("YYYY-MM-DD"));
+                currentSelectedDate.add(1,"days");
             }
-	    addNewDays();
-        },
-
+            return days;
+        };
+        addCalendarHTMLBodyRow = function(dayRow){
+            let rowContent = dayRow.map(x => dayCell(x)).join("");
+            uiCalendar.calendarBody.append(`<TR class='weekRow' style='height:${rows.rowHeight}px'>${rowContent}</TR>`);
+        };
         addEventControlHandlers = function() {
-	    //controlers to add a new event on this day
-            displayedDayIds.forEach( row => row.forEach(id => AJS.$("#" + id).click(x => eventDialogUI.showNew(id)))); //add eventListener to each added days
-	    //controlers to edit an event displayed on this day
-            displayedEventsEditIds.forEach(evID => AJS.$("#" + evID.htmlEditID).click(x => eventDialogUI.showEdit(evID.eventID)));
-       	    //controlers to delete an event displayed on this day
-            displayedEventsEditIds.forEach(evID => AJS.$("#" + evID.htmlDeleteID).click(x => eventDialogUI.deleteEvent(evID.eventID)));
-         }
+        };
 
     return {
         onReady: function(uic) {
@@ -203,30 +160,26 @@ const calendarInnerTable = (function() {
         },
 
         update: function(calendar) {
-            let numRows,
-                containerHeight = AJS.$("#calendar-container").height() -
-                AJS.$("#calendar-container-header").height() -
-                AJS.$("#calendar-table-header").height() -
-                AJS.$("#calendar-table-footer").height();
+            try{
+                let containerHeight = AJS.$("#calendar-container").height() -
+                    AJS.$("#calendar-container-header").height() -
+                    AJS.$("#calendar-table-header").height() -
+                    AJS.$("#calendar-table-footer").height();
 
-            numRows = 5;
-            rowHeight = containerHeight / numRows;
-
-            //reset the ids arrays to be associated with events
-            displayedDays.length = 0;
-            displayedEventsEditIds.length = 0;
-
-            uiCalendar.calendarBody.empty();
-            for (let weekRow = 1; weekRow <= numRows; weekRow++) {
-                layoutMonth(weekRow, calendar);
+                rows.rowHeight = containerHeight / rows.numRows;
+                //reset the ids arrays to be associated with events
+                displayedDays.length = 0; 
+                //remove the rows on display if any
+                uiCalendar.calendarBody.empty();
+                for (let weekRow = 1; weekRow <= rows.numRows; weekRow++) {
+                    displayedDays.push(dayUI.contextualize(layoutMonth(weekRow), calendar));
+                }
+                //display the days row by row
+                displayedDays.forEach(dayRow => addCalendarHTMLBodyRow(dayRow));
+            } catch(e){
+                console.log(e);
             }
-
-	        //render each calendar row
-            displayedDays.forEach(
-                    x => addCalendarBodyRow(x.map(day => dayCell(calendar, day)).join("")));
-
-            addEventControlHandlers();
-        }
+       }
     }
 })();
 

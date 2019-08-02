@@ -60,17 +60,16 @@ const timeSpan = (function() {
             this.endDate = endDate;
             this.units = (units === undefined) ? timeSpan.units.days : units;
         },
-        Timer: function(settings) {
+
+        Timer: function(settings) { //untested
             this.settings = settings;
             this.timer = null;
             this.fps = settings.fps || 30;
             this.interval = Math.floor(1000 / this.fps);
             this.timeInit = null;
-
-            return this;
         },
 
-        Day: function(date) {
+        Day: function(date) { //no unit tests
             if (!timeSpan.isValidDate(date)) {
                 throw timeSpan.invalidDate(argDate);
             }
@@ -94,32 +93,32 @@ timeSpan.Span.prototype = {
     },
 
     includes: function(tD) { //returns true if the span includes this date or part of this date
-        let targetDate, 
+        let targetDate,
             inOrder;
 
         targetDate = moment(tD);
         inOrder = (x1, x2, x3) => (x1 <= x2 && x2 <= x3) ? true : false;
-        
+
         /*************************************************************
          *  input validation
          * ***********************************************************/
         //Only implemented for {timeSpan.units.years, timeSpan.units.months, timeSpan.units.days}
-        assert.includeMembers([timeSpan.units.years, timeSpan.units.months, timeSpan.units.days], [this.units], "unsuported time unit"); 
-        
+        assert.includeMembers([timeSpan.units.years, timeSpan.units.months, timeSpan.units.days], [this.units], "unsuported time unit");
+
         //Check the year
-        if(! inOrder(this.beginDate.getFullYear(), targetDate.year(), this.endDate.getFullYear())){
+        if (!inOrder(this.beginDate.getFullYear(), targetDate.year(), this.endDate.getFullYear())) {
             return false; //different years
-        } 
-        if( this.units === timeSpan.units.years ){
+        }
+        if (this.units === timeSpan.units.years) {
             return true;
         }
-        if(! inOrder(this.beginDate.getMonth(), targetDate.month(), this.endDate.getMonth())){
+        if (!inOrder(this.beginDate.getMonth(), targetDate.month(), this.endDate.getMonth())) {
             return false; //month not in range
         }
-        if( this.units === timeSpan.units.months ){
+        if (this.units === timeSpan.units.months) {
             return true;
         }
-        if(! inOrder(this.beginDate.getDate(), targetDate.date(), this.endDate.getDate())){
+        if (!inOrder(this.beginDate.getDate(), targetDate.date(), this.endDate.getDate())) {
             return true;
         }
 

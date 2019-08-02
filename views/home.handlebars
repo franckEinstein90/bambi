@@ -5,23 +5,62 @@
 
 
 <HR>
+
 <div class="calendarContainer" ID="calendar-container">
 
-	<table class="aui calendarContainerHeader" ID="calendar-container-header">
-	<thead>
-	<tr>
+<table class="aui calendarContainerHeader" ID="calendar-container-header"> 
+<thead>
+<TR>
+    <TH style="width:15%"><span class="aui-icon aui-icon-large aui-iconfont-appswitcher">Insert meaningful text here for accessibility</span> </TH>
+    <TH style="width:25%">
+		<button id="reset-to-today" class="aui-button">Today</button>
+		<span id="select-previous-month" class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span>
+    		<span id="select-next-month" class="aui-icon aui-icon-large aui-iconfont-arrows-right monthSelector">Insert meaningful text here for accessibility</span>
+    </TH>
+    <TH  style="text-align:center" ID="tableCalendar-title"></TH>
+    <TH><span class="aui-icon aui-icon-large aui-iconfont-configure">Insert meaningful text here for accessibility</span>
+    <a href="#units" aria-owns="units" aria-haspopup="true" class="aui-button aui-style-default aui-dropdown2-trigger">Month</a>
+	<div id="units" class="aui-style-default aui-dropdown2">
+		<ul class="aui-list-truncate">
+			<li><a href="#">Month</a></li>
+			<li><a href="#">Week</a></li>
+			<li><a href="#">Day</a></li>
+		</ul>
+	</div>
+    </th>
+</TR>
+</thead>
+</table>
 
+<div class="calendarSidebar" id="calendar-sidebar">
+sideBar
+</div>
 
-	<TH style="text-align:center" ID="tableCalendar-title"></TH>
-	</tr>
-	</thead>
-	</table><!--end calendar-container-header-->
+<div ID="calendar-table-container" class="calendarTableContainer">
 
+    <table ID="calendar-table" class="aui calendarTable">
 
+    <thead ID="calendar-table-header">
+        <tr ID="calendar-table-weekdays-labels"></tr>
+    </thead>
 
-	<div class="calendarSidebar" ID="calendar-sidebar">
+    <tbody ID="calendar-table-body"></tbody>
 
-	</div><!--end calendar-sidebar-->
+    <tfoot ID="calendar-table-footer">
+       <tr>
+       <TD COLSPAN=7>
+       <FORM name="dateChooser" ID="dateChooser" class="aui">
+       <SELECT ID="chooseMonth" name="chooseMonth">
+       </SELECT>
+       <SELECT NAME="chooseYear">
+       </SELECT>
+       </FORM>
+       </TD>
+       </tr>
+    </tfoot>
 
+    </table>
 
-</div><!--end calendar-container-->
+</div>
+
+</div>
