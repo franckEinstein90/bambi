@@ -96,11 +96,9 @@ timeSpan.Span.prototype = {
     },
 
     includes: function(tD) { //returns true if the span includes this date or part of this date
-        let targetDate,
-            inOrder;
+        let targetDate;
 
         targetDate = moment(tD);
-        inOrder = (x1, x2, x3) => (x1 <= x2 && x2 <= x3) ? true : false;
 
         /*************************************************************
          *  input validation

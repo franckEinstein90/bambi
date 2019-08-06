@@ -81,7 +81,7 @@ const pageContainer = (function() {
         onReady: (eventStrings) => {
             //get all events on the page into the event registrar (calendar)
             eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
-            eventsUI.onReady(calendar);
+           // eventsUI.onReady(calendar);
             calendarSideBarUI.onReady(calendar);
             calendarUI.onReady(calendar);
             eventDialogUI.onReady(calendar);

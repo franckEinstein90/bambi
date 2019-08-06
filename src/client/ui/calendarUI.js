@@ -19,10 +19,11 @@ const moment = require('moment');
 const calendarUIChrome = (function() {
     let uiCalendar,
         setCalendarTitle = () => {
-            let calendarTitle =
-                dateUtils.monthIdxToStr(calendarSettings.selectedMonth()) + " " +
-                calendarSettings.selectedYear();
-            uiCalendar.calendarTitle.html("<h1>" + calendarTitle + "</h1>");
+            uiCalendar.calendarTitle.html([ 
+                `<H1 id='dateLabel'>`,
+                `${dateUtils.monthIdxToStr(calendarSettings.selectedMonth())} ${calendarSettings.selectedYear()}`, 
+                "</H1>"
+            ].join(""));
         };
 
     return {

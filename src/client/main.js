@@ -9,7 +9,7 @@ const pageContainer = require('./pageContainer').pageContainer;
 *****************************************************************************/
 
 AJS.toInit(function($) {
-
+    console.log("App begins here");
     /*********************************************************************
      * add the section that displays event sidebar ui 
      ********************************************************************/
