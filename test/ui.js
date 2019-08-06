@@ -7,7 +7,7 @@
 
 const expect = require('chai').expect;
 const validator = require('validator');
-const ui = require('../src/client/ui').ui;
+const ui = require('../src/client/ui/ui').ui;
 
 
 describe('ui.UI Object', function() {

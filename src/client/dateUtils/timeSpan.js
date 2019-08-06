@@ -5,9 +5,11 @@
  *  - A TimeSpan object that abstracts the concept of a length of a span 
  *    between two time markers. 
  *  - A day object that abstracts the concept of a day (date, weekday, holydays)
- *  - A timer 
+ *  - A timer
+ * 
+ *  Last Update 2019/08/06 - FranckEinstein90 
  ******************************************************************************/
-"use strict"
+"use strict";
 const assert = require('chai').assert;
 const moment = require('moment');
 
@@ -47,18 +49,19 @@ const timeSpan = (function() {
          * - Timer
          *************************************************/
         Span: function(beginDate, endDate, units) {
-            if (!timeSpan.isValidDate(beginDate)) {
-                throw timeSpan.invalidDate(beginDate)
+            try {
+                this.beginDate = moment(beginDate);
+                this.endDate = moment(endDate);
+                if (this.endDate.isBefore(this.beginDate)) {
+                    throw timeSpan.invalidDateSpan
+                }
+                this.units = (units === undefined) ? timeSpan.units.days : units;
+            } catch (e) {
+                if (e === timeSpan.invalidDateSpan) {
+                    throw e;
+                }
+                throw ("Unknown error " + e + "at timeSpan.Span Constructor")
             }
-            if (!timeSpan.isValidDate(endDate)) {
-                throw timeSpan.invalidDate(endDate)
-            }
-            if (endDate < beginDate) {
-                throw timeSpan.invalidDateSpan
-            }
-            this.beginDate = beginDate;
-            this.endDate = endDate;
-            this.units = (units === undefined) ? timeSpan.units.days : units;
         },
 
         Timer: function(settings) { //untested
@@ -105,23 +108,21 @@ timeSpan.Span.prototype = {
         //Only implemented for {timeSpan.units.years, timeSpan.units.months, timeSpan.units.days}
         assert.includeMembers([timeSpan.units.years, timeSpan.units.months, timeSpan.units.days], [this.units], "unsuported time unit");
 
-        //Check the year
-        if (!inOrder(this.beginDate.getFullYear(), targetDate.year(), this.endDate.getFullYear())) {
-            return false; //different years
+        if (targetDate.isSameOrBefore(this.endDate, 'year') && targetDate.isSameOrAfter(this.beginDate, 'year')) {
+            if (this.units === timeSpan.units.years) {
+                return true;
+            }
+            if (targetDate.isSameOrBefore(this.endDate, 'month') && targetDate.isSameOrAfter(this.beginDate, 'month')) {
+                if (this.units === timeSpan.units.months) {
+                    return true;
+                }
+                if (targetDate.isSameOrBefore(this.endDate, 'day') && targetDate.isSameOrAfter(this.beginDate, 'day')) {
+                    if (this.units === timeSpan.units.days) {
+                        return true;
+                    }
+                }
+            }
         }
-        if (this.units === timeSpan.units.years) {
-            return true;
-        }
-        if (!inOrder(this.beginDate.getMonth(), targetDate.month(), this.endDate.getMonth())) {
-            return false; //month not in range
-        }
-        if (this.units === timeSpan.units.months) {
-            return true;
-        }
-        if (!inOrder(this.beginDate.getDate(), targetDate.date(), this.endDate.getDate())) {
-            return true;
-        }
-
         return false;
     }
 }
