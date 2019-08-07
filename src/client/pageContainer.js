@@ -1,3 +1,10 @@
+/***********************************************************
+ * FranckEinstein90 
+ * 
+ * *******************************************************/
+
+"use strict";
+
 const events = require('./core/events.js').events;
 const calendarEvents = require('./calendarEvents.js').calendarEvents;
 

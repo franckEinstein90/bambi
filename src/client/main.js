@@ -9,7 +9,9 @@ const pageContainer = require('./pageContainer').pageContainer;
 *****************************************************************************/
 
 AJS.toInit(function($) {
-    console.log("App begins here");
+
+    console.log("App Entry Point");
+    bambi.init();
     /*********************************************************************
      * add the section that displays event sidebar ui 
      ********************************************************************/
