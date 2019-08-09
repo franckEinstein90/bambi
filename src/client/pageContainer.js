@@ -64,8 +64,7 @@ const eventDecoder = (function() {
         processEventDescription: (calendar, eventDescriptionString) => {
             let eventDescriptionFields = parse(eventDescriptionString);
             if (eventDescriptionFields) {
-                newEvent = makeEventObject(eventDescriptionFields);
-                calendar.register(newEvent);
+                calendar.register( makeEventObject(eventDescriptionFields));
             }
         }
     }
@@ -73,10 +72,20 @@ const eventDecoder = (function() {
 
 const pageContainer = (function() {
 
-    let calendar;
+    let calendar, eventDescriptionsOnPage; 
 
     calendar = new events.Registrar(); //global events store
-
+    eventDescriptionsOnPage = function(){
+        /*************************************************************
+        * Collects everything that looks like an event description 
+        * already on the page into an array of strings
+        *************************************************************/
+        let eventDescriptions = [];
+        AJS.$("h1:contains('Events') + ul li").each(function(index) {
+            eventDescriptions.push($(this).text());
+        });
+        return eventDescriptions; 
+    };
 
     return {
         Command: function(execute, undo, value) {
@@ -84,10 +93,9 @@ const pageContainer = (function() {
             this.undo = undo;
             this.value = value;
         },
-
-        onReady: (eventStrings) => {
-            //get all events on the page into the event registrar (calendar)
-            eventStrings.forEach(str => eventDecoder.processEventDescription(calendar, str));
+        onReady: () => {
+            // 1. get all events on the page into the event registrar (calendar)
+            eventDescriptionsOnPage().forEach(str => eventDecoder.processEventDescription(calendar, str));
            // eventsUI.onReady(calendar);
             calendarSideBarUI.onReady(calendar);
             calendarUI.onReady(calendar);
