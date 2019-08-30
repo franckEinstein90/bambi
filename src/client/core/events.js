@@ -70,6 +70,12 @@ const events = (function() {
 
             eventRegistrar.set(this.id, this.state);
         },
+        registerEvent: function(ev, registrar) {
+            registrar.register({
+                uuid: ev.id,
+                value: ev
+            })
+        },
 
         /*************************************************************
          * events.Chain
@@ -80,18 +86,6 @@ const events = (function() {
          * **********************************************************/
         Chain: function() {
             //todo
-        },
-
-        /*************************************************************
-         * events.Registrar
-         * -------------------
-         *  Structure into which events can be registered. Provides
-         *  various operations on the set of registered events, map, 
-         *  filter, reduce
-         * **********************************************************/
-
-        Registrar: function() { // Event registrar
-            this.events = new Map();
         },
 
         /*************************************************************
@@ -144,67 +138,6 @@ events.Event.prototype = {
         }
         this.onFlipActions.forEach(x => x());
     }
-};
-
-/******************************************************************************
- * Registrar objects
- * -----------------
- *  data structure that holds and registers events, 
- *  keeping track of their status
- * 
- * ***************************************************************************/
-events.Registrar.prototype = {
-
-    /*****************************************************************
-     *  Registers an event in the registrar
-     *  *************************************************************/
-
-    get size() {
-        return this.events.size;
-    },
-
-    register: function(ev) {
-        this.events.set(ev.id, ev);
-    },
-
-    flush: function(ev) {
-        this.events.clear();
-    },
-
-    forEach: function(eventCallbackFunction) {
-        this.events.forEach(eventCallbackFunction);
-    },
-
-    get: function(eventId) {
-        return this.events.get(eventId);
-    },
-
-    filter: function(filterPred) {
-        /********************************************************
-         * returns an array of events filtered as 
-         * per the predicate argument
-         * *****************************************************/
-        let arrayRes = [];
-        this.events.forEach((value, key) => {
-            if (filterPred(value)) {
-                arrayRes.push(value);
-            }
-        });
-        return arrayRes;
-    },
-
-    remove: function(evId) {
-        /********************************************************
-         * removes an event with given id from 
-         * the registrar
-         * *****************************************************/
-        if (!this.events.has(evId)) {
-            throw new events.Exception("Event does not exist");
-        }
-        this.events.delete(evId);
-    }
-
-
 };
 
 module.exports = {

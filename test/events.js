@@ -1,23 +1,12 @@
 /*******************************************************************
- * tests for events namespace objects and functions
+ * unit tests for events namespace objects and functions
  * FranckEinstein90
- * ----------------
- *
  ********************************************************************/
 
 const expect = require('chai').expect;
 const validator = require('validator');
 const events = require('../src/client/core/events').events;
-
-/*************************************************************
- * events.Registrar
- * FranckEinstein90
- * -------------------
- *  Structure into which events can be registered. Provides
- *  various operations on the set of registered events, map, 
- *  filter, reduce
- * **********************************************************/
-
+const registrar = require('../src/client/core/registrar').registrar
 
 
 describe('events.event Object', function() {
@@ -88,9 +77,17 @@ describe("events.Event.flip()", function() {
 })
 
 
-describe('events.Registrar Object', function() {
+describe('events.registerEvent(ev, registrar)', function() {
 
-    let evRegistrar = new events.Registrar();
+    let evRegistrar = new registrar.Registrar();
+    let evRegistrarSize = 0;
+
+    it('registers a new event in the registrar parameter', function(){
+            let evOff1 = new events.Event(events.eventState.off); 
+            events.registerEvent(evOff1, evRegistrar)
+            expect(evRegistrar.size).to.equal(evRegistrarSize + 1)
+            evRegistrarSize = evRegistrar.size
+    })
 
     it('has the following methods and properties', function() {
         ["remove", "filter",
@@ -107,7 +104,7 @@ describe('events.Registrar Object', function() {
             evOff2 = new events.Event(events.eventState.off), 
             evOn1 = new events.Event();
             [evOff1, evOff2, evOn1].forEach(x => evRegistrar.register(x));
-            expect(evRegistrar.size).to.equal(3);
+            expect(evRegistrar.size).to.equal(evRegistrarSize + 3);
         })
     })
 
@@ -126,7 +123,7 @@ describe('events.Registrar Object', function() {
 /*********************************************************************/
 
 describe('calendarEvent.remove(evId)', function() {
-    let evRegistrar = new events.Registrar();
+    let evRegistrar = new registrar.Registrar();
 
     beforeEach(function() {
         evRegistrar.flush();
@@ -136,13 +133,13 @@ describe('calendarEvent.remove(evId)', function() {
         let ev = new events.Event();
         expect(function() {
             evRegistrar.remove(ev.id);
-        }).to.throw('Event does not exist');
+        }).to.throw(registrar.Exception(registrar.errors.nonRegisteredElement));
         expect(evRegistrar.size).to.equal(0);
     })
 })
 
 describe('Registrar object get method', function() {
-    let evRegistrar = new events.Registrar();
+    let evRegistrar = new registrar.Registrar();
 
     beforeEach(function() {
         evRegistrar.flush();
@@ -150,7 +147,7 @@ describe('Registrar object get method', function() {
 
     it('returns an event stored in the event store with the given id', function() {
         let ev = new events.Event();
-        evRegistrar.register(ev);
+        evRegistrar.register({uuid:ev.id, value:ev});
         let ev2 = evRegistrar.get(ev.id);
         expect(ev2.id).to.equal(ev.id);
     })
