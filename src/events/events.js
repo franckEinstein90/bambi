@@ -2,10 +2,10 @@
  * Includes all initialization functions
  * ***************************/
 
-"use strict";
+ "use strict";
 
 
-const bambi = require('../bambi.js').bambi
+const bambi = require('../bambi.js').bambi 
 const confluencePage = require('../confluencePage/confluencePage').confluencePage
 const events = require('../events/events.js').events
 const calendarSideBarUI = require('../calendarSideBarUI').calendarSideBarUI
@@ -29,21 +29,21 @@ const p = (function() {
 
 const pageContainer = (function() {
 
-    let calendar, calendarInformationRows, initPage;
+    let calendar, calendarInformationRows, initPage; 
 
     calendar = new events.Registrar();
     //Reads each line of calendar information
     //stored on the page
-    calendarInformationRows = function() {
+    calendarInformationRows = function(){
         // Collects list items on page that can be converted to 
         // calendar events and returns all as an array
         let eventDescriptions = [];
-        AJS.$("H1:contains('Events') + ul li").each(function(index) {
+        AJS.$("H1:contains('Events') + ul li").each(function(index){
             eventDescriptions.push($(this).text());
         });
-        return eventDescriptions;
+        return eventDescriptions; 
     };
-    initPage = function() {
+    initPage = function(){
         AJS.$("H1:contains('Events') + ul").hide();
         AJS.$("H1:contains('Events')").hide();
     };
@@ -54,7 +54,7 @@ const pageContainer = (function() {
             this.value = value;
         },
 
-        onReady: function() {
+        onReady: function()  {
             confluencePage.updateMatchers()
             //extract and process all calendar information stored on the page 
             let calendarInfo = calendarInformationRows();
