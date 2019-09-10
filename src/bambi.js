@@ -5,50 +5,99 @@
  ***********************************************/
 "use strict";
 
+const appVersion = require('../appversion.json')
+
 const bambi = (function() {
-	/*************** variable definitions *************/
-	let validEnv,  //Env related variables
-		eventSectionDefinition;
-	/**************************************************/
-	validEnv = false; 
-	eventSectionDefinition = {
-		beginLabel: "[***BEGIN CALENDAR EVENTS***]",
-		endLabel:"[***END CALENDAR EVENTS***]"
-	};
+    let bambiVersion,
+        checkEnv, setEnv, runningEnv, //Env related variables
+        params,
+        eventSection;
+
+    bambiVersion = {
+        major: appVersion.version.major,
+        minor: appVersion.version.minor
+    }
+
+    checkEnv = false;
+    setEnv = function(env) {
+        if (env === bambi.runningEnvs.production) {
+            runningEnv = env;
+            AJS.populateParameters();
+            params = AJS.params;
+        } else if (env === bambi.runningEnvs.development) {
+            runningEnv = env;
+        } else {
+            throw "unknown environment"
+        }
+    };
+    eventSection = {
+        beginLabel: "[***BEGIN CALENDAR EVENTS***]",
+        endLabel: "[***END CALENDAR EVENTS***]"
+    };
 
     return {
+        goodEnv: function() {
+            return checkEnv;
+        },
         init: function() {
-			let checkEventSection = AJS.$("h1:contains('Events')").length > 0;
-			if(!checkEventSection){
-				validEnv = false; 
-				return; 
-			}
-			checkEventSection = AJS.$("h1:contains('Events')").next('UL').length > 0; 
-			if(!checkEventSection){
-				validEnv = false; 
-				return; 
-			}
-			validEnv = true; 
+            /********************************
+             * Get the version number
+             ********************************/
+            let checkEventSection = AJS.$("h1:contains('Events')").length > 0;
+            if (!checkEventSection) {
+                checkEnv = false;
+                return;
+            }
+            checkEventSection = AJS.$("h1:contains('Events')").next("UL").length > 0;
+            if (!checkEventSection) {
+                checkEnv = false;
+                return;
+            }
+            let check2 = AJS.$("h1:contains('Events')").next("UL").children().filter(":last");
+            let check3 = check2.text();
+            if (check3 === "init" || check3 === eventSection.endLabel) {
+                checkEnv = true;
+            } else {
+                checkEnv = false;
+            }
+        },
+        setEnv: function() {
+            /**********************************************************************
+             * if this is running in a confluence environemnt, bambi expects the 
+             * variable "confEnv" to be defined
+             * ************************************************************************/
+            if (typeof confEnv !== 'undefined') { //check if this is a confluence env
+                setEnv(bambi.runningEnvs.production); //this is a production env
+            } else {
+                setEnv(bambi.runningEnvs.development); // this is a local development envi
+            }
+        },
+        isDev: function() {
+            return runningEnv === bambi.runningEnvs.development;
         },
         runningEnvs: {
             production: 1,
             development: 2
         },
-        setEnv: function(env) { //captures the running environment
-            runningEnv = env;
+        getVersionString: function() {
+            return `Parks Canada Confluence Calendar - v${bambiVersion.major}.${bambiVersion.minor}`
         },
-        isDev: function() { //returns true for a dev env
-            return runningEnv === bambi.runningEnvs.development;
-        },
-        user: {
-            language: "en"
-        },
+        prevVersion: undefined, //the previous version of the app used to save event and app information
         clientData: {
             "monthsEn": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             "monthsFr": ["Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre"],
             "weekDaysAbbrEn": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             "weekDaysAbbrFr": ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
             "weekDays": ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+        },
+
+        htmlFieldSeparator: function(ver) { //returns the field separator corresponding to the version
+            if (ver === undefined) {
+                return '\\:'
+            }
+            if (ver === "1.3") {
+                return '\\[x\\|\\|\\x\\]'
+            }
         },
         path: (moduleName) => `./${moduleName}`
     }
