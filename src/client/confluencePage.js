@@ -8,12 +8,25 @@ const calendarEvents = require('../events/calendarEvents.js').calendarEvents
 const events = require('../events/events.js').events
 
 const confluencePage = (function() {
-    let fieldSeparator, updateMatchers, 
+    let _pageID, _path, _title, _version, _content, setValues,
+    fieldSeparator, updateMatchers, 
     calendarVersionInfoReg, 
     eventDescriptionMatcher, infoType,
     toDate,
     parse, tryParseJSON,  makeEventFromStringValues;
     
+    _path = ""
+    _title = ""
+    _version = undefined
+    _content = ""
+
+    setValues = function() {
+        _path = contextPath + "/rest/api/content/" + _pageID;
+        let result = jQuery.getValues(_path + "?expand=body.storage,version");
+        _title = result["title"];
+        _version = result["version"]["number"];
+        _content = result["body"]["storage"]["value"];
+    }
 
     toDate = (dayStamp) => { 
         let [year, month, day] = dayStamp.split("-");
@@ -21,7 +34,6 @@ const confluencePage = (function() {
     }
     calendarVersionInfoReg = /Parks Canada Confluence Calendar - v\d\.\d/
     fieldSeparator = bambi.htmlFieldSeparator();
-//    eventDescriptionMatcher = /Event from (\d{4}\-\d{2}\-\d{2}) to (\d{4}\-\d{2}\-\d{2})\s*\:\s*(.+)/
 
     tryParseJSON = function(jsonString){
         try {
@@ -43,6 +55,7 @@ const confluencePage = (function() {
         JSONEvent: 10, 
         STRINGEvent: 11
     },
+
     parse = (evStr) => {
             let recognized, obj; 
             obj = tryParseJSON(evStr)
@@ -86,7 +99,29 @@ const confluencePage = (function() {
     }
 
     return { 
-        updateMatchers : function(){ //used to extract information stored directly on a confluence page
+         onReady: function(pageID) {
+             if(!bambi.isDev()) { //we're in a confluence page environment
+                _pageID = confEnv.pageID;
+                setValues();
+            } 
+            confluencePage.updateMatchers()
+        },
+        pageID: function() {
+            return _pageID;
+        },
+        path: function() {
+            return _path;
+        },
+        title: function() {
+            return _title;
+        },
+        version: function() {
+            return _version;
+        },
+        content: function() {
+            return _content;
+        },
+       updateMatchers : function(){ //used to extract information stored directly on a confluence page
             eventDescriptionMatcher = new RegExp(`Event from (\\d{4}\\-\\d{2}\\-\\d{2}) to (\\d{4}\\-\\d{2}\\-\\d{2})\\s*${fieldSeparator}\\s*(.+)`)
         },
         /********************************************************************
@@ -121,7 +156,7 @@ const confluencePage = (function() {
             }
         }
     }
-})();
+})()
 
 module.exports = {
     confluencePage
