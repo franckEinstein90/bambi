@@ -58,7 +58,8 @@ const pageContainer = (function() {
         },
 
         onReady: function()  {
-            confluencePage.updateMatchers()
+            confluencePage.onReady() //get information from page metadata and external resources
+
             //extract and process all calendar information stored on the page 
             let calendarInfo = calendarInformationRows();
             calendarInfo.forEach(str => confluencePage.processCalendarInformation(calendar, str));
