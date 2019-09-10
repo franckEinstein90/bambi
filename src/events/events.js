@@ -1,72 +1,214 @@
-/******************************
- * Includes all initialization functions
- * ***************************/
+"use strict"; 
 
- "use strict";
+/*******************************************************************
+ * events Module
+ * ---------------
+ *  events.Event: Include implementations for:
+ *
+ *  - object events.Event, base class for all other event object in system
+ *    . has status on or off
+ *    . can be flipped from one to the other
+ *    . has a unique id
+ *  
+ *  - object events.Chain, implements concept of a chain of events
+ *    . sets of events that are linked to one another
+ *
+ *  - object events.Registrar, a container for objects of type events.Event
+ *
+ *  ------------
+ *  Unit tests: /test/events.js
+ *  Dependent modules: /src/calendarEvents.js
+ * 
+ * *****************************************************************/
+
+const events = (function() {
 
 
-const bambi = require('../bambi.js').bambi 
-const confluencePage = require('../confluencePage/confluencePage').confluencePage
-const events = require('../events/events.js').events
-const calendarSideBarUI = require('../calendarSideBarUI').calendarSideBarUI
-const calendarUI = require('../calendarUI').calendarUI
-const eventDialogUI = require('../eventDialogUI').eventDialogUI
+    let eventRegistrar = new Map(),
 
-const p = (function() {
+        generateUUID = () => {
+            let d = new Date().getTime();
+            if (typeof performance !== 'undefined' &&
+                typeof performance.now === 'function') {
+                d += performance.now(); //use high-precision timer if available
+            }
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                let r = (d + Math.random() * 16) % 16 | 0;
+                d = Math.floor(d / 16);
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+        };
+
     return {
-        tag: (t, content, id) => `<${t}> ${content} </${t}>`,
-        makeDiv: (divBody, divId, divClass) => `<div class='${divClass}' id='${divId}'>${divBody}</div>`,
-        makeSpan: (spanBody, spanId, spanClass) => `<span class='${spanClass}' id = '${spanId}'>${spanBody}</span>`,
-        uiHandle: (uiID) => AJS.$("#" + uiID),
-        toDate: (dayStamp) => {
-            let [year, month, day] = dayStamp.split("-");
-            return new Date(year, month - 1, day);
+
+        eventState: {
+            on: 1,
+            off: 0
+        },
+
+        /*************************************************************
+         * events.Event
+         * FranckEinstein90
+         * -------------------
+         *
+         *  base event abstraction. A wrapper for:  
+         *   - a unique id
+         *   - a status of on or off
+         *
+         * **********************************************************/
+        Event: function(state) { // events.Event registered at construction
+            this.id = generateUUID();
+
+            this.onOffActions = [];
+            this.onOnActions = [];
+            this.onFlipActions = [];
+
+            if (state === undefined) {
+                this.state = events.eventState.on;
+            } else {
+                this.state = state;
+            }
+
+
+            eventRegistrar.set(this.id, this.state);
+        },
+
+        /*************************************************************
+         * events.Chain
+         * -------------------
+         *  Structure that links events to each other
+         *  provides facilities to create webs of related 
+         *  events
+         * **********************************************************/
+        Chain: function() {
+            //todo
+        },
+
+        /*************************************************************
+         * events.Registrar
+         * -------------------
+         *  Structure into which events can be registered. Provides
+         *  various operations on the set of registered events, map, 
+         *  filter, reduce
+         * **********************************************************/
+
+        Registrar: function() { // Event registrar
+            this.events = new Map();
+        },
+
+        /*************************************************************
+         * events.Exception
+         * -------------------
+         *  Error Structure 
+         * **********************************************************/
+        Exception: function(err) {
+
         }
-    }
+    };
 })();
 
 
+/******************************************************************************
+ * Event class prototype
+ * 
+ * ***************************************************************************/
 
-const pageContainer = (function() {
+events.Event.prototype = {
 
-    let calendar, calendarInformationRows, initPage; 
+    get isOn() {
+        return (this.state == events.eventState.on);
+    },
 
-    calendar = new events.Registrar();
-    //Reads each line of calendar information
-    //stored on the page
-    calendarInformationRows = function(){
-        // Collects list items on page that can be converted to 
-        // calendar events and returns all as an array
-        let eventDescriptions = [];
-        AJS.$("H1:contains('Events') + ul li").each(function(index){
-            eventDescriptions.push($(this).text());
-        });
-        return eventDescriptions; 
-    };
-    initPage = function(){
-        AJS.$("H1:contains('Events') + ul").hide();
-        AJS.$("H1:contains('Events')").hide();
-    };
-    return {
-        Command: function(execute, undo, value) {
-            this.execute = execute;
-            this.undo = undo;
-            this.value = value;
-        },
+    get isOff() {
+        return (this.state === events.eventState.off);
+    },
 
-        onReady: function()  {
-            confluencePage.updateMatchers()
-            //extract and process all calendar information stored on the page 
-            let calendarInfo = calendarInformationRows();
-            calendarInfo.forEach(str => confluencePage.processCalendarInformation(calendar, str));
-            initPage();
-            eventDialogUI.onReady(calendar);
-            calendarSideBarUI.onReady(calendar);
-            calendarUI.onReady(calendar);
+    on: function() { //event is ongoing
+        if (this.isOff) {
+            this.state = events.eventState.on;
+            this.onOnActions.forEach(x => x());
         }
+    },
+
+    off: function() { //event is offgoing
+        if (this.isOn) {
+            this.state = events.eventState.off;
+            this.onOffActions.forEach(x => x());
+        }
+    },
+
+
+    flip: function() {
+        if (this.isOn) {
+            this.off();
+        } else {
+            this.on();
+        }
+        this.onFlipActions.forEach(x => x());
     }
-})()
+};
+
+/******************************************************************************
+ * Registrar objects
+ * -----------------
+ *  data structure that holds and registers events, 
+ *  keeping track of their status
+ * 
+ * ***************************************************************************/
+events.Registrar.prototype = {
+
+    /*****************************************************************
+     *  Registers an event in the registrar
+     *  *************************************************************/
+
+    get size() {
+        return this.events.size;
+    },
+
+    register: function(ev) {
+        this.events.set(ev.id, ev);
+    },
+
+    flush: function(ev) {
+        this.events.clear();
+    },
+
+    forEach: function(eventCallbackFunction) {
+        this.events.forEach(eventCallbackFunction);
+    },
+
+    get: function(eventId) {
+        return this.events.get(eventId);
+    },
+
+    filter: function(filterPred) {
+        /********************************************************
+         * returns an array of events filtered as 
+         * per the predicate argument
+         * *****************************************************/
+        let arrayRes = [];
+        this.events.forEach((value, key) => {
+            if (filterPred(value)) {
+                arrayRes.push(value);
+            }
+        });
+        return arrayRes;
+    },
+
+    remove: function(evId) {
+        /********************************************************
+         * removes an event with given id from 
+         * the registrar
+         * *****************************************************/
+        if (!this.events.has(evId)) {
+            throw new events.Exception("Event does not exist");
+        }
+        this.events.delete(evId);
+    }
+
+
+};
 
 module.exports = {
-    pageContainer
-}
+    events
+};
