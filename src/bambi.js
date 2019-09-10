@@ -64,11 +64,14 @@ const bambi = (function() {
         setEnv: function() {
             /**********************************************************************
              * if this is running in a confluence environemnt, bambi expects the 
-             * variable "confEnv" to be defined
+             * variable "confEnv" to be defined externally
              * ************************************************************************/
-            if (typeof confEnv !== 'undefined') { //check if this is a confluence env
-                setEnv(bambi.runningEnvs.production); //this is a production env
-            } else {
+            try{
+                if (confEnv in window) { //check if this is a confluence env
+                    setEnv(bambi.runningEnvs.production); //this is a production env
+                } 
+             }
+            catch(e){
                 setEnv(bambi.runningEnvs.development); // this is a local development envi
             }
         },
