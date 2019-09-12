@@ -8,11 +8,12 @@
 const bambi = require('../bambi.js').bambi 
 
 const confluencePage = require('./confluencePage').confluencePage
+const pageParser = require('./pageParser').pageParser
 
 const events = require('../events/events.js').events
 
 const calendarSideBarUI = require('../calendarSideBarUI').calendarSideBarUI
-const calendarUI = require('../calendarUI').calendarUI
+const calendarUI = require('../ui/calendarUI').calendarUI
 const eventDialogUI = require('../dialogs/eventDialogUI').eventDialogUI
 
 const p = (function() {
@@ -59,10 +60,10 @@ const pageContainer = (function() {
 
         onReady: function()  {
             confluencePage.onReady() //get information from page metadata and external resources
-
+            pageParser.onReady()
             //extract and process all calendar information stored on the page 
             let calendarInfo = calendarInformationRows();
-            calendarInfo.forEach(str => confluencePage.processCalendarInformation(calendar, str));
+            calendarInfo.forEach(str => pageParser.processCalendarInformation(calendar, str));
             initPage();
             eventDialogUI.onReady(calendar);
             calendarSideBarUI.onReady(calendar);
