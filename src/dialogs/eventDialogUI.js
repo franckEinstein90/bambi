@@ -21,37 +21,108 @@ const ui = require('../ui.js').ui;
 const confluencePage = require('../client/confluencePage.js').confluencePage;
 
 const eventFormValidator = (function(){
-    return{
 
+    let reset, eventProperties, readFormValues, 
+    validateTitle, validateDateSpan, 
+    //validation
+    doError, errorFlag
+   
+    reset = function(){
+        eventProperties = {
+            eventTitle:"", 
+            eventDescription:"", 
+            eventCategory:0,
+            eventBeginDate:null, 
+            eventEndDate:null
+        }
+        errorFlag = false
     }
-})()
+    readFormValues = function(){
+            eventProperties.eventCategory = (AJS.$("#important-event").is(":checked"))?1:0
+            eventProperties.eventTitle = AJS.$("#event-dialog-title").val()
+            eventProperties.eventDescription = AJS.$("#event-dialog-description").val()
+            eventProperties.eventBeginDate = moment(AJS.$("#event-dialog-begin-date").val())
+            eventProperties.eventEndDate = moment(AJS.$("#event-dialog-end-date").val())
+    }
 
-const eventDialogUI = (function() {
+    doError = function({
+        title,
+        body
+    }) {
+        AJS.flag({
+            type: 'error',
+            title: title,
+            body: body
+        });
+    }
 
-    let uiEventDialog,
-        dialogAction,
+    validateTitle = function(){
+        if (eventProperties.eventTitle.length < 1) {
+            errorFlag = true
+            doError({
+                title: 'Invalid event title',
+                body: 'Please provide a valid event title'
+            })
+        }
+    }
+
+    validateDateSpan = function(){
+        if (eventProperties.eventEndDate.isBefore(eventProperties.eventBeginDate)) {
+                errorFlag = true 
+                doError({
+                   title: 'Invalid date range',
+                   body: "The end date for this event can't be after the beginning date"
+                })
+        }
+    }
+
+    return{
+        validateFormFields : function() {
+            reset()
+            /****************
+             * 	returns a new calendar event if dialog data is valid
+             * 	**************************/
+            readFormValues()
+            validateTitle()
+            validateDateSpan()
+            if(errorFlag === false){
+                return calendarEvents.newCalendarEvent({
+                    beginDate: eventProperties.eventBeginDate, 
+                    endDate: eventProperties.eventEndDate, 
+                    title: eventProperties.eventTitle, 
+                    description: eventProperties.eventDescription, 
+                    categoryID: eventProperties.eventCategory})
+            }
+        }
+    }
+})() 
+
+const eventDialogUI = (function() { 
+        let uiEventDialog, dialogAction,
         calendar,
-        eventBeginDateField,
-        eventEndDateField,
+        eventBeginDateField, eventEndDateField,
         dateStampToDate,
         calendarBlankEvent,
         setEventFormValues,
         setEventDialogHeader,
         registerNewEventFromFormValues,
         editEventFromFormValues,
-        doError,
-        validateFormFields,
         eventAsHTMLListItem,
-        saveEventsToPage;
+        saveChanges, changeType
 
     uiEventDialog = ui.newUI({
         submitFormValues: "dialog-submit-button",
         dialogCancel: "dialog-cancel-button"
-    });
+    })
 
-    eventBeginDateField = "#event-dialog-begin-date";
+    changeType = {
+        newEvent: 10,
+        editEvent: 20, 
+        deleteEvent: 30
+    }
 
-    eventEndDateField = "#event-dialog-end-date";
+    eventBeginDateField = "#event-dialog-begin-date"
+    eventEndDateField = "#event-dialog-end-date"
 
     dateStampToDate = function(dayStamp) {
         let returnDate;
@@ -64,15 +135,21 @@ const eventDialogUI = (function() {
     calendarBlankEvent = function(dayStamp) {
         let beginDate = dateStampToDate(dayStamp);
         return new calendarEvents.CalendarEvent(beginDate, beginDate, "", "");
-    };
+    }
 
     setEventFormValues = function(ev) {
         //sets the value of the form to the event passed on as argument
+        if(ev.categoryID && ev.categoryID === 1){
+            AJS.$("#important-event").prop('checked', true)
+        }
+        else{
+            AJS.$("important-event").prop('checked', false)
+        }
         AJS.$(eventBeginDateField).val(ev.timeSpan.beginDate.format('YYYY-MM-DD'));
         AJS.$(eventEndDateField).val(ev.timeSpan.endDate.format('YYYY-MM-DD'));
         AJS.$("#event-dialog-title").val(ev.eventTitle);
         AJS.$("#event-dialog-description").val(ev.eventDescription);
-    };
+    }
 
     setEventDialogHeader = function(headerTitle) {
         AJS.$("#event-dialog-action").text(headerTitle);
@@ -84,79 +161,33 @@ const eventDialogUI = (function() {
          * and if valide, registers new event in calendar 
          * *****************************************************/
         e.preventDefault();
-        let newCalendarEvent = validateFormFields();
+        let newCalendarEvent = eventFormValidator.validateFormFields();
         if (newCalendarEvent !== undefined) {
             calendar.register(newCalendarEvent);
-            saveEventsToPage();
+            saveChanges(changeType.newEvent);
         }
     };
 
     editEventFromFormValues = function(e) {
         e.preventDefault();
-        let newCalendarEvent = validateFormFields();
+        let newCalendarEvent = eventFormValidator.validateFormFields();
         if (newCalendarEvent !== undefined) {
             let registeredEvent = calendar.get(dialogAction.id);
             registeredEvent.timeSpan = newCalendarEvent.timeSpan;
             registeredEvent.eventTitle = newCalendarEvent.eventTitle;
             registeredEvent.eventDescription = newCalendarEvent.eventDescription;
-            saveEventsToPage();
+            registeredEvent.categoryID = newCalendarEvent.categoryID
+            saveChanges(changeType.editEvent);
         }
     };
 
-    doError = function({
-        title,
-        body
-    }) {
-        AJS.flag({
-            type: 'error',
-            title: title,
-            body: body
-        });
-    };
-
-    validateFormFields = function() {
-        /****************
-         * 	returns a new calendar event if dialog data is valid
-         * 	**************************/
-        let eventTitle, eventDescription, eventBeginDate, eventEndDate;
-
-        try {
-            eventTitle = AJS.$("#event-dialog-title").val();
-            eventDescription = AJS.$("#event-dialog-description").val();
-            eventBeginDate = moment(AJS.$("#event-dialog-begin-date").val());
-            eventEndDate = moment(AJS.$("#event-dialog-end-date").val());
-
-            if (eventTitle.length < 1) {
-                doError({
-                    title: 'Invalid event title',
-                    body: 'Please provide a valid event title'
-                });
-                return;
-            }
-            if (eventEndDate.isBefore(eventBeginDate)) {
-                doError({
-                    title: 'Invalid date range',
-                    body: "The end date for this event can't be after the beginning date"
-                });
-                return;
-            }
-            if (bambi.isDev()) {
-                console.log(`creating new event title:=${eventTitle}, beginDate:=${eventBeginDate}, endDate:=${eventEndDate}, description:=${eventDescription}`);
-            }
-            return new calendarEvents.CalendarEvent(eventBeginDate, eventEndDate, eventTitle, eventDescription);
-        } finally {
-
-        }
-    };
-
+  
     eventAsHTMLListItem = function(ev) {
         return `<li>${JSON.stringify(ev)}</li>`;
     };
 
-    saveEventsToPage = function() {
-        let eventsAsHTMLList,
-            jsonData,
-            newBody;
+    saveChanges = function(change) {
+        let eventsAsHTMLList, jsonData, newBody, userMessage
 
         eventsAsHTMLList = [`<li>${bambi.getVersionString()}</li>`];
         calendar.forEach(ev => eventsAsHTMLList.push(eventAsHTMLListItem(ev)))
@@ -185,10 +216,22 @@ const eventDialogUI = (function() {
                 }
             }
         };
+        userMessage = "Saving your changes"
+        switch(change){
+            case changeType.newEvent:
+                userMessage = 'Saving new event'
+                break
+            case changeType.editEvent:
+                userMessage = 'Editing event'
+                break
+            case changeType.deleteEvent:
+                userMessage = 'Deleting event'
+                break
+        }
 
         AJS.flag({
             type: 'info',
-            title: 'Saving new event',
+            title: userMessage, 
             body: "please wait while your changes are being saved."
         });
 
@@ -235,7 +278,7 @@ const eventDialogUI = (function() {
 
         deleteEvent: function(evID) {
             calendar.remove(evID);
-            saveEventsToPage();
+            saveChanges(changeType.deleteEvent);
         },
 
         showEdit: function(evID) {
