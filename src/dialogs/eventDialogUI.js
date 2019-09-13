@@ -18,7 +18,13 @@ const events = require('../events/events.js').events;
 const calendarEvents = require('../events/calendarEvents.js').calendarEvents;
 
 const ui = require('../ui.js').ui;
-const confluencePage = require('../confluencePage.js').confluencePage;
+const confluencePage = require('../client/confluencePage.js').confluencePage;
+
+const eventFormValidator = (function(){
+    return{
+
+    }
+})()
 
 const eventDialogUI = (function() {
 
@@ -206,6 +212,7 @@ const eventDialogUI = (function() {
 
     return {
         onReady: function(cal) {
+            console.log("eventDialog init")
             calendar = cal
             ui.assignAction({
                 triggerHandle: uiEventDialog.dialogCancel,
