@@ -29,14 +29,25 @@ const dayUI = (function() {
         this.listItemId = "evId_Day_" + dayStamp + "_" + event.id;
         this.eventID = event.id;
         this.dateStamp = dayStamp;
+        this.category = event.categoryID; 
         this.htmlEditID = "edit_" + this.listItemId;
         this.htmlDeleteID = "delete_" + this.listItemId;
     }
 
-    renderEventPane = function(eventInfo){ //renders a pane for a single event
+    renderEventPane = function(eventInfo){ 
+    //renders a pane for a single event
+            let eventPaneStyle, eventLabelStyle
+            eventPaneStyle = "cursor:pointer"
+            eventLabelStyle = "cursor:pointer"
+
+            if(eventInfo.category === 1){
+                eventPaneStyle += ";background-color:#66152d;  font-weight:bold;"
+                eventLabelStyle += ";color:#FFFFFF"
+            }
+
             return [
-                `<div class="dayEvent">`,
-                `<A data-aui-trigger aria-controls='${eventInfo.listItemId}' style="cursor:pointer">`,
+                `<div class="dayEvent" style="${eventPaneStyle}">`,
+                `<A data-aui-trigger aria-controls='${eventInfo.listItemId}' style="${eventLabelStyle}">`,
                  eventInfo.label,
                 "</A>",
                 `<aui-inline-dialog id='${eventInfo.listItemId}' style='width:200px'>`,
@@ -88,13 +99,13 @@ const dayUI = (function() {
                 if(numberOfEvents > maxEvents){
                     let jsCollapsableCode = [
                         `AJS.$(".collapsedDayEvents").css("display", "none")`,
-                        `AJS.$(".expandEvents").css("display", "block")`,
+                        `AJS.$(".expandEventsLink").css("display", "block")`,
                         `document.getElementById("${expandPaneID}Control").style.display="none"`,
                         `document.getElementById("${expandPaneID}").style.display="block"`
                     ].join(';')
 
                     cellEvents += [
-                        `<A id='${expandPaneID}Control' class="expandEvents" onclick='${jsCollapsableCode}'>`,
+                        `<A id='${expandPaneID}Control' class="expandEventsLink" onclick='${jsCollapsableCode}'>`,
                         `${numberOfEvents - maxEvents} more</a>`,
                         `<div id="${expandPaneID}"  class= "collapsedDayEvents" style="display: none">`, 
                         dayProperties.events.slice(maxEvents).map(evInfo => renderEventPane(evInfo)).join(""),
