@@ -18,6 +18,7 @@ const pageParser = (function() {
         registerEventFromStringDescription, registerEventFromJSONDescription,
         //categories
         createCategoryFromJSONDescription
+
     toDate = (dayStamp) => {
         let [year, month, day] = dayStamp.split("-");
         return new Date(year, month - 1, day);
@@ -41,7 +42,7 @@ const pageParser = (function() {
             JSONCategoryDescription: 10,
             JSONEvent: 20,
             STRINGEvent: 30
-        },
+        }
 
         parseFromObject = function(infoObj) {
             if ('infoType' in infoObj) {
@@ -58,7 +59,7 @@ const pageParser = (function() {
                 type: infoType.JSONEvent,
                 value: infoObj
             }
-        },
+        }
 
         parse = (evStr) => {
             let recognized, obj;
@@ -89,7 +90,7 @@ const pageParser = (function() {
             }
         }
 
-    registerEventFromStringDescription = (calendar, evFieldValues) => {
+    registerEventFromStringDescription = function(calendar, evFieldValues) {
         let beginDate, endDate, description
         beginDate = toDate(evFieldValues.beginDate)
         endDate = toDate(evFieldValues.endDate)
@@ -125,8 +126,8 @@ const pageParser = (function() {
         }
     }
 
-    createCategoryFromJSONDescription = function(calendar, categoryDescription) {
-
+    createCategoryFromJSONDescription = function(categoryDescription) {
+        eventCategories.addCategory(categoryDescription)
     }
 
     return {
@@ -137,13 +138,12 @@ const pageParser = (function() {
         updateMatchers: function() { //used to extract information stored directly on a confluence page
             eventDescriptionMatcher = new RegExp(`Event from (\\d{4}\\-\\d{2}\\-\\d{2}) to (\\d{4}\\-\\d{2}\\-\\d{2})\\s*${fieldSeparator}\\s*(.+)`)
         },
+
         /********************************************************************
-         * given a string describing a calendar event, verify it for format
-         *  and content, and if an event can be made of it, create it, id it,
-         *  and  register it with eventUtils manager
+         * given a string describing a calendar event, setting, or category, 
+         * a) verify it for format and content, 
+         * b) process accordingly 
          ********************************************************************/
-
-
         processCalendarInformation: (calendar, eventDescriptionString) => {
             let infoDescription = parse(eventDescriptionString);
             if (!infoDescription) {
@@ -151,13 +151,13 @@ const pageParser = (function() {
             }
             switch (infoDescription.type) {
                 case (infoType.JSONEvent):
-                    registerEventFromJSONDescription(infoDescription.value)
+                    registerEventFromJSONDescription(calendar, infoDescription.value)
                     break
                 case (infoType.StringEvent):
                     registerEventFromStringDescription(calendar, infoDescription.value)
                     break
                 case (infoType.JSONCategoryDescription):
-                    createCategoryFromJSONDescription(calendar, infoDescription.value)
+                    createCategoryFromJSONDescription(infoDescription.value)
                     break
             }
         }
