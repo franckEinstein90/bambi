@@ -14,11 +14,12 @@ const bambi = require('../bambi').bambi;
 const dateUtils = require('../time/dateUtils.js').dateUtils;
 const moment = require('moment');
 
-const events = require('../events/events.js').events;
-const calendarEvents = require('../events/calendarEvents.js').calendarEvents;
+const events = require('../events/events').events
+const calendarEvents = require('../events/calendarEvents').calendarEvents
+const eventCategories = require('../events/eventCategories').eventCategories
 
-const ui = require('../ui.js').ui;
-const confluencePage = require('../client/confluencePage.js').confluencePage;
+const ui = require('../ui.js').ui
+const confluencePage = require('../client/confluencePage.js').confluencePage
 
 const eventFormValidator = (function(){
 
@@ -257,6 +258,9 @@ const eventDialogUI = (function() {
         onReady: function(cal) {
             console.log("eventDialog init")
             calendar = cal
+            eventCategories.listCategoriesLabel().forEach(
+                catDescription => AJS.$("#category-select").append(`<option>${catDescription.label}</option>`))
+
             ui.assignAction({
                 triggerHandle: uiEventDialog.dialogCancel,
                 action: () => AJS.dialog2("#event-dialog").hide()
@@ -294,12 +298,12 @@ const eventDialogUI = (function() {
         },
 
         showNew: function(dayStamp) {
-            dialogAction = eventDialogUI.dialogActions.create;
-            setEventDialogHeader("Creating new event");
+            dialogAction = eventDialogUI.dialogActions.create
+            setEventDialogHeader("Creating new event")
             if (dayStamp === undefined) {
-                dateUtils.pushSeparator("-");
-                dayStamp = dateUtils.dayStamp();
-                dateUtils.popSeparator();
+                dateUtils.pushSeparator("-")
+                dayStamp = dateUtils.dayStamp()
+                dateUtils.popSeparator()
             }
             let ev = calendarBlankEvent(dayStamp);
             setEventFormValues(ev);
@@ -308,17 +312,17 @@ const eventDialogUI = (function() {
                 action: registerNewEventFromFormValues
             });
 
-            AJS.dialog2("#event-dialog").show();
+            AJS.dialog2("#event-dialog").show()
         },
 
         publish: function(ev) {
-            console.log("publishing event to page" + ev.eventTitle);
+            console.log("publishing event to page" + ev.eventTitle)
             validateFormInfo();
         }
     }
-})();
+})()
 
 
 module.exports = {
     eventDialogUI
-};
+}
