@@ -7,9 +7,11 @@
 
 const appVersion = require('../appversion.json')
 
+
 const bambi = (function() {
     let bambiVersion,
-        checkEnv, setEnv, runningEnv, //Env related variables
+        dataSectionOK, jqueryOK, 
+        runningEnv, detectRunningEnv, //Env related variables
         params,
         eventSection;
 
@@ -18,73 +20,88 @@ const bambi = (function() {
         minor: appVersion.version.minor
     }
 
-    checkEnv = false;
-    setEnv = function(env) {
-        if (env === bambi.runningEnvs.production) {
-            runningEnv = env;
-            AJS.populateParameters();
-            params = AJS.params;
-        } else if (env === bambi.runningEnvs.development) {
-            runningEnv = env;
-        } else {
-            throw "unknown environment"
-        }
-    };
     eventSection = {
         beginLabel: "[***BEGIN CALENDAR EVENTS***]",
         endLabel: "[***END CALENDAR EVENTS***]"
-    };
+    }
+
+    dataSectionOK = function(){ 
+        //verifies that the section that contains data exists and is formatted correctly
+        let checkEventSection = AJS.$("h1:contains('Events')").length > 0;
+        if (!checkEventSection) {
+            return false
+        }
+        checkEventSection = AJS.$("h1:contains('Events')").next("UL").length > 0;
+        if (!checkEventSection) {
+            return false
+        }
+        let check2 = AJS.$("h1:contains('Events')").next("UL").children().filter(":last");
+        let check3 = check2.text();
+        return (check3 === "init" || check3 === eventSection.endLabel) 
+    }
+
+    jqueryOK = function(){
+        if(typeof jQuery != 'undefined'){
+            console.log(jQuery.fn.jquery)
+            return true
+        }
+        return false
+    }
+    detectRunningEnv = function() {
+        /**********************************************************************
+         * if this is running in a confluence environemnt, bambi expects the 
+         * variable "confEnv" to be defined externally
+         * ************************************************************************/
+        try{
+            if (confEnv) { //check if this is a confluence env
+                return bambi.runningEnvs.production //this is a production env
+            } 
+         }
+        catch(e){
+            return bambi.runningEnvs.development // this is a local development envi
+        }
+    }
 
     return {
-        goodEnv: function() {
-            return checkEnv;
+        appStages:{
+            init: 5,
+            running: 10
         },
-        init: function() {
-            /********************************
-             * Get the version number
-             ********************************/
-            let checkEventSection = AJS.$("h1:contains('Events')").length > 0;
-            if (!checkEventSection) {
-                checkEnv = false;
-                return;
-            }
-            checkEventSection = AJS.$("h1:contains('Events')").next("UL").length > 0;
-            if (!checkEventSection) {
-                checkEnv = false;
-                return;
-            }
-            let check2 = AJS.$("h1:contains('Events')").next("UL").children().filter(":last");
-            let check3 = check2.text();
-            if (check3 === "init" || check3 === eventSection.endLabel) {
-                checkEnv = true;
-            } else {
-                checkEnv = false;
-            }
+
+        errors:{
+            badInfoSection: "bad info section", 
+            badJQuery: "bad JQuery" 
         },
-        setEnv: function() {
-            /**********************************************************************
-             * if this is running in a confluence environemnt, bambi expects the 
-             * variable "confEnv" to be defined externally
-             * ************************************************************************/
-            try{
-                if (confEnv in window) { //check if this is a confluence env
-                    setEnv(bambi.runningEnvs.production); //this is a production env
-                } 
-             }
-            catch(e){
-                setEnv(bambi.runningEnvs.development); // this is a local development envi
-            }
-        },
-        isDev: function() {
-            return runningEnv === bambi.runningEnvs.development;
-        },
+
         runningEnvs: {
-            production: 1,
-            development: 2
+            production: {code: 1, description:"confluence page"},
+            development: {code: 2, description: "dev local"}
         },
+
+        init: function() {
+            //check data section exists and correctly formatted
+            if(!dataSectionOK()){ throw bambi.error.badInfoSection } 
+            runningEnv = detectRunningEnv()
+            console.log(`running on ${runningEnv.description}`)
+            if(!jqueryOK()){ throw bambi.error.badJQuery }
+            if(runningEnv === bambi.runningEnvs.production){
+                AJS.populateParameters()
+                runningEnv.params = AJS.params
+            }
+        },
+
+        isProd: function(){
+            return runningEnv.code == 1
+        }, 
+
+        isDev: function() {
+            return runningEnv.code === 2
+        },
+       
         getVersionString: function() {
             return `Parks Canada Confluence Calendar - v${bambiVersion.major}.${bambiVersion.minor}`
         },
+
         prevVersion: undefined, //the previous version of the app used to save event and app information
         clientData: {
             "monthsEn": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
