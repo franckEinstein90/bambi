@@ -5,14 +5,15 @@
  ****************************************************/
 const bambi = require('../bambi.js').bambi;
 const errors = require('../errors.js').errors;
+const confluencePage = require('./confluencePage').confluencePage
 const pageContainer = require('./pageContainer.js').pageContainer; 
+
 
 AJS.toInit(function($) {
     /*********************************************
      *
      * *******************************************/
-    console.log("App Start");
-    jQuery.extend({
+   jQuery.extend({
         getValues: function(url) {
             var result = null;
             jQuery.ajax({
@@ -25,31 +26,28 @@ AJS.toInit(function($) {
             });
             return result;
         }
-    });
+    })
 
-    bambi.init();
-    if (!bambi.goodEnv()) {
-        errors.doError({
-            title: "bad setup",
-            body: "Your calendar install is not set up properly." +
-                  " Please contact the Confluence team to resolve this issue and get your calendar properly initialize"
-        });
-    }
-    else{
-        bambi.setEnv();
-        /**********************************************************************
-         * if this is running in a confluence environemnt, bambi expects the 
-         * variable "confEnv" to be defined
-         * ************************************************************************/
-       
-        if(! bambi.isDev()){ 
-            try {
-                confluencePage.onReady(confEnv.pageID);
-            } catch (err) {
-                console.log(err);
-            }
+    let initApp = function(){
+        try{
+            console.group("Bambi Init")
+            bambi.init()
+            if(bambi.isProd()){ confluencePage.onReady(confEnv.pageID) }                
+            console.groupEnd()
+            return true
         }
-        pageContainer.onReady();
+        catch(err){
+            errors.doError({
+                title: "bad setup",
+                body: "Your calendar install is not set up properly." 
+            });
+            return false
+        }
     }
-});
+
+    if(initApp()){
+        pageContainer.onReady();  
+    }
+ 
+})
 
