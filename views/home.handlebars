@@ -11,7 +11,10 @@
 <table class="aui calendarContainerHeader" ID="calendar-container-header"> 
 <thead>
 <TR>
-    <TH style="width:15%"><span class="aui-icon aui-icon-large aui-iconfont-appswitcher">Insert meaningful text here for accessibility</span> </TH>
+    <TH style="width:15%" class="headerSection">
+	<span 	class="aui-icon aui-icon-large aui-iconfont-appswitcher appControlButton" id="app-settings">
+	app settings</span> 
+    </TH>
     <TH style="width:25%">
 		<button id="reset-to-today" class="aui-button">Today</button>
 		<span id="select-previous-month" class="aui-icon aui-icon-large aui-iconfont-arrows-left monthSelector">Insert meaningful text here for accessibility</span>
@@ -33,7 +36,7 @@
 </table>
 
 <div class="calendarSidebar" id="calendar-sidebar">
-sideBar
+    sidebar
 </div>
 
 <div ID="calendar-table-container" class="calendarTableContainer">
@@ -63,4 +66,125 @@ sideBar
 
 </div>
 
+</div>
+
+<section id="settings-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main" id="app-version-info">placeHolder</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+        <div class="aui-dialog2-content">
+            <h1>Event Categories</h1>   
+            <form class="aui">
+                    <fieldset>
+                        <div class ="field-group">
+                        <button>new event category</button>
+                        </div>
+                    </fieldset>
+                </form>
+        </div>
+</section>
+
+
+
+<section id="event-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main" id="event-dialog-action">Create a new event</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div class="aui-dialog2-content">
+      <form class="aui">
+        <fieldset>
+            <div class="field-group">
+
+              <label for="d-fname">Event Title<span class="aui-icon icon-required"> required</span></label>
+              <input class="text" type="text" id="event-dialog-title" name="d-fname">
+              <div class="description">Title of event</div>
+              <div class="checkbox">
+                    <input class="checkbox" type="checkbox" name="importantCheck" id="important-event">
+                    <label for="importantCheck">Mark as important</label>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="begin-date">From
+                <span class="aui-icon icon-required"> required</span></label>
+                <input id="event-dialog-begin-date" name="begin-date" type="date" /> 
+            </div>
+
+            <div class="field-group">
+                <label for="end-date">To
+                <span class="aui-icon icon-required"> required</span></label>
+                <input id="event-dialog-end-date" name="end-date" type="date" />
+            </div>
+
+            <div class="field-group">
+                <label for="dBase">Event category</label>
+                <select class="select" id="category-select" name="dBase" title="database select">
+              
+                </select>
+            </div>
+
+            <div class="field-group">
+            <label for="descr">Description</label>
+            <textarea class="textarea" rows="6" cols="10" name="descr" id="event-dialog-description"></textarea>
+            </div>
+        </fieldset>
+    </form>
+
+ </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+          <button id="dialog-cancel-button"  class="aui-button">Cancel</button>
+          <button id="dialog-submit-button" class="aui-button aui-button-primary">OK</button>
+        </div>
+    </footer>
+</section>
+<br/>
+<div>
+<h1>Events</h1>
+<ul>
+<li>[***BEGIN CALENDAR EVENTS***]</li>
+<li>{"infoType":10, "categoryID":2, "label":"vacation", "cssDecorator":"color:#FF0000; background-color:#00FF00"}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-18T04:00:00.000Z","endDate":"2019-09-18T04:00:00.000Z","units":20},"categoryID": 2, "eventTitle":"testJson1","eventDescription":"fdsa","id":"fb2ae312-d0d9-4012-b728-66df2c1c8a05","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-19T04:00:00.000Z","endDate":"2019-09-19T04:00:00.000Z","units":20},"categoryID": 1, "eventTitle":"testJson1","eventDescription":"fdsa","id":"fb2ae312-d0d9-4012-b728-66df2c1c8a05","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-18T04:00:00.000Z","endDate":"2019-09-18T04:00:00.000Z","units":20},"categoryID": 1, "eventTitle":"testJson1","eventDescription":"fdsa","id":"fb2ae312-d0d9-4012-b728-66df2c1c8a05","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-03T04:00:00.000Z","endDate":"2019-09-03T04:00:00.000Z","units":20},"eventTitle":"worked from 12:30 to 5","eventDescription":"","id":"baf9e58f-777b-44ef-acbe-5ada914e771c","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-15:00:00.000Z","endDate":"2019-09-15:00:00.000Z","units":20},"eventTitle":"test1","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-15:00:00.000Z","endDate":"2019-09-15:00:00.000Z","units":20},"eventTitle":"test2","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-15:00:00.000Z","endDate":"2019-09-15:00:00.000Z","units":20},"categoryID": 0, "eventTitle":"categorized event","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"categoryID": 1, "eventTitle":"important","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"eventTitle":"test5","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"eventTitle":"test1","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"eventTitle":"test2","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"eventTitle":"test3","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"eventTitle":"test4","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-17:00:00.000Z","endDate":"2019-09-17:00:00.000Z","units":20},"eventTitle":"test5","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+
+
+<li>{"timeSpan":{"beginDate":"2019-09-15:00:00.000Z","endDate":"2019-09-15:00:00.000Z","units":20},"eventTitle":"test6","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-18T04:00:00.000Z","endDate":"2019-09-18T04:00:00.000Z","units":20},"eventTitle":"testJson1","eventDescription":"fdsa","id":"fb2ae312-d0d9-4012-b728-66df2c1c8a05","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-03T04:00:00.000Z","endDate":"2019-09-03T04:00:00.000Z","units":20},"eventTitle":"worked from 12:30 to 5","eventDescription":"","id":"baf9e58f-777b-44ef-acbe-5ada914e771c","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-12T04:00:00.000Z","endDate":"2019-09-12T04:00:00.000Z","units":20},"eventTitle":"test1","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-12T04:00:00.000Z","endDate":"2019-09-12T04:00:00.000Z","units":20},"eventTitle":"test2","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-12T04:00:00.000Z","endDate":"2019-09-12T04:00:00.000Z","units":20},"eventTitle":"test3","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-12T04:00:00.000Z","endDate":"2019-09-12T04:00:00.000Z","units":20},"eventTitle":"test4","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-12T04:00:00.000Z","endDate":"2019-09-12T04:00:00.000Z","units":20},"eventTitle":"test5","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>{"timeSpan":{"beginDate":"2019-09-12T04:00:00.000Z","endDate":"2019-09-12T04:00:00.000Z","units":20},"eventTitle":"test6","eventDescription":"","id":"6578f528-dc3a-460a-b03c-7dbe097c4645","onOffActions":[],"onOnActions":[],"onFlipActions":[],"state":0}</li>
+<li>EventCategory: pay action : #FFFF00</li>
+<li>Event from 2019-09-11 to 2019-09-11 : Doctors Appointment: 1130</li>
+<li>Event from 2019-08-10 to 2019-08-10 : Art Sell in the Glebe : Participating </li>
+<li>Event from 2019-06-30 to 2019-06-30 : Alice goes hunting : the cat follows </li>
+<li>Event from 2019-07-10 to 2019-07-21 : Alice goes hunting : the cat follows </li>
+<li>Event from 2019-07-20 to 2019-07-25 : das Wall: fgds</li>
+<li>Event from 2019-07-25 to 2019-07-26:hello:fdsa fdsa</li>
+<li>Event from 2019-06-10 to 2019-06-21 : gres : </li>
+<li>Event from 2019-06-20 to 2019-06-21 : gres : fgds</li>
+<li>Event from 2019-06-25 to 2019-06-26:hello:fdsa fdsa</li>
+<li>[***END CALENDAR EVENTS***]</li>
+</ul>
 </div>

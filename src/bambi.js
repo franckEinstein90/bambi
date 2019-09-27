@@ -90,6 +90,10 @@ const bambi = (function() {
             }
         },
 
+        run: function(){
+
+        },
+
         isProd: function(){
             return runningEnv.code == 1
         }, 

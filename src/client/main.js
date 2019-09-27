@@ -3,10 +3,8 @@
  * Application Entry point
  * 
  ****************************************************/
-const bambi = require('../bambi.js').bambi;
-const errors = require('../errors.js').errors;
-const confluencePage = require('./confluencePage').confluencePage
-const pageContainer = require('./pageContainer.js').pageContainer; 
+const bambi = require('../bambi').bambi;
+const pageContainer = require('./pageContainer').pageContainer
 
 
 AJS.toInit(function($) {
@@ -26,13 +24,14 @@ AJS.toInit(function($) {
             });
             return result;
         }
-    })
+    });
 
     let initApp = function(){
         try{
-            console.group("Bambi Init")
-            bambi.init()
-            if(bambi.isProd()){ confluencePage.onReady(confEnv.pageID) }                
+            console.group("Bambi Init");
+                bambi.init()
+                if(bambi.isProd()){ confluencePage.onReady(confEnv.pageID) }   
+                pageContainer.ready();  
             console.groupEnd()
             return true
         }
@@ -41,13 +40,17 @@ AJS.toInit(function($) {
                 title: "bad setup",
                 body: "Your calendar install is not set up properly." 
             });
-            return false
+            return false;
         }
-    }
+    };
 
     if(initApp()){
-        pageContainer.onReady();  
+        try{
+            bambi.run()
+        }
+        catch(err){
+            errors.doError(err)
+        }
     }
  
-})
-
+});
