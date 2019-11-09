@@ -1,13 +1,16 @@
 {
   "name": "bambi",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "nodemon ./bin/www",
     "test": "mocha --reporter spec",
     "build": "browserify src/client/main.js -o public/js/lib/bundle.js",
     "flow": "flow"
   },
+  "_moduleAliases":{
+    "@routes" : "routes"
+  }, 
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -19,6 +22,7 @@
     "js-beautify": "^1.9.1",
     "jslint": "^0.12.1",
     "mocha": "^6.1.4",
+    "module-alias": "^2.2.2",
     "moment": "^2.24.0",
     "mongodb": "^3.2.7",
     "request": "^2.88.0",
