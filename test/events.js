@@ -7,7 +7,7 @@
 
 const expect = require('chai').expect;
 const validator = require('validator');
-const events = require('../src/client/events').events;
+const events = require('../src/core/events').events;
 
 /*************************************************************
  * events.Registrar
