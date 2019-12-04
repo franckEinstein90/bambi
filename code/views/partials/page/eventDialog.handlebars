@@ -1,0 +1,44 @@
+<section id="event-dialog" class="aui-dialog2 aui-dialog2-medium aui-layer" role="dialog" aria-hidden="true">
+    <header class="aui-dialog2-header">
+        <h2 class="aui-dialog2-header-main" id="event-dialog-action">Create a new event</h2>
+        <a class="aui-dialog2-header-close">
+            <span class="aui-icon aui-icon-small aui-iconfont-close-dialog">Close</span>
+        </a>
+    </header>
+    <div class="aui-dialog2-content">
+      <form class="aui">
+        <fieldset>
+            <div class="field-group">
+              <label for="d-fname">Event Title<span class="aui-icon icon-required"> required</span></label>
+              <input class="text" type="text" id="event-dialog-title" name="d-fname">
+              <div class="description">Description of event</div>
+            </div>
+            <div class="field-group">
+                <label for="begin-date">When<span class="aui-icon icon-required"> required</span></label>
+                <input id="event-dialog-begin-date" type="date" /> to
+                <input id="event-dialog-end-date" type="date" />
+            </div>
+<div class="field-group">
+            <label for="dBase">Event Type</label>
+            <select class="select" id="dBase" name="dBase" title="database select">
+                <option>Event</option>
+                <option>Leave</option>
+                <option>JIRA Issue Dates</option>
+                <option>JIRA Agile Sprints</option>
+            </select>
+        </div>
+<div class="field-group">
+            <label for="descr">Description</label>
+            <textarea class="textarea" rows="6" cols="10" name="descr" id="event-dialog-description"></textarea>
+        </div>
+          </fieldset>
+       </form>
+
+ </div>
+    <footer class="aui-dialog2-footer">
+        <div class="aui-dialog2-footer-actions">
+          <button id="dialog-cancel-button"  class="aui-button">Cancel</button>
+          <button id="dialog-submit-button" class="aui-button aui-button-primary">OK</button>
+        </div>
+    </footer>
+</section>

@@ -1,0 +1,88 @@
+/******************************************************************************
+ 
+ * It includes:
+ *
+ *  - A timer
+ * 
+ *  Last Update 2019/08/06 - FranckEinstein90 
+ ******************************************************************************/
+"use strict";
+
+const Timer = (function() {
+   let FPS; 
+   let SECOND_TENTHS_PER_SECOND = 10;
+   let MILLISECONDS_PER_SECOND = 1000;
+   
+   let SECONDS_PER_MINUTE = 60;
+   
+   let MINUTES_PER_HOUR = 60;
+   
+   let HOURS_PER_DAY = 24;
+
+   let SECOND_TENTHS_POSITION = 0;
+   let SECONDS_POSITION = 1;
+   let MINUTES_POSITION = 2;
+   let HOURS_POSITION = 3;
+   let DAYS_POSITION = 4;
+
+   let SECOND_TENTHS = 'secondTenths';
+   let SECONDS = 'seconds';
+   let MINUTES = 'minutes';
+   let HOURS = 'hours';
+   let DAYS = 'days';
+   
+    return {
+        onReady(fps){
+           FPS = fps
+        }
+        /**************************************************
+         * Includes definition for the following objects: 
+         * - Timer
+         *************************************************/
+        Timer: function(callBack) { 
+            //runs event every second
+            this.callBacks = [];
+            if(callBack){
+              callBacks.pushcallBack
+            }
+            this.timer = null;
+            this.interval = Math.floor( MILLISECONDS_PER_SECOND / this.fps);
+            this.timeInit = null;
+        },
+  };
+})();
+
+
+
+timeSpan.Timer.prototype = {
+    run: function() {
+        let $this = this;
+        for(let i=0; i < callBacks.length; i++){
+          this.callBacks[i].run();
+        }
+        this.timeInit += this.interval;
+        this.timer = setTimeout(
+            function() {
+                $this.run()
+            },
+            this.timeInit - (new Date).getTime()
+        );
+    },
+    start: function() {
+        if (this.timer == null) {
+            this.timeInit = (new Date).getTime();
+            this.run();
+        }
+    },
+    stop: function() {
+        clearTimeout(this.timer);
+        this.timer = null;
+    }
+}
+
+
+
+
+module.exports = {
+    timeSpan
+};

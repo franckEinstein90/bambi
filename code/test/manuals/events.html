@@ -1,0 +1,100 @@
+<!doctype.html>
+<html lang="en">
+<head>
+    <meta charset = "utf-8">
+    <title>event.js testing</title>
+
+
+<!--manual in browser tests for events.js-->
+<body>
+    <style>
+        #eventContainer {}
+        #eventContainer TR {
+            height:45px;
+            width:100%;}
+        #eventContainer TD {
+            width: 25px;
+        }
+
+    </style>
+
+<table id="eventContainer"> 
+<tbody id="events">
+
+</tbody>
+</table>
+
+<script
+src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+    <script src ="../../src/events.js"></script>
+    <script src ="../../src/dateUtils.js"></script>
+
+
+
+<script>
+
+
+
+$(document).ready(function() {
+    let registrarSize = 35, 
+
+        Registrar = (color)=> {
+            let evRegistrar = new events.Registrar();
+            for (let i=0; i<registrarSize ; i++){
+                let ev = new events.Event();
+                if(i%2 === 0){ev.off();}
+                evRegistrar.register(ev);
+            }
+            evRegistrar.color = color;
+            return evRegistrar;
+        },
+
+        pageEvents = [  
+                    "yellow", "blue", "red", 
+                    "green", "khaki", "magenta", 
+                    "pink", "white", "orange", 
+                    "navy", "beige", "brown", 
+                    "cyan", "DarkOrchid", "DarkRed"].map( 
+                    x => Registrar(x));
+
+    makeTableRow = (color,x) => `<tr style="background-color:${color}">${x}</tr>`, 
+
+    printEvents = (registrar) => {
+       let eventTableCells = "", 
+        decorateTD = x => x.isOn()?` style = "background-color:black"`:""; 
+ 
+       registrar.forEach(ev => eventTableCells += `<td ${decorateTD(ev)}>&nbsp;</td>`);
+       $("#events").append(makeTableRow(registrar.color, eventTableCells ));
+    }, 
+
+    randSwitch = (registrar) => {
+        registrar.forEach(function(ev){
+            if(Math.floor(Math.random() * 2)){
+                ev.on();
+            }
+            else{
+                ev.off();
+            }
+        })}, 
+    
+    
+    timer = new timeSpanUtils.Timer({
+        fps: 1,
+        run: function(){
+           $("#events").empty();
+           pageEvents.forEach(x => { 
+               printEvents(x);
+               randSwitch(x)})
+        }
+    });
+
+    timer.start();
+
+
+});
+</script>
+
+</body>
+</html>
