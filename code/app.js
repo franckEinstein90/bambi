@@ -2,10 +2,6 @@
  * Bambi - Event system - By FranckEinstein90
  *
  * 2018 
-
- * ---------------------------------------------------------------------------00
- * i will always love you, Enora, always
- *
  * app.js is not the entry point, but it is the most important chunk of it
  *
  ******************************************************************************/
