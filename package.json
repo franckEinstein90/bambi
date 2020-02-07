@@ -3,20 +3,22 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon ./bin/www",
+    "start": "nodemon ./bambi.js",
     "test": "mocha --reporter spec",
     "build": "browserify src/client/main.js -o public/js/lib/bundle.js",
     "flow": "flow"
   },
-  "_moduleAliases":{
-    "@routes" : "routes"
-  }, 
+  "_moduleAliases": {
+    "@routes"       : "routes",
+    "@appInternals" : "src/appInternals",
+    "@server"       : "src/server"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "chai": "^4.2.0",
     "express": "^4.16.4",
-    "express-handlebars": "^3.0.2",
+    "express-handlebars": "^3.1.0",
     "flow-bin": "^0.95.1",
     "helmet": "^3.16.0",
     "js-beautify": "^1.9.1",
