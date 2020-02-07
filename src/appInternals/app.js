@@ -10,9 +10,9 @@ const ready = function(){
 
     let _setAppClock    = () => appClock.start()
     let _appLogger      = winston.createLogger({
-        level:'info',  
-        format: winston.format.simple(), 
-        transports: [
+        level       :'info',  
+        format      : winston.format.simple(), 
+        transports  : [
             new winston.transports.Console()
         ]
     })
