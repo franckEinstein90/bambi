@@ -21,18 +21,20 @@ const expressStack  = require('@server/expressStack').expressStack({
     staticFolder: path.join( __dirname, 'public'), 
     faviconPath : null 
 })
-
+bambiApp.say('expressStack ok')
 require('@server/routingSystem').routingSystem({
     app: expressStack.app
 })
-
+bambiApp.say('routingSystem ok')
 require('@server/httpServer').httpServer({
     app : expressStack.app, 
-    port: appData.port 
+    port: '3000' 
 })
+bambiApp.say('httpServer ok')
+
 
 /******************************************************************************/
-console.log(`app server now running on port ${httpServer.port}`)
+//everything is set up!!! let's boot :)
 bambiApp.run()
 
 

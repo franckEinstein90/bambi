@@ -9,9 +9,9 @@
     "flow": "flow"
   },
   "_moduleAliases": {
-    "@routes"       : "routes",
-    "@appInternals" : "src/appInternals",
-    "@server"       : "src/server"
+    "@routes": "src/routes",
+    "@appInternals": "src/appInternals",
+    "@server": "src/server"
   },
   "author": "",
   "license": "ISC",
@@ -20,7 +20,7 @@
     "express": "^4.16.4",
     "express-handlebars": "^3.1.0",
     "flow-bin": "^0.95.1",
-    "helmet": "^3.16.0",
+    "helmet": "^3.21.2",
     "js-beautify": "^1.9.1",
     "jslint": "^0.12.1",
     "mocha": "^6.1.4",
@@ -29,7 +29,8 @@
     "mongodb": "^3.2.7",
     "request": "^2.88.0",
     "validator": "^10.11.0",
-    "watchify": "^3.11.1"
+    "watchify": "^3.11.1",
+    "winston": "^3.2.1"
   },
   "directories": {
     "test": "test"
