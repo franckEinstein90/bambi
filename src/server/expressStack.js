@@ -15,7 +15,9 @@ const path      = require('path')
 
 /*****************************************************************************/
 const expressStack = function({
-    root
+    root, 
+    staticFolder, 
+    faviconPath
     }){
 
     let _app    = express() 
@@ -28,8 +30,16 @@ const expressStack = function({
         partialsDir : path.join(_root, 'views', 'partials/')
     })
 
-    return {
+    _app.use(express.json())
+    _app.use(express.urlencoded({
+        extended: false
+    }))
 
+    _app.use(express.static(staticFolder))
+    if( faviconPath ) _app.use(favicon(faviconPath))
+
+    return {
+        app: _app
     }
 }
 

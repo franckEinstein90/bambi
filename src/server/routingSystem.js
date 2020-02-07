@@ -4,21 +4,26 @@
  * Started in 2018 
  * Last Update Feb 2020
  * ----------------------------------------------------------------------------
- * 
- * Essential app data
+ * routingSystem.js is the entry point for the app
  /*****************************************************************************/
 "use strict"
+
  /*****************************************************************************/
 
-const appData = (function(){
+const routingSystem = function({
+    app
+    }){
 
-    return {
-        port: '3000'
-    }
-})()
+        let _router = null
+        app.use(_router)
 
-module.exports = {
-    appData
+        return {
+
+
+        } 
 }
 
 
+module.exports = {
+    routingSystem
+}
