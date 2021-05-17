@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon ./bambi.js",
     "test": "mocha --reporter spec",
-    "build": "browserify src/client/main.js -o public/js/lib/bundle.js",
+    "buildClient": "browserify src/client/main.js -o public/js/lib/bundle.js",
     "flow": "flow"
   },
   "_moduleAliases": {
@@ -40,8 +40,10 @@
     "@babel/core": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
     "@babel/preset-flow": "^7.0.0",
+    "gulp": "^4.0.2",
     "nodemon": "^1.18.10",
-    "webpack": "^4.29.6"
+    "webpack": "^4.46.0",
+    "webpack-cli": "^4.7.0"
   },
   "repository": {
     "type": "git",

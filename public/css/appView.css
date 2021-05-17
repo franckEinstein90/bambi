@@ -1,0 +1,17 @@
+.appView {
+    position:absolute ; 
+    top: 0; 
+    left:0; 
+    display: flex; 
+    box-sizing: border-box;
+    width:100vw;
+    min-width: 100vw; 
+    height:100vh;
+    min-height:100vh;  
+  }
+  .appView>div.leftPanel{
+    display: none;
+  }
+  .leftPanel{
+    background-color: palegoldenrod;
+  }

@@ -5,40 +5,44 @@
  ***********************************************/
 "use strict";
 
-const appVersion = require('../appversion.json')
+//const appVersion = require('../appversion.json') ; 
+
+const _findPageEvents = ()=> {
+    let bambiEvents = AJS.$(".bambiEvent") ;
+    return bambiEvents ;  
+}
+
+const _findBambiContainers = function(){ 
+    //return the bambi containers currently in the DOM
+    let bambiContainers = AJS.$(".bambiContainer");
+    console.log (bambiContainers) ;  
+    //verifies that the section that contains data exists and is formatted correctly
+/*    let checkEventSection = AJS.$("h1:contains('Events')").length > 0;
+    if ( !checkEventSection ) return false ; 
+    checkEventSection = AJS.$("h1:contains('Events')").next("UL").length > 0;
+    if (!checkEventSection) { return false }
+    let check3 = check2.text();
+    return (check3 === "init" || check3 === eventSection.endLabel) */
+}
 
 
-const bambi = (function() {
+const bambi = ( function() {
+
     let bambiVersion,
         dataSectionOK, jqueryOK, 
-        runningEnv, detectRunningEnv, //Env related variables
-        params,
-        eventSection;
+        runningEnv, detectRunningEnv ; 
 
-    bambiVersion = {
+    let events ; 
+    let bambiContainers ; 
+ /*   bambiVersion = {
         major: appVersion.version.major,
         minor: appVersion.version.minor
-    }
+    }*/
 
-    eventSection = {
+    const eventSection = {
         beginLabel: "[***BEGIN CALENDAR EVENTS***]",
         endLabel: "[***END CALENDAR EVENTS***]"
-    }
-
-    dataSectionOK = function(){ 
-        //verifies that the section that contains data exists and is formatted correctly
-        let checkEventSection = AJS.$("h1:contains('Events')").length > 0;
-        if (!checkEventSection) {
-            return false
-        }
-        checkEventSection = AJS.$("h1:contains('Events')").next("UL").length > 0;
-        if (!checkEventSection) {
-            return false
-        }
-        let check2 = AJS.$("h1:contains('Events')").next("UL").children().filter(":last");
-        let check3 = check2.text();
-        return (check3 === "init" || check3 === eventSection.endLabel) 
-    }
+    } ; 
 
     jqueryOK = function(){
         if(typeof jQuery != 'undefined'){
@@ -47,6 +51,7 @@ const bambi = (function() {
         }
         return false
     }
+
     detectRunningEnv = function() {
         /**********************************************************************
          * if this is running in a confluence environemnt, bambi expects the 
@@ -63,6 +68,14 @@ const bambi = (function() {
     }
 
     return {
+        init: () => {
+            bambiContainers = _findBambiContainers() ; 
+            events = _findPageEvents(); 
+        },
+        run: () => {
+
+        }, 
+
         appStages:{
             init: 5,
             running: 10
@@ -78,22 +91,6 @@ const bambi = (function() {
             development: {code: 2, description: "dev local"}
         },
 
-        init: function() {
-            //check data section exists and correctly formatted
-            if(!dataSectionOK()){ throw bambi.error.badInfoSection } 
-            runningEnv = detectRunningEnv()
-            console.log(`running on ${runningEnv.description}`)
-            if(!jqueryOK()){ throw bambi.error.badJQuery }
-            if(runningEnv === bambi.runningEnvs.production){
-                AJS.populateParameters()
-                runningEnv.params = AJS.params
-            }
-        },
-
-        run: function(){
-
-        },
-
         isProd: function(){
             return runningEnv.code == 1
         }, 
@@ -103,7 +100,7 @@ const bambi = (function() {
         },
        
         getVersionString: function() {
-            return `Parks Canada Confluence Calendar - v${bambiVersion.major}.${bambiVersion.minor}`
+            return ` - v${bambiVersion.major}.${bambiVersion.minor}`
         },
 
         prevVersion: undefined, //the previous version of the app used to save event and app information
