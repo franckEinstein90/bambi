@@ -11,23 +11,23 @@
 /*****************************************************************************/
 const express = require('express')
 /*****************************************************************************/
-const appRoot = require('@routes/appRoot').appRoot
+const appRoot       = require('@routes/appRoot').appRoot ; 
+const accountRouter = require('@routes/account').accountRouter ;
+const eventRouter   = require('@routes/events').eventRouter ; 
 /*****************************************************************************/
 
-const routingSystem = function({
-    app
-    }){
+const routingSystem = function({ app }){
 
-        let _router = require('express').Router() 
-        app.use('/', _router)
-        _router.get('/', appRoot.render)
+        const _router = require('express').Router() ; 
+        _router.get('/', appRoot.render) ; 
 
-        return {
+    
+        app.use('/account', accountRouter);
+        app.use('/events', eventRouter) ; 
+        app.use('/', _router) ; 
 
-
-        } 
-}
-
+        return { } 
+} ; 
 
 module.exports = {
     routingSystem

@@ -9,6 +9,7 @@
     "flow": "flow"
   },
   "_moduleAliases": {
+    "@events": "src/events",
     "@routes": "src/routes",
     "@appInternals": "src/appInternals",
     "@server": "src/server"
